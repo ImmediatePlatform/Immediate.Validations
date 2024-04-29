@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net8.0</TargetFramework>
+	<IsPackable>true</IsPackable>
+	<IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Nuget">
+	<Title>Immediate.Validations</Title>
+	<Description>Source generated validations for Immediate.Handlers parameters.</Description>
+
+	<Authors>Immediate.Validations Developers</Authors>
+
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageReadmeFile>readme.md</PackageReadmeFile>
+
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	<RepositoryUrl>https://github.com/ImmediatePlatform/Immediate.Validations</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Immediate.Handlers" />
+  </ItemGroup>
+
+  <!--
+	This ensures the library will be packaged as a source generator when we use `dotnet pack`
+	-->
+  <ItemGroup>
+	<None Include="../../readme.md" Pack="true" PackagePath="/" />
+	<None Include="$(PkgScriban)/lib/netstandard2.0/Scriban.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="false" />
+	<None Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Analyzers.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="true" />
+	<None Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/netstandard2.0/Immediate.Validations.CodeFixes.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="true" />
+	<None Include="../Immediate.Validations.Generators/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Generators.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="true" />
+	<None Include="../Immediate.Validations.Shared/bin/$(Configuration)/net8.0/Immediate.Validations.Shared.dll" Pack="true" PackagePath="lib/net8.0" Visible="true" />
+	<None Include="../Immediate.Validations.Shared/bin/$(Configuration)/net8.0/Immediate.Validations.Shared.xml" Pack="true" PackagePath="lib/net8.0" Visible="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="MinVer" PrivateAssets="all" />
+	<PackageReference Include="Scriban" PrivateAssets="all" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="../Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" ReferenceOutputAssembly="false" />
+	<ProjectReference Include="../Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" ReferenceOutputAssembly="false" />
+	<ProjectReference Include="../Immediate.Validations.Generators/Immediate.Validations.Generators.csproj" ReferenceOutputAssembly="false" />
+	<ProjectReference Include="../Immediate.Validations.Shared/Immediate.Validations.Shared.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <PropertyGroup Label="MinVer">
+	<MinVerAutoIncrement>minor</MinVerAutoIncrement>
+	<MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
+	<MinVerTagPrefix>v</MinVerTagPrefix>
+  </PropertyGroup>
+
+</Project>
