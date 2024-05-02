@@ -1,0 +1,98 @@
+{{~ 
+	func validate(p, target, property_name)
+~}}
+
+{{~ if p.is_validation_property ~}}
+foreach (var error in {{ p.type_full_name }}.Validate({{ target }}))
+{
+	errors.Add(error with 
+	{
+		PropertyName = {{ property_name }} + $".{error.PropertyName}",
+	});
+}
+{{~ else ~}}
+if (
+	{{ p.validator_name }}.Validate{{ if p.is_generic_method; $"<{p.type_full_name}>"; end }}(
+		{{ target }}
+		{{~ for param in p.parameters ~}}
+		, {{ param }}
+		{{~ end ~}}
+	) is (true, var message)
+)
+{
+	errors.Add(new()
+	{
+		PropertyName = {{ property_name }}, 
+		ErrorMessage = {{ if string.empty p.message; "null"; else; $"\"{p.message}\""; end }} ?? message,
+	});
+}
+{{~ end ~}}
+{{~ end -}}
+
+{{~ 
+	func process_nested_properties(properties, depth, prefix)
+~}}
+{{~ for p in properties ~}}
+{
+	{{~ validate(p, $"item{depth-1}", $"$\"{prefix}[\{counter{depth-1}}]\"") ~}}
+		
+	{{~ if p.collection_properties.count != 0 ~}}
+	var counter{{depth}} = 0;
+	foreach (var item{{depth}} in item{{depth-1}})
+	{
+		{{~ process_nested_properties(p.collection_properties, depth+1, prefix + $"[\{counter{depth-1}}]") ~}}
+		counter{{depth}}++;
+	}
+	{{~ end ~}}
+}
+{{~ end ~}}
+{{~ end ~}}
+
+{{~ 
+	func process_properties(properties)
+~}}
+{{~ for p in properties ~}}
+{
+	{{~ validate(p, $"target.{p.property_name}", $"\"{p.property_name}\"") ~}}
+		
+	{{~ if p.collection_properties.count != 0 ~}}
+	var counter0 = 0;
+	foreach (var item0 in target.{{ p.property_name }})
+	{
+		{{~ process_nested_properties(p.collection_properties, 1, $"{p.property_name}") ~}}
+		counter0++;
+	}
+	{{~ end ~}}
+}
+{{~ end ~}}
+{{~ end -}}
+
+using System.Collections.Generic;
+using Immediate.Validations.Shared;
+
+#pragma warning disable CS1591
+
+{{~ if !string.empty namespace ~}}
+namespace {{ namespace }};
+
+{{~ end ~}}
+{{~ for c in outer_classes ~}}
+partial {{ c.type }} {{ c.name }}
+{
+{{~ end ~}}
+
+partial {{ class.type }} {{ class.name }} : IValidationTarget<{{ class_name }}>
+{
+	public static List<ValidationError> Validate({{ class_name }} target)
+	{
+		var errors = new List<ValidationError>();
+
+		{{~ process_properties(properties) ~}}
+
+		return errors;
+	}
+}
+
+{{~ for c in outer_classes ~}}
+}
+{{~ end ~}}

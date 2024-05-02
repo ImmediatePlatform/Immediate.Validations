@@ -8,6 +8,7 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 
 	<AnalysisLevel>latest-all</AnalysisLevel>
+	<WarningLevel>9999</WarningLevel>
 	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
