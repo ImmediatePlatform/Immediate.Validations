@@ -67,8 +67,16 @@ public sealed partial class ImmediateValidationsGenerator
 		var properties = new List<ValidationProperty>();
 		foreach (var member in symbol.GetMembers())
 		{
-			if (member is not IPropertySymbol { } property)
+			if (member is not IPropertySymbol
+				{
+					IsStatic: false,
+					// ignore record `EqualityContract`
+					Name: not "EqualityContract",
+				} property
+			)
+			{
 				continue;
+			}
 
 			token.ThrowIfCancellationRequested();
 
