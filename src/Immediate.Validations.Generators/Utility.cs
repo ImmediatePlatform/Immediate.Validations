@@ -23,6 +23,19 @@ internal static class Utility
 	public static string? NullIf(this string value, string check) =>
 		value.Equals(check, StringComparison.Ordinal) ? null : value;
 
+	public static T? SingleValue<T>(this IEnumerable<T> source)
+	{
+		using var enumerator = source.GetEnumerator();
+		if (!enumerator.MoveNext())
+			return default;
+
+		var c = enumerator.Current;
+		if (enumerator.MoveNext())
+			return default;
+
+		return c;
+	}
+
 	public static bool SatisfiesConstraints(IMethodSymbol method, ITypeSymbol[] typeArguments, Compilation compilation)
 	{
 		var typeParameters = method.TypeParameters;

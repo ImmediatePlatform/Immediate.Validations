@@ -28,6 +28,22 @@ if (
 }
 		
 }
+{
+
+if (
+	global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.Validate(
+		target.StringProperty
+	) is (true, var message)
+)
+{
+	errors.Add(new()
+	{
+		PropertyName = "StringProperty", 
+		ErrorMessage = null ?? message,
+	});
+}
+		
+}
 
 		return errors;
 	}

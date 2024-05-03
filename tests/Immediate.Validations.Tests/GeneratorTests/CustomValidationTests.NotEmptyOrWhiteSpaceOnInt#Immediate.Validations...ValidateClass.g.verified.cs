@@ -12,22 +12,6 @@ partial class ValidateClass : IValidationTarget<ValidateClass>
 	{
 		var errors = new List<ValidationError>();
 
-{
-
-if (
-	global::Immediate.Validations.Shared.NotNullAttribute.Validate<string>(
-		target.StringProperty
-	) is (true, var message)
-)
-{
-	errors.Add(new()
-	{
-		PropertyName = "StringProperty", 
-		ErrorMessage = null ?? message,
-	});
-}
-		
-}
 
 		return errors;
 	}

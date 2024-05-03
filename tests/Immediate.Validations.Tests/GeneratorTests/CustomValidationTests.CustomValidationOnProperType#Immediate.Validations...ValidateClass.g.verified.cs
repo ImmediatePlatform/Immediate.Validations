@@ -15,14 +15,14 @@ partial class ValidateClass : IValidationTarget<ValidateClass>
 {
 
 if (
-	global::Immediate.Validations.Shared.NotNullAttribute.Validate<string>(
-		target.StringProperty
+	global::IntGreaterThanZeroAttribute.Validate(
+		target.IntProperty
 	) is (true, var message)
 )
 {
 	errors.Add(new()
 	{
-		PropertyName = "StringProperty", 
+		PropertyName = "IntProperty", 
 		ErrorMessage = null ?? message,
 	});
 }

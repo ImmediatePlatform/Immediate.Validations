@@ -120,7 +120,7 @@ public sealed partial class ImmediateValidationsGenerator
 			{
 				PropertyName = propertyName,
 				TypeFullName = GetPropertyTypeFullName(),
-				ValidatorName = $"global::Immediate.Validations.Shared.Validators.NotNullAttribute",
+				ValidatorName = $"global::Immediate.Validations.Shared.NotNullAttribute",
 				IsGenericMethod = true,
 				IsValidationProperty = false,
 				Parameters = [],
@@ -137,7 +137,7 @@ public sealed partial class ImmediateValidationsGenerator
 			{
 				PropertyName = propertyName,
 				TypeFullName = GetPropertyTypeFullName(),
-				ValidatorName = "global::Immediate.Validations.Shared.Validators.EnumValueAttribute",
+				ValidatorName = "global::Immediate.Validations.Shared.EnumValueAttribute",
 				IsGenericMethod = true,
 				IsValidationProperty = false,
 				Parameters = [],
@@ -176,12 +176,27 @@ public sealed partial class ImmediateValidationsGenerator
 			if (@class
 					.GetMembers()
 					.OfType<IMethodSymbol>()
-					.SingleOrDefault(m => m is
+					.Where(m => m is
 					{
 						IsStatic: true,
-						ReturnType.SpecialType: SpecialType.System_Boolean,
+						Parameters.Length: >= 1,
 						Name: "ValidateProperty",
-					}) is not
+						ReturnType: INamedTypeSymbol
+						{
+							MetadataName: "ValueTuple`2",
+							ContainingNamespace:
+							{
+								Name: "System",
+								ContainingNamespace.IsGlobalNamespace: true,
+							},
+							TypeArguments:
+							[
+							{ SpecialType: SpecialType.System_Boolean },
+							{ SpecialType: SpecialType.System_String },
+							]
+						},
+					})
+					.SingleValue() is not
 					{
 						Parameters: [{ Type: { } targetParameterType }, ..],
 					} validateMethod

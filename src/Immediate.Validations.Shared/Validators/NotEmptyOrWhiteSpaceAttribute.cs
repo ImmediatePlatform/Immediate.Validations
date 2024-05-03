@@ -1,4 +1,4 @@
-namespace Immediate.Validations.Shared.Attributes;
+namespace Immediate.Validations.Shared;
 
 /// <summary>
 ///	    Applied to a <see langword="string"/> property to indicate that the value should not be <see langword="null"/>

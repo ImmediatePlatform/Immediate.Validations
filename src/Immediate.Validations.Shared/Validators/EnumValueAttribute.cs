@@ -1,4 +1,4 @@
-namespace Immediate.Validations.Shared.Validators;
+namespace Immediate.Validations.Shared;
 
 /// <summary>
 ///	    Applied to a property to indicate that the value of the property should be a defined value of the <see
