@@ -13,7 +13,7 @@ internal static class Utility
 		using var stream = Assembly
 			.GetExecutingAssembly()
 			.GetManifestResourceStream(
-				$"Immediate.Apis.Generators.Templates.{name}.sbntxt"
+				$"Immediate.Validations.Generators.Templates.{name}.sbntxt"
 			)!;
 
 		using var reader = new StreamReader(stream);
@@ -34,10 +34,10 @@ internal static class Utility
 			if (typeArgument.IsPointerOrFunctionPointer() || typeArgument.IsRefLikeType)
 				return false;
 
-			if (typeParameter.HasReferenceTypeConstraint && !typeArgument.IsReferenceType
-				|| typeParameter.HasValueTypeConstraint && !typeArgument.IsNonNullableValueType()
-				|| typeParameter.HasUnmanagedTypeConstraint && !(typeArgument.IsUnmanagedType && typeArgument.IsNonNullableValueType())
-				|| typeParameter.HasConstructorConstraint && !SatisfiesConstructorConstraint(typeArgument))
+			if ((typeParameter.HasReferenceTypeConstraint && !typeArgument.IsReferenceType)
+				|| (typeParameter.HasValueTypeConstraint && !typeArgument.IsNonNullableValueType())
+				|| (typeParameter.HasUnmanagedTypeConstraint && !(typeArgument.IsUnmanagedType && typeArgument.IsNonNullableValueType()))
+				|| (typeParameter.HasConstructorConstraint && !SatisfiesConstructorConstraint(typeArgument)))
 			{
 				return false;
 			}
@@ -92,37 +92,29 @@ internal static class Utility
 	/// To check whether a type is System.Nullable`1 or is a type parameter constrained to System.Nullable`1
 	/// use <see cref="IsNullableTypeOrTypeParameter" /> instead.
 	/// </summary>
-	public static bool IsNullableType(this ITypeSymbol type)
-	{
-		return type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
-	}
+	public static bool IsNullableType(this ITypeSymbol type) =>
+		type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
 
 	public static bool IsPointerOrFunctionPointer(this ITypeSymbol type) =>
 		type.TypeKind is TypeKind.Pointer or TypeKind.FunctionPointer;
 
-	[SuppressMessage("Style", "IDE0010:Add missing cases")]
-	private static bool SatisfiesConstructorConstraint(ITypeSymbol typeArgument)
-	{
-		switch (typeArgument.TypeKind)
+	[SuppressMessage("Style", "IDE0072:Add missing cases")]
+	private static bool SatisfiesConstructorConstraint(ITypeSymbol typeArgument) =>
+		typeArgument.TypeKind switch
 		{
-			case TypeKind.Struct:
-			case TypeKind.Enum:
-			case TypeKind.Dynamic:
-				return true;
+			TypeKind.Struct => true,
+			TypeKind.Enum => true,
+			TypeKind.Dynamic => true,
 
-			case TypeKind.Class:
-				return HasPublicParameterlessConstructor((INamedTypeSymbol)typeArgument) && !typeArgument.IsAbstract;
+			TypeKind.Class =>
+				HasPublicParameterlessConstructor((INamedTypeSymbol)typeArgument) && !typeArgument.IsAbstract,
 
-			case TypeKind.TypeParameter:
-			{
-				var typeParameter = (ITypeParameterSymbol)typeArgument;
-				return typeParameter.HasConstructorConstraint || typeParameter.IsValueType;
-			}
+			TypeKind.TypeParameter =>
+				typeArgument is ITypeParameterSymbol tps
+				&& (tps.HasConstructorConstraint || tps.IsValueType),
 
-			default:
-				return false;
-		}
-	}
+			_ => false,
+		};
 
 	private static bool HasPublicParameterlessConstructor(INamedTypeSymbol type)
 	{

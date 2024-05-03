@@ -81,9 +81,9 @@ partial {{ c.type }} {{ c.name }}
 {
 {{~ end ~}}
 
-partial {{ class.type }} {{ class.name }} : IValidationTarget<{{ class_name }}>
+partial {{ class.type }} {{ class.name }} : IValidationTarget<{{ class.name }}>
 {
-	public static List<ValidationError> Validate({{ class_name }} target)
+	public static List<ValidationError> Validate({{ class.name }} target)
 	{
 		var errors = new List<ValidationError>();
 
