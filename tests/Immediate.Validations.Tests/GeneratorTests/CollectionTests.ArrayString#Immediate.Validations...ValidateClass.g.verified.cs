@@ -15,7 +15,7 @@ partial class ValidateClass : IValidationTarget<ValidateClass>
 {
 
 if (
-	global::Immediate.Validations.Shared.NotNullAttribute.Validate<string>(
+	global::Immediate.Validations.Shared.NotNullAttribute.Validate<string[]>(
 		target.StringProperty
 	) is (true, var message)
 )
@@ -27,20 +27,27 @@ if (
 	});
 }
 }
+{
+	var counter0 = 0;
+	foreach (var item0 in target.StringProperty)
+	{
 {
 
 if (
-	global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.Validate(
-		target.StringProperty
+	global::Immediate.Validations.Shared.NotNullAttribute.Validate<string>(
+		item0
 	) is (true, var message)
 )
 {
 	errors.Add(new()
 	{
-		PropertyName = "StringProperty", 
+		PropertyName = $"StringProperty[{counter0}]", 
 		ErrorMessage = null ?? message,
 	});
 }
+}
+		counter0++;
+	}
 }
 
 		return errors;

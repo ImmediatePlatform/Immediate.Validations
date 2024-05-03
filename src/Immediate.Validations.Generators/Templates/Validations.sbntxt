@@ -34,8 +34,6 @@ if (
 ~}}
 {{~ for p in properties ~}}
 {
-	{{~ validate(p, $"item{depth-1}", $"$\"{prefix}[\{counter{depth-1}}]\"") ~}}
-		
 	{{~ if p.collection_properties.count != 0 ~}}
 	var counter{{depth}} = 0;
 	foreach (var item{{depth}} in item{{depth-1}})
@@ -43,7 +41,11 @@ if (
 		{{~ process_nested_properties(p.collection_properties, depth+1, prefix + $"[\{counter{depth-1}}]") ~}}
 		counter{{depth}}++;
 	}
-	{{~ end ~}}
+	{{~
+		else 
+			validate(p, $"item{depth-1}", $"$\"{prefix}[\{counter{depth-1}}]\"")
+		end
+	~}}
 }
 {{~ end ~}}
 {{~ end ~}}
@@ -53,8 +55,6 @@ if (
 ~}}
 {{~ for p in properties ~}}
 {
-	{{~ validate(p, $"target.{p.property_name}", $"\"{p.property_name}\"") ~}}
-		
 	{{~ if p.collection_properties.count != 0 ~}}
 	var counter0 = 0;
 	foreach (var item0 in target.{{ p.property_name }})
@@ -62,7 +62,11 @@ if (
 		{{~ process_nested_properties(p.collection_properties, 1, $"{p.property_name}") ~}}
 		counter0++;
 	}
-	{{~ end ~}}
+	{{~
+		else 
+			validate(p, $"target.{p.property_name}", $"\"{p.property_name}\"")
+		end
+	~}}
 }
 {{~ end ~}}
 {{~ end -}}

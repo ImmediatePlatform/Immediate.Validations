@@ -83,7 +83,6 @@ public sealed partial class ImmediateValidationsGenerator
 			properties.AddRange(
 				GetPropertyValidations(
 					compilation,
-					properties,
 					property.Name,
 					property.Type,
 					property.NullableAnnotation,
@@ -98,7 +97,6 @@ public sealed partial class ImmediateValidationsGenerator
 
 	private static IEnumerable<ValidationProperty> GetPropertyValidations(
 		Compilation compilation,
-		List<ValidationProperty> properties,
 		string propertyName,
 		ITypeSymbol propertyType,
 		NullableAnnotation nullableAnnotation,
@@ -226,7 +224,7 @@ public sealed partial class ImmediateValidationsGenerator
 			if (parameters.Count != validateMethod.Parameters.Length - 1)
 				continue;
 
-			properties.Add(new()
+			yield return new()
 			{
 				PropertyName = propertyName,
 				TypeFullName = validateMethod.IsGenericMethod ? GetPropertyTypeFullName() : "",
@@ -236,7 +234,7 @@ public sealed partial class ImmediateValidationsGenerator
 				Parameters = parameters.ToEquatableReadOnlyList()!,
 				Message = GetMessage(attribute),
 				CollectionProperties = [],
-			});
+			};
 		}
 
 		switch (propertyType)
@@ -255,7 +253,6 @@ public sealed partial class ImmediateValidationsGenerator
 					Parameters = [],
 					CollectionProperties = GetPropertyValidations(
 						compilation,
-						properties,
 						propertyName,
 						ats.ElementType,
 						ats.ElementNullableAnnotation,
@@ -285,7 +282,6 @@ public sealed partial class ImmediateValidationsGenerator
 					Parameters = [],
 					CollectionProperties = GetPropertyValidations(
 						compilation,
-						properties,
 						propertyName,
 						type,
 						annotation,
