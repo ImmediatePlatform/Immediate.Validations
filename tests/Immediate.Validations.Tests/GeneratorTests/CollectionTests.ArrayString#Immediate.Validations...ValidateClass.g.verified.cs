@@ -6,7 +6,7 @@ using Immediate.Validations.Shared;
 #pragma warning disable CS1591
 
 
-partial class ValidateClass : IValidationTarget<ValidateClass>
+partial class ValidateClass
 {
 	public static List<ValidationError> Validate(ValidateClass target)
 	{

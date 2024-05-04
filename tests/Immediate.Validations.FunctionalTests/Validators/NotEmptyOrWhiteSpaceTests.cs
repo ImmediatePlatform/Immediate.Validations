@@ -34,7 +34,7 @@ public sealed partial class NotEmptyOrWhiteSpaceTests
 				new()
 				{
 					PropertyName = nameof(StringRecord.StringValue),
-					ErrorMessage = "Property must not be `null` or whitespace." ,
+					ErrorMessage = "Property must not be `null` or whitespace.",
 				}
 			],
 			errors

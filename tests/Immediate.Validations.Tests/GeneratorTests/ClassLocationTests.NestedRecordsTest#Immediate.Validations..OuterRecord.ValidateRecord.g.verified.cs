@@ -8,7 +8,7 @@ using Immediate.Validations.Shared;
 partial record OuterRecord
 {
 
-partial record ValidateRecord : IValidationTarget<ValidateRecord>
+partial record ValidateRecord
 {
 	public static List<ValidationError> Validate(ValidateRecord target)
 	{

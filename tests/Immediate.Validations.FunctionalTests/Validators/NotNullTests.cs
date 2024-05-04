@@ -33,7 +33,7 @@ public sealed partial class NotNullTests
 				new()
 				{
 					PropertyName = nameof(StringRecord.StringValue),
-					ErrorMessage = "Property must not be `null`." ,
+					ErrorMessage = "Property must not be `null`.",
 				}
 			],
 			errors

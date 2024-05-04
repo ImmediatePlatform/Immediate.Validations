@@ -8,7 +8,7 @@ using Immediate.Validations.Shared;
 partial record struct OuterRecordStruct
 {
 
-partial record struct ValidateRecordStruct : IValidationTarget<ValidateRecordStruct>
+partial record struct ValidateRecordStruct
 {
 	public static List<ValidationError> Validate(ValidateRecordStruct target)
 	{

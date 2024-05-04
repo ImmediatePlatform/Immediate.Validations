@@ -8,7 +8,7 @@ using Immediate.Validations.Shared;
 partial class OuterClass
 {
 
-partial class ValidateClass : IValidationTarget<ValidateClass>
+partial class ValidateClass
 {
 	public static List<ValidationError> Validate(ValidateClass target)
 	{

@@ -23,7 +23,7 @@ if (
 	errors.Add(new()
 	{
 		PropertyName = {{ property_name }}, 
-		ErrorMessage = {{ if string.empty p.message; "null"; else; $"\"{p.message}\""; end }} ?? message,
+		ErrorMessage = {{ if string.empty p.message; "null"; else; p.message; end }} ?? message,
 	});
 }
 {{~ end ~}}
@@ -85,7 +85,7 @@ partial {{ c.type }} {{ c.name }}
 {
 {{~ end ~}}
 
-partial {{ class.type }} {{ class.name }} : IValidationTarget<{{ class.name }}>
+partial {{ class.type }} {{ class.name }}
 {
 	public static List<ValidationError> Validate({{ class.name }} target)
 	{
