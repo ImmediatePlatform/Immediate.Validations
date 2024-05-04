@@ -15,7 +15,7 @@ partial class ValidateClass : IValidationTarget<ValidateClass>
 {
 
 if (
-	global::Immediate.Validations.Shared.NotNullAttribute.Validate<string>(
+	global::Immediate.Validations.Shared.NotNullAttribute.ValidateProperty(
 		target.StringProperty
 	) is (true, var message)
 )
@@ -30,7 +30,7 @@ if (
 {
 
 if (
-	global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.Validate(
+	global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.ValidateProperty(
 		target.StringProperty
 	) is (true, var message)
 )

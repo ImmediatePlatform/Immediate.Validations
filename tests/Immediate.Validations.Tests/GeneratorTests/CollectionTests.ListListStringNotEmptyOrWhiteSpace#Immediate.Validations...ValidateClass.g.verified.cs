@@ -15,7 +15,7 @@ partial class ValidateClass : IValidationTarget<ValidateClass>
 {
 
 if (
-	global::Immediate.Validations.Shared.NotNullAttribute.Validate<global::System.Collections.Generic.List<global::System.Collections.Generic.List<string>>>(
+	global::Immediate.Validations.Shared.NotNullAttribute.ValidateProperty(
 		target.StringProperty
 	) is (true, var message)
 )
@@ -34,7 +34,7 @@ if (
 {
 
 if (
-	global::Immediate.Validations.Shared.NotNullAttribute.Validate<global::System.Collections.Generic.List<string>>(
+	global::Immediate.Validations.Shared.NotNullAttribute.ValidateProperty(
 		item0
 	) is (true, var message)
 )
@@ -53,7 +53,7 @@ if (
 {
 
 if (
-	global::Immediate.Validations.Shared.NotNullAttribute.Validate<string>(
+	global::Immediate.Validations.Shared.NotNullAttribute.ValidateProperty(
 		item1
 	) is (true, var message)
 )
@@ -68,7 +68,7 @@ if (
 {
 
 if (
-	global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.Validate(
+	global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.ValidateProperty(
 		item1
 	) is (true, var message)
 )

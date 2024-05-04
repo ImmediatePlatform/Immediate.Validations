@@ -15,7 +15,7 @@ partial class ValidateClass : IValidationTarget<ValidateClass>
 {
 
 if (
-	global::Immediate.Validations.Shared.EnumValueAttribute.Validate<global::TestEnum>(
+	global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
 		target.TestEnum
 	) is (true, var message)
 )

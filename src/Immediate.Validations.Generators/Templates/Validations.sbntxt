@@ -12,7 +12,7 @@ foreach (var error in {{ p.type_full_name }}.Validate({{ target }}))
 }
 {{~ else ~}}
 if (
-	{{ p.validator_name }}.Validate{{ if p.is_generic_method; $"<{p.type_full_name}>"; end }}(
+	{{ p.validator_name }}.ValidateProperty(
 		{{ target }}
 		{{~ for param in p.parameters ~}}
 		, {{ param }}

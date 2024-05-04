@@ -15,7 +15,7 @@ partial class ValidateClass : IValidationTarget<ValidateClass>
 {
 
 if (
-	global::IntGreaterThanZeroAttribute.Validate(
+	global::IntGreaterThanZeroAttribute.ValidateProperty(
 		target.IntProperty
 	) is (true, var message)
 )
