@@ -24,6 +24,25 @@ internal static class ITypeSymbolExtensions
 			},
 		};
 
+	public static bool IsIReadOnlyCollection1(this INamedTypeSymbol typeSymbol) =>
+		typeSymbol is
+		{
+			MetadataName: "IReadOnlyCollection`1",
+			ContainingNamespace:
+			{
+				Name: "Generic",
+				ContainingNamespace:
+				{
+					Name: "Collections",
+					ContainingNamespace:
+					{
+						Name: "System",
+						ContainingNamespace.IsGlobalNamespace: true,
+					},
+				},
+			},
+		};
+
 	public static bool IsValidateAttribute(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{

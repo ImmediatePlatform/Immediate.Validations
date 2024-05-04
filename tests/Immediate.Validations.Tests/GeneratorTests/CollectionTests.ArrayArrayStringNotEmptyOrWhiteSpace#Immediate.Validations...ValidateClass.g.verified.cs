@@ -29,7 +29,7 @@ if (
 }
 {
 	var counter0 = 0;
-	foreach (var item0 in target.StringProperty)
+	foreach (var item0 in target.StringProperty ?? [])
 	{
 {
 
@@ -48,7 +48,7 @@ if (
 }
 {
 	var counter1 = 0;
-	foreach (var item1 in item0)
+	foreach (var item1 in item0 ?? [])
 	{
 {
 

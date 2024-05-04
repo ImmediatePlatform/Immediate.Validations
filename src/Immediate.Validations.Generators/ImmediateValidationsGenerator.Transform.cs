@@ -268,7 +268,7 @@ public sealed partial class ImmediateValidationsGenerator
 				IsGenericType: true,
 				TypeArguments: [{ } type],
 				TypeArgumentNullableAnnotations: [{ } annotation],
-			} nts when nts.AllInterfaces.Any(i => i.IsICollection1()):
+			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()):
 				token.ThrowIfCancellationRequested();
 
 				yield return new()

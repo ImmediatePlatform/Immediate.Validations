@@ -36,7 +36,7 @@ if (
 {
 	{{~ if p.collection_properties.count != 0 ~}}
 	var counter{{depth}} = 0;
-	foreach (var item{{depth}} in item{{depth-1}})
+	foreach (var item{{depth}} in item{{depth-1}} ?? [])
 	{
 		{{~ process_nested_properties(p.collection_properties, depth+1, prefix + $"[\{counter{depth-1}}]") ~}}
 		counter{{depth}}++;
@@ -57,7 +57,7 @@ if (
 {
 	{{~ if p.collection_properties.count != 0 ~}}
 	var counter0 = 0;
-	foreach (var item0 in target.{{ p.property_name }})
+	foreach (var item0 in target.{{ p.property_name }} ?? [])
 	{
 		{{~ process_nested_properties(p.collection_properties, 1, $"{p.property_name}") ~}}
 		counter0++;
