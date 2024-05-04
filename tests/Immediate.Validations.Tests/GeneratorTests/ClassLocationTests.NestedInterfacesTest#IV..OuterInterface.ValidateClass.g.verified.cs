@@ -1,10 +1,12 @@
-﻿//HintName: Immediate.Validations...ValidateClass.g.cs
+﻿//HintName: IV..OuterInterface.ValidateClass.g.cs
 
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #pragma warning disable CS1591
 
+partial interface OuterInterface
+{
 
 partial class ValidateClass
 {
@@ -12,23 +14,9 @@ partial class ValidateClass
 	{
 		var errors = new List<ValidationError>();
 
-{
-
-if (
-	global::IntGreaterThanZeroAttribute.ValidateProperty(
-		target.IntProperty
-	) is (true, var message)
-)
-{
-	errors.Add(new()
-	{
-		PropertyName = "IntProperty", 
-		ErrorMessage = null ?? message,
-	});
-}
-}
 
 		return errors;
 	}
 }
 
+}

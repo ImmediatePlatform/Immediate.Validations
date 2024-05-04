@@ -1,4 +1,4 @@
-﻿//HintName: Immediate.Validations...ValidateClass.g.cs
+﻿//HintName: IV...ValidateClass.g.cs
 
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
@@ -15,14 +15,14 @@ partial class ValidateClass
 {
 
 if (
-	global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
-		target.TestEnum
+	global::IntGreaterThanZeroAttribute.ValidateProperty(
+		target.IntProperty
 	) is (true, var message)
 )
 {
 	errors.Add(new()
 	{
-		PropertyName = "TestEnum", 
+		PropertyName = "IntProperty", 
 		ErrorMessage = null ?? message,
 	});
 }

@@ -1,12 +1,10 @@
-﻿//HintName: Immediate.Validations..OuterClass.ValidateClass.g.cs
+﻿//HintName: IV...ValidateClass.g.cs
 
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #pragma warning disable CS1591
 
-partial class OuterClass
-{
 
 partial class ValidateClass
 {
@@ -14,9 +12,23 @@ partial class ValidateClass
 	{
 		var errors = new List<ValidationError>();
 
+{
+
+if (
+	global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
+		target.TestEnum
+	) is (true, var message)
+)
+{
+	errors.Add(new()
+	{
+		PropertyName = "TestEnum", 
+		ErrorMessage = null ?? message,
+	});
+}
+}
 
 		return errors;
 	}
 }
 
-}

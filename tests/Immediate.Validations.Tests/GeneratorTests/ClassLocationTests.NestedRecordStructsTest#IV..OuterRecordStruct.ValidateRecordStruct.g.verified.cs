@@ -1,4 +1,4 @@
-﻿//HintName: Immediate.Validations..OuterRecordStruct.ValidateRecordStruct.g.cs
+﻿//HintName: IV..OuterRecordStruct.ValidateRecordStruct.g.cs
 
 using System.Collections.Generic;
 using Immediate.Validations.Shared;

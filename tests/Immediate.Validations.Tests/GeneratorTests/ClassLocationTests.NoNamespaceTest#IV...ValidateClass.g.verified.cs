@@ -1,4 +1,4 @@
-﻿//HintName: Immediate.Validations...ValidateClass.g.cs
+﻿//HintName: IV...ValidateClass.g.cs
 
 using System.Collections.Generic;
 using Immediate.Validations.Shared;

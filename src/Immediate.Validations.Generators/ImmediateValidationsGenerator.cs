@@ -32,6 +32,6 @@ public sealed partial class ImmediateValidationsGenerator : IIncrementalGenerato
 		token.ThrowIfCancellationRequested();
 
 		var name = $"{v.Namespace}.{string.Join(".", v.OuterClasses.Select(c => c.Name))}.{v.Class.Name}";
-		context.AddSource($"Immediate.Validations.{name}.g.cs", source);
+		context.AddSource($"IV.{name}.g.cs", source);
 	}
 }

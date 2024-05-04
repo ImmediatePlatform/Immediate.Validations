@@ -1,4 +1,4 @@
-﻿//HintName: Immediate.Validations...ValidateClass.g.cs
+﻿//HintName: IV...ValidateClass.g.cs
 
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
@@ -26,28 +26,6 @@ if (
 		ErrorMessage = null ?? message,
 	});
 }
-}
-{
-	var counter0 = 0;
-	foreach (var item0 in target.StringProperty ?? [])
-	{
-{
-
-if (
-	global::Immediate.Validations.Shared.NotNullAttribute.ValidateProperty(
-		item0
-	) is (true, var message)
-)
-{
-	errors.Add(new()
-	{
-		PropertyName = $"StringProperty[{counter0}]", 
-		ErrorMessage = null ?? message,
-	});
-}
-}
-		counter0++;
-	}
 }
 
 		return errors;
