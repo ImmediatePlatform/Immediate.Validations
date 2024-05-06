@@ -22,7 +22,7 @@ public sealed partial class CollectionTests
 	}
 
 	[Fact]
-	public void ValidRecordNullProperty()
+	public void InvalidRecordNullProperty()
 	{
 		var record = new ListStringRecord { Strings = null! };
 
@@ -41,7 +41,7 @@ public sealed partial class CollectionTests
 	}
 
 	[Fact]
-	public void ValidRecordNullFirstLevel()
+	public void InvalidRecordNullFirstLevel()
 	{
 		var record = new ListStringRecord
 		{
@@ -74,7 +74,7 @@ public sealed partial class CollectionTests
 	}
 
 	[Fact]
-	public void ValidRecordNullSecondLevel()
+	public void InvalidRecordNullSecondLevel()
 	{
 		var record = new ListStringRecord
 		{
