@@ -16,13 +16,4 @@ internal static class Utility
 		MetadataReference.CreateFromFile("./Microsoft.Extensions.Options.dll"),
 		MetadataReference.CreateFromFile("./Microsoft.Extensions.Primitives.dll"),
 	];
-
-	public static TheoryData<string> Methods() =>
-		new([
-			"Get",
-			"Post",
-			"Patch",
-			"Put",
-			"Delete",
-		]);
 }
