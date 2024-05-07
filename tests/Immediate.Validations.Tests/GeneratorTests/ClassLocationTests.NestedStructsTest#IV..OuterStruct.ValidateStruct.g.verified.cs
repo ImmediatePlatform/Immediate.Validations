@@ -1,16 +1,16 @@
-﻿//HintName: IV..OuterRecordStruct.ValidateRecordStruct.g.cs
+﻿//HintName: IV..OuterStruct.ValidateStruct.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
-partial record struct OuterRecordStruct
+partial struct OuterStruct
 {
 
-partial record struct ValidateRecordStruct
+partial struct ValidateStruct
 {
-	public static List<ValidationError> Validate(ValidateRecordStruct? target)
+	public static List<ValidationError> Validate(ValidateStruct? target)
 	{
 		if (target is not { } t)
 		{

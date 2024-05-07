@@ -10,9 +10,9 @@ partial record OuterRecord
 
 partial record ValidateRecord
 {
-	public static List<ValidationError> Validate(ValidateRecord target)
+	public static List<ValidationError> Validate(ValidateRecord? target)
 	{
-		if (target is null)
+		if (target is not { } t)
 		{
 			return 
 			[

@@ -8,9 +8,9 @@ using Immediate.Validations.Shared;
 
 partial class ValidateClass
 {
-	public static List<ValidationError> Validate(ValidateClass target)
+	public static List<ValidationError> Validate(ValidateClass? target)
 	{
-		if (target is null)
+		if (target is not { } t)
 		{
 			return 
 			[
@@ -24,7 +24,7 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
-		__ValidateTestEnum(errors, target.TestEnum);
+		__ValidateTestEnum(errors, t.TestEnum);
 
 		return errors;
 	}

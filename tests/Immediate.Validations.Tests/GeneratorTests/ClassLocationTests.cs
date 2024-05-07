@@ -137,4 +137,28 @@ public sealed class ClassLocationTests
 
 		_ = await Verify(result);
 	}
+
+	[Fact]
+	public async Task NestedStructsTest()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			using Immediate.Validations.Shared;
+
+			using Namespace
+
+			public partial struct OuterStruct
+			{
+				[Validate]
+				public partial struct ValidateStruct;
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
 }

@@ -8,9 +8,9 @@ using Immediate.Validations.Shared;
 
 partial class ValidationTarget
 {
-	public static List<ValidationError> Validate(ValidationTarget target)
+	public static List<ValidationError> Validate(ValidationTarget? target)
 	{
-		if (target is null)
+		if (target is not { } t)
 		{
 			return 
 			[
@@ -24,7 +24,7 @@ partial class ValidationTarget
 		
 		var errors = new List<ValidationError>();
 
-		__ValidateStringProperty(errors, target.StringProperty);
+		__ValidateStringProperty(errors, t.StringProperty);
 
 		return errors;
 	}

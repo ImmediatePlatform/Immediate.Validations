@@ -15,9 +15,9 @@ partial {{ c.type }} {{ c.name }}
 
 partial {{ class.type }} {{ class.name }}
 {
-	public static List<ValidationError> Validate({{ class.name }} target)
+	public static List<ValidationError> Validate({{ class.name }}? target)
 	{
-		if (target is null)
+		if (target is not { } t)
 		{
 			return 
 			[
@@ -32,7 +32,7 @@ partial {{ class.type }} {{ class.name }}
 		var errors = new List<ValidationError>();
 
 		{{~ for p in properties ~}}
-		__Validate{{ p.property_name }}(errors, target.{{ p.property_name }});
+		__Validate{{ p.property_name }}(errors, t.{{ p.property_name }});
 		{{~ end ~}}
 
 		return errors;
