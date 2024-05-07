@@ -146,4 +146,88 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
+
+	[Fact]
+	public async Task NotNullAsCustomValidationOnGenericType()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[NotNull]
+				public string? StringProperty { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task EnumAsCustomValidationOnGenericType()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			public enum TestEnum { None = 0, Valid = 1 }
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				public TestEnum? EnumProperty { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task CustomValidatorWithParameters()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute : ValidatorAttribute
+			{
+				public required int Operand { get; init; }
+
+				public static (bool Invalid, string Message) ValidateProperty(int value, int operand) =>
+					value > operand ? default : (true, $"Value `{value}` is not greater than `{operand}`.");
+			}
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[GreaterThan(Operand = 0, Message = "Must be greater than zero.")]
+				public int IntProperty { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
 }
