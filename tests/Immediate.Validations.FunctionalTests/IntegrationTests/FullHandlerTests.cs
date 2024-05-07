@@ -30,7 +30,38 @@ public sealed class FullHandlerTests
 	}
 
 	[Fact]
-	public async Task FullTestWithInvalidName()
+	public async Task FullTestWithNullData()
+	{
+		var services = new ServiceCollection();
+
+		_ = services
+			.AddHandlers()
+			.AddBehaviors();
+
+		var provider = services.BuildServiceProvider();
+		using var scope = provider.CreateScope();
+		var handler = scope.ServiceProvider.GetRequiredService<SaveRecord.Handler>();
+
+		var ex = await Assert.ThrowsAsync<ValidationException>(async () =>
+			await handler.HandleAsync(
+				null!
+			)
+		);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = ".self",
+					ErrorMessage = "`target` must not be `null`.",
+				},
+			],
+			ex.Errors
+		);
+	}
+
+	[Fact]
+	public async Task FullTestWithNullName()
 	{
 		var services = new ServiceCollection();
 
@@ -60,6 +91,37 @@ public sealed class FullHandlerTests
 					PropertyName = "Name",
 					ErrorMessage = "Property must not be `null`.",
 				},
+			],
+			ex.Errors
+		);
+	}
+
+	[Fact]
+	public async Task FullTestWithEmptyName()
+	{
+		var services = new ServiceCollection();
+
+		_ = services
+			.AddHandlers()
+			.AddBehaviors();
+
+		var provider = services.BuildServiceProvider();
+		using var scope = provider.CreateScope();
+		var handler = scope.ServiceProvider.GetRequiredService<SaveRecord.Handler>();
+
+		var ex = await Assert.ThrowsAsync<ValidationException>(async () =>
+			await handler.HandleAsync(
+				new()
+				{
+					Name = "",
+					Status = SaveRecord.Status.Open,
+					Value = 3,
+				}
+			)
+		);
+
+		Assert.Equal(
+			[
 				new()
 				{
 					PropertyName = "Name",

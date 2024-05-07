@@ -1,4 +1,4 @@
-﻿//HintName: IV...ValidateClass.g.cs
+﻿//HintName: IV...ValidationTarget.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
@@ -6,9 +6,9 @@ using Immediate.Validations.Shared;
 #pragma warning disable CS1591
 
 
-partial class ValidateClass
+partial class ValidationTarget
 {
-	public static List<ValidationError> Validate(ValidateClass target)
+	public static List<ValidationError> Validate(ValidationTarget target)
 	{
 		if (target is null)
 		{
@@ -48,18 +48,6 @@ partial class ValidateClass
 
 
 
-		if (
-			global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.ValidateProperty(
-				t
-			) is (true, { } message)
-		)
-		{
-			errors.Add(new()
-			{
-				PropertyName = $"StringProperty", 
-				ErrorMessage = message,
-			});
-		}
 	}
 
 }

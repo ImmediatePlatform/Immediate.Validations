@@ -24,14 +24,14 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
-		__ValidateStringProperty(errors, target.StringProperty);
+		__ValidateValidationTargets(errors, target.ValidationTargets);
 
 		return errors;
 	}
 
 
-		private static void __ValidateStringProperty00(
-		List<ValidationError> errors, string target, int counter0, int counter1
+		private static void __ValidateValidationTargets0(
+		List<ValidationError> errors, global::ValidationTarget target, int counter0
 	)
 	{
 
@@ -39,47 +39,26 @@ partial class ValidateClass
 		{
 			errors.Add(new()
 			{
-				PropertyName = $"StringProperty[{counter0}][{counter1}]",
+				PropertyName = $"ValidationTargets[{counter0}]",
 				ErrorMessage = "Property must not be `null`.",
 			});
 
 			return;
 		}
 
-
-
-	}
-
-	private static void __ValidateStringProperty0(
-		List<ValidationError> errors, string[] target, int counter0
-	)
-	{
-
-		if (target is not { } t)
+		foreach (var error in global::ValidationTarget.Validate(t))
 		{
-			errors.Add(new()
+			errors.Add(error with 
 			{
-				PropertyName = $"StringProperty[{counter0}]",
-				ErrorMessage = "Property must not be `null`.",
+				PropertyName = $"ValidationTargets[{counter0}].{error.PropertyName}",
 			});
-
-			return;
 		}
 
-
-		var counter1 = 0;
-		foreach (var item1 in t)
-		{
-			__ValidateStringProperty00(
-				errors, item1, counter0, counter1
-			);
-			counter1++;
-		}
 
 	}
 
-	private static void __ValidateStringProperty(
-		List<ValidationError> errors, string[][] target
+	private static void __ValidateValidationTargets(
+		List<ValidationError> errors, global::ValidationTarget[] target
 	)
 	{
 
@@ -87,7 +66,7 @@ partial class ValidateClass
 		{
 			errors.Add(new()
 			{
-				PropertyName = $"StringProperty",
+				PropertyName = $"ValidationTargets",
 				ErrorMessage = "Property must not be `null`.",
 			});
 
@@ -98,7 +77,7 @@ partial class ValidateClass
 		var counter0 = 0;
 		foreach (var item0 in t)
 		{
-			__ValidateStringProperty0(
+			__ValidateValidationTargets0(
 				errors, item0, counter0
 			);
 			counter0++;

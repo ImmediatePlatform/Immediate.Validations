@@ -150,4 +150,64 @@ public sealed class CollectionTests
 
 		_ = await Verify(result);
 	}
+
+	[Fact]
+	public async Task ArrayValidationTarget()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+			
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public class ValidationTarget
+			{
+				public string StringProperty { get; init; }
+			}
+			
+			[Validate]
+			public partial class ValidateClass
+			{
+				public ValidationTarget[] ValidationTargets { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		Assert.Equal(2, result.GeneratedTrees.Length);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task ArrayArrayValidationTarget()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public class ValidationTarget
+			{
+				public string StringProperty { get; init; }
+			}
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				public ValidationTarget[][] ValidationTargets { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		Assert.Equal(2, result.GeneratedTrees.Length);
+
+		_ = await Verify(result);
+	}
 }

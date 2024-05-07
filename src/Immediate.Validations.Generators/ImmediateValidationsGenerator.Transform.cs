@@ -6,7 +6,15 @@ namespace Immediate.Validations.Generators;
 
 public sealed partial class ImmediateValidationsGenerator
 {
-	private static ValidationClass? TransformMethod(
+	private static readonly SymbolDisplayFormat s_fullyQualifiedPlusNullable =
+		SymbolDisplayFormat.FullyQualifiedFormat
+			.WithMiscellaneousOptions(
+				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers
+				| SymbolDisplayMiscellaneousOptions.UseSpecialTypes
+				| SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier
+			);
+
+	private static ValidationTarget? TransformMethod(
 		GeneratorAttributeSyntaxContext context,
 		CancellationToken token
 	)
@@ -23,6 +31,7 @@ public sealed partial class ImmediateValidationsGenerator
 			Namespace = @namespace,
 			OuterClasses = outerClasses,
 			Class = GetClass(symbol),
+			IsReferenceType = symbol.IsReferenceType,
 			Properties = properties,
 		};
 	}
@@ -56,7 +65,7 @@ public sealed partial class ImmediateValidationsGenerator
 		return outerClasses.ToEquatableReadOnlyList();
 	}
 
-	private static EquatableReadOnlyList<ValidationProperty> GetProperties(
+	private static EquatableReadOnlyList<ValidationTargetProperty> GetProperties(
 		Compilation compilation,
 		INamedTypeSymbol symbol,
 		CancellationToken token
@@ -64,7 +73,7 @@ public sealed partial class ImmediateValidationsGenerator
 	{
 		token.ThrowIfCancellationRequested();
 
-		var properties = new List<ValidationProperty>();
+		var properties = new List<ValidationTargetProperty>();
 		foreach (var member in symbol.GetMembers())
 		{
 			if (member is not IPropertySymbol
@@ -80,22 +89,23 @@ public sealed partial class ImmediateValidationsGenerator
 
 			token.ThrowIfCancellationRequested();
 
-			properties.AddRange(
-				GetPropertyValidations(
+			if (GetPropertyValidations(
 					compilation,
 					property.Name,
 					property.Type,
 					property.NullableAnnotation,
 					property.GetAttributes(),
 					token
-				)
-			);
+				) is { } prop)
+			{
+				properties.Add(prop);
+			}
 		}
 
 		return properties.ToEquatableReadOnlyList();
 	}
 
-	private static IEnumerable<ValidationProperty> GetPropertyValidations(
+	private static ValidationTargetProperty? GetPropertyValidations(
 		Compilation compilation,
 		string propertyName,
 		ITypeSymbol propertyType,
@@ -106,59 +116,36 @@ public sealed partial class ImmediateValidationsGenerator
 	{
 		token.ThrowIfCancellationRequested();
 
-		string? propertyTypeFullName = null;
+		var isReferenceType = propertyType.IsReferenceType;
+		var isNullable = isReferenceType
+			? nullableAnnotation is NullableAnnotation.Annotated
+			: propertyType.IsNullableType();
 
-		string GetPropertyTypeFullName() =>
-			propertyTypeFullName ??= propertyType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-
-		if (propertyType.IsReferenceType is true
-			&& nullableAnnotation is NullableAnnotation.NotAnnotated)
-		{
-			yield return new()
-			{
-				PropertyName = propertyName,
-				TypeFullName = GetPropertyTypeFullName(),
-				ValidatorName = $"global::Immediate.Validations.Shared.NotNullAttribute",
-				IsGenericMethod = true,
-				IsValidationProperty = false,
-				Parameters = [],
-				Message = null,
-				CollectionProperties = [],
-			};
-		}
+		var baseType = !isReferenceType && isNullable
+			? ((INamedTypeSymbol)propertyType).TypeArguments[0]
+			: propertyType;
 
 		token.ThrowIfCancellationRequested();
 
-		if (propertyType.TypeKind is TypeKind.Enum)
-		{
-			yield return new()
-			{
-				PropertyName = propertyName,
-				TypeFullName = GetPropertyTypeFullName(),
-				ValidatorName = "global::Immediate.Validations.Shared.EnumValueAttribute",
-				IsGenericMethod = true,
-				IsValidationProperty = false,
-				Parameters = [],
-				Message = null,
-				CollectionProperties = [],
-			};
-		}
+		var isValidationProperty = propertyType.GetAttributes()
+			.Any(v => v.AttributeClass.IsValidateAttribute());
 
 		token.ThrowIfCancellationRequested();
 
-		if (propertyType.GetAttributes().Any(v => v.AttributeClass.IsValidateAttribute()))
+		var validations = new List<PropertyValidation>();
+
+		if (baseType.TypeKind is TypeKind.Enum)
 		{
-			yield return new()
-			{
-				PropertyName = propertyName,
-				TypeFullName = GetPropertyTypeFullName(),
-				ValidatorName = "",
-				IsGenericMethod = false,
-				IsValidationProperty = true,
-				Parameters = [],
-				Message = null,
-				CollectionProperties = [],
-			};
+			validations.Add(
+				new()
+				{
+					ValidatorName = "global::Immediate.Validations.Shared.EnumValueAttribute",
+					IsGenericMethod = true,
+					IsNullable = false,
+					Parameters = [],
+					Message = null,
+				}
+			);
 		}
 
 		token.ThrowIfCancellationRequested();
@@ -170,6 +157,8 @@ public sealed partial class ImmediateValidationsGenerator
 			var @class = attribute.AttributeClass?.OriginalDefinition;
 			if (!@class.ImplementsValidatorAttribute())
 				continue;
+
+			token.ThrowIfCancellationRequested();
 
 			if (@class
 					.GetMembers()
@@ -203,6 +192,8 @@ public sealed partial class ImmediateValidationsGenerator
 				continue;
 			}
 
+			token.ThrowIfCancellationRequested();
+
 			if (targetParameterType is ITypeParameterSymbol tps)
 			{
 				if (!Utility.SatisfiesConstraints(validateMethod, [propertyType], compilation))
@@ -210,10 +201,18 @@ public sealed partial class ImmediateValidationsGenerator
 			}
 			else
 			{
-				var conversion = compilation.ClassifyConversion(propertyType, targetParameterType);
-				if (conversion is not { IsIdentity: true } or { IsImplicit: true, IsReference: true } or { IsBoxing: true })
+				var conversion = compilation.ClassifyConversion(baseType, targetParameterType);
+				if (conversion is not { IsIdentity: true }
+						or { IsImplicit: true, IsReference: true }
+						or { IsImplicit: true, IsNullable: true }
+						or { IsBoxing: true }
+				)
+				{
 					continue;
+				}
 			}
+
+			token.ThrowIfCancellationRequested();
 
 			var parameters = validateMethod.Parameters
 				.Skip(1)
@@ -224,77 +223,82 @@ public sealed partial class ImmediateValidationsGenerator
 			if (parameters.Count != validateMethod.Parameters.Length - 1)
 				continue;
 
-			yield return new()
-			{
-				PropertyName = propertyName,
-				TypeFullName = validateMethod.IsGenericMethod ? GetPropertyTypeFullName() : "",
-				ValidatorName = @class.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-				IsGenericMethod = validateMethod.IsGenericMethod,
-				IsValidationProperty = false,
-				Parameters = parameters.ToEquatableReadOnlyList()!,
-				Message = GetMessage(attribute),
-				CollectionProperties = [],
-			};
+			token.ThrowIfCancellationRequested();
+
+			validations.Add(
+				new()
+				{
+					ValidatorName = @class.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+					IsGenericMethod = validateMethod.IsGenericMethod,
+					IsNullable = targetParameterType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated }
+						or { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T },
+					Parameters = parameters.ToEquatableReadOnlyList()!,
+					Message = GetMessage(attribute),
+				}
+			);
 		}
 
-		switch (propertyType)
+		var collectionPropertyDetails = propertyType switch
 		{
-			case IArrayTypeSymbol ats:
-				token.ThrowIfCancellationRequested();
+			IArrayTypeSymbol ats =>
+				GetPropertyValidations(
+					compilation,
+					propertyName,
+					ats.ElementType,
+					ats.ElementNullableAnnotation,
+					attributes,
+					token
+				),
 
-				yield return new()
-				{
-					PropertyName = propertyName,
-					TypeFullName = "",
-					ValidatorName = "",
-					IsGenericMethod = false,
-					IsValidationProperty = false,
-					Message = null,
-					Parameters = [],
-					CollectionProperties = GetPropertyValidations(
-						compilation,
-						propertyName,
-						ats.ElementType,
-						ats.ElementNullableAnnotation,
-						attributes,
-						token
-					).ToEquatableReadOnlyList(),
-				};
-
-				break;
-
-			case INamedTypeSymbol
+			INamedTypeSymbol
 			{
 				IsGenericType: true,
 				TypeArguments: [{ } type],
 				TypeArgumentNullableAnnotations: [{ } annotation],
-			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()):
-				token.ThrowIfCancellationRequested();
+			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
+				GetPropertyValidations(
+					compilation,
+					propertyName,
+					type,
+					annotation,
+					attributes,
+					token
+				),
 
-				yield return new()
-				{
-					PropertyName = propertyName,
-					TypeFullName = "",
-					ValidatorName = "",
-					IsGenericMethod = false,
-					IsValidationProperty = false,
-					Message = null,
-					Parameters = [],
-					CollectionProperties = GetPropertyValidations(
-						compilation,
-						propertyName,
-						type,
-						annotation,
-						attributes,
-						token
-					).ToEquatableReadOnlyList(),
-				};
+			_ => null,
+		};
 
-				break;
-
-			default:
-				break;
+		if (
+			isNullable
+			&& !isValidationProperty
+			&& collectionPropertyDetails is null
+			&& validations is []
+		)
+		{
+			return null;
 		}
+
+		return new()
+		{
+			PropertyName = propertyName,
+			TypeFullName = propertyType.ToDisplayString(s_fullyQualifiedPlusNullable),
+			IsReferenceType = isReferenceType,
+			IsNullable = isNullable,
+
+			IsValidationProperty = isValidationProperty,
+			ValidationTypeFullName = isValidationProperty
+				? baseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+				: null,
+
+			CollectionPropertyDetails = collectionPropertyDetails,
+
+			Validations = validations
+				.Where(v => !v.IsNullable)
+				.ToEquatableReadOnlyList(),
+			NullValidations = validations
+				.Where(v => v.IsNullable)
+				.ToEquatableReadOnlyList(),
+		};
 	}
 
 	private static TypedConstant? GetValue(AttributeData attribute, string name)

@@ -23,7 +23,7 @@ public sealed partial class ImmediateValidationsGenerator : IIncrementalGenerato
 		);
 	}
 
-	private static void RenderValidation(SourceProductionContext context, ValidationClass v, Template template)
+	private static void RenderValidation(SourceProductionContext context, ValidationTarget v, Template template)
 	{
 		var token = context.CancellationToken;
 		token.ThrowIfCancellationRequested();

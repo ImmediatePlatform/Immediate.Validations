@@ -1,79 +1,7 @@
-{{~ 
-	func validate(p, target, property_name)
-~}}
-
-{{~ if p.is_validation_property ~}}
-foreach (var error in {{ p.type_full_name }}.Validate({{ target }}))
-{
-	errors.Add(error with 
-	{
-		PropertyName = {{ property_name }} + $".{error.PropertyName}",
-	});
-}
-{{~ else ~}}
-if (
-	{{ p.validator_name }}.ValidateProperty(
-		{{ target }}
-		{{~ for param in p.parameters ~}}
-		, {{ param }}
-		{{~ end ~}}
-	) is (true, var message)
-)
-{
-	errors.Add(new()
-	{
-		PropertyName = {{ property_name }}, 
-		ErrorMessage = {{ if string.empty p.message; "null"; else; p.message; end }} ?? message,
-	});
-}
-{{~ end ~}}
-{{~ end -}}
-
-{{~ 
-	func process_nested_properties(properties, depth, prefix)
-~}}
-{{~ for p in properties ~}}
-{
-	{{~ if p.collection_properties.count != 0 ~}}
-	var counter{{depth}} = 0;
-	foreach (var item{{depth}} in item{{depth-1}} ?? [])
-	{
-		{{~ process_nested_properties(p.collection_properties, depth+1, prefix + $"[\{counter{depth-1}}]") ~}}
-		counter{{depth}}++;
-	}
-	{{~
-		else 
-			validate(p, $"item{depth-1}", $"$\"{prefix}[\{counter{depth-1}}]\"")
-		end
-	~}}
-}
-{{~ end ~}}
-{{~ end ~}}
-
-{{~ 
-	func process_properties(properties)
-~}}
-{{~ for p in properties ~}}
-{
-	{{~ if p.collection_properties.count != 0 ~}}
-	var counter0 = 0;
-	foreach (var item0 in target.{{ p.property_name }} ?? [])
-	{
-		{{~ process_nested_properties(p.collection_properties, 1, $"{p.property_name}") ~}}
-		counter0++;
-	}
-	{{~
-		else 
-			validate(p, $"target.{p.property_name}", $"\"{p.property_name}\"")
-		end
-	~}}
-}
-{{~ end ~}}
-{{~ end -}}
-
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
+#nullable enable
 #pragma warning disable CS1591
 
 {{~ if !string.empty namespace ~}}
@@ -89,12 +17,121 @@ partial {{ class.type }} {{ class.name }}
 {
 	public static List<ValidationError> Validate({{ class.name }} target)
 	{
+		if (target is null)
+		{
+			return 
+			[
+				new()
+				{
+					PropertyName = ".self",
+					ErrorMessage = "`target` must not be `null`.",
+				},
+			];
+		}
+		
 		var errors = new List<ValidationError>();
 
-		{{~ process_properties(properties) ~}}
+		{{~ for p in properties ~}}
+		__Validate{{ p.property_name }}(errors, target.{{ p.property_name }});
+		{{~ end ~}}
 
 		return errors;
 	}
+
+		{{~ 
+			func validate(p, target, property_name)
+		~}}
+		if (
+			{{ p.validator_name }}.ValidateProperty(
+				{{ target }}
+				{{~ for param in p.parameters ~}}
+				, {{ param }}
+				{{~ end ~}}
+			) is (true, { } message)
+		)
+		{
+			errors.Add(new()
+			{
+				PropertyName = {{ property_name }}, 
+				ErrorMessage = {{ if string.empty p.message; "message"; else; p.message; end }},
+			});
+		}
+		{{~ end ~}}
+
+	{{
+		func get_prop_name(prop_name, depth)
+			if depth != 0
+				for i in 1..depth
+					prop_name = prop_name + $"[\{counter{i - 1}}]"
+				end
+			end
+			ret prop_name
+		end
+	-}}
+
+	{{~ func validate_property(p, depth = 0) ~}}
+	{{- if p.collection_property_details; validate_property(p.collection_property_details, depth + 1); end ~}}
+	private static void __Validate{{ p.property_name }}{{ if depth != 0; for i in 1..depth; "0"; end; end }}(
+		List<ValidationError> errors, {{ p.type_full_name }} target{{ if depth != 0; for i in 1..depth }}, int counter{{i-1}}{{ end; end }}
+	)
+	{
+		{{~ 
+			for v in p.null_validations
+				validate(v, "target", $"$\"{get_prop_name(p.property_name, depth)}\"")
+			end
+		~}}
+
+		{{~ if p.is_reference_type || p.is_nullable ~}}
+		if (target is not { } t)
+		{
+			{{~ if !p.is_nullable ~}}
+			errors.Add(new()
+			{
+				PropertyName = $"{{ get_prop_name(p.property_name, depth) }}",
+				ErrorMessage = "Property must not be `null`.",
+			});
+			{{~ end ~}}
+
+			return;
+		}
+		{{~ else ~}}
+		var t = target;
+		{{~ end ~}}
+
+		{{~ if p.is_validation_property ~}}
+		foreach (var error in {{ p.validation_type_full_name }}.Validate(t))
+		{
+			errors.Add(error with 
+			{
+				PropertyName = $"{{ get_prop_name(p.property_name, depth) }}.{error.PropertyName}",
+			});
+		}
+		{{~ end ~}}
+
+		{{~ if p.collection_property_details ~}}
+		var counter{{depth}} = 0;
+		foreach (var item{{depth}} in t)
+		{
+			__Validate{{ p.property_name }}{{ for i in 1..(depth + 1); "0"; end }}(
+				errors, item{{depth}}{{ for i in 1..(depth + 1) }}, counter{{ i - 1 }}{{ end }}
+			);
+			counter{{depth}}++;
+		}
+		{{~ end ~}}
+
+		{{~ 
+			for v in p.validations
+				validate(v, "t", $"$\"{get_prop_name(p.property_name, depth)}\"")
+			end
+		~}}
+	}
+
+	{{~ end ~}}
+	{{~ 
+		for p in properties
+			validate_property(p)
+		end 
+	~}}
 }
 
 {{~ for c in outer_classes ~}}

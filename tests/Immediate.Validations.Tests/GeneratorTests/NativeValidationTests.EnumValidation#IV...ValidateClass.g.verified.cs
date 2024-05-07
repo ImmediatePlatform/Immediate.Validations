@@ -1,8 +1,8 @@
 ﻿//HintName: IV...ValidateClass.g.cs
-
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
+#nullable enable
 #pragma warning disable CS1591
 
 
@@ -10,25 +10,48 @@ partial class ValidateClass
 {
 	public static List<ValidationError> Validate(ValidateClass target)
 	{
+		if (target is null)
+		{
+			return 
+			[
+				new()
+				{
+					PropertyName = ".self",
+					ErrorMessage = "`target` must not be `null`.",
+				},
+			];
+		}
+		
 		var errors = new List<ValidationError>();
 
-{
-
-if (
-	global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
-		target.TestEnum
-	) is (true, var message)
-)
-{
-	errors.Add(new()
-	{
-		PropertyName = "TestEnum", 
-		ErrorMessage = null ?? message,
-	});
-}
-}
+		__ValidateTestEnum(errors, target.TestEnum);
 
 		return errors;
 	}
+
+
+		private static void __ValidateTestEnum(
+		List<ValidationError> errors, global::TestEnum target
+	)
+	{
+
+		var t = target;
+
+
+
+		if (
+			global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
+				t
+			) is (true, { } message)
+		)
+		{
+			errors.Add(new()
+			{
+				PropertyName = $"TestEnum", 
+				ErrorMessage = message,
+			});
+		}
+	}
+
 }
 
