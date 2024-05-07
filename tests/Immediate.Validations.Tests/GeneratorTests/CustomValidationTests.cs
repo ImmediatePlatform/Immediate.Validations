@@ -173,6 +173,31 @@ public sealed class CustomValidationTests
 	}
 
 	[Fact]
+	public async Task NotNullAsCustomValidationOnInvalidGenericType()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[NotNull]
+				public int? IntProperty { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
 	public async Task EnumAsCustomValidationOnGenericType()
 	{
 		var driver = GeneratorTestHelper.GetDriver(

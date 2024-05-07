@@ -36,6 +36,7 @@ internal static class Utility
 		return c;
 	}
 
+	[ExcludeFromCodeCoverage]
 	public static bool SatisfiesConstraints(IMethodSymbol method, ITypeSymbol[] typeArguments, Compilation compilation)
 	{
 		var typeParameters = method.TypeParameters;
@@ -71,6 +72,7 @@ internal static class Utility
 		return true;
 	}
 
+	[ExcludeFromCodeCoverage]
 	public static bool IsNonNullableValueType(this ITypeSymbol typeArgument)
 	{
 		if (!typeArgument.IsValueType)
@@ -79,6 +81,7 @@ internal static class Utility
 		return !IsNullableTypeOrTypeParameter(typeArgument);
 	}
 
+	[ExcludeFromCodeCoverage]
 	public static bool IsNullableTypeOrTypeParameter(this ITypeSymbol? type)
 	{
 		if (type is null)
@@ -105,13 +108,16 @@ internal static class Utility
 	/// To check whether a type is System.Nullable`1 or is a type parameter constrained to System.Nullable`1
 	/// use <see cref="IsNullableTypeOrTypeParameter" /> instead.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static bool IsNullableType(this ITypeSymbol type) =>
 		type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
 
+	[ExcludeFromCodeCoverage]
 	public static bool IsPointerOrFunctionPointer(this ITypeSymbol type) =>
 		type.TypeKind is TypeKind.Pointer or TypeKind.FunctionPointer;
 
 	[SuppressMessage("Style", "IDE0072:Add missing cases")]
+	[ExcludeFromCodeCoverage]
 	private static bool SatisfiesConstructorConstraint(ITypeSymbol typeArgument) =>
 		typeArgument.TypeKind switch
 		{
@@ -129,6 +135,7 @@ internal static class Utility
 			_ => false,
 		};
 
+	[ExcludeFromCodeCoverage]
 	private static bool HasPublicParameterlessConstructor(INamedTypeSymbol type)
 	{
 		foreach (var constructor in type.InstanceConstructors)
@@ -140,6 +147,7 @@ internal static class Utility
 		return false;
 	}
 
+	[ExcludeFromCodeCoverage]
 	private static ITypeSymbol SubstituteType(Compilation compilation, ITypeSymbol type, IMethodSymbol method, ITypeSymbol[] typeArguments)
 	{
 		return Visit(type);
