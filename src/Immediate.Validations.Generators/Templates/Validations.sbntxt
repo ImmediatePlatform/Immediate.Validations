@@ -38,7 +38,7 @@ partial {{ class.type }} {{ class.name }}
 		return errors;
 	}
 
-		{{~ 
+		{{~
 			func validate(p, target, property_name)
 		~}}
 		if (
@@ -58,7 +58,7 @@ partial {{ class.type }} {{ class.name }}
 		}
 		{{~ end ~}}
 
-	{{
+	{{~
 		func get_prop_name(prop_name, depth)
 			if depth != 0
 				for i in 1..depth
@@ -67,7 +67,7 @@ partial {{ class.type }} {{ class.name }}
 			end
 			ret prop_name
 		end
-	-}}
+	~}}
 
 	{{~ func validate_property(p, depth = 0) ~}}
 	{{- if p.collection_property_details; validate_property(p.collection_property_details, depth + 1); end ~}}

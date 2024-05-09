@@ -29,5 +29,6 @@ partial class ValidateClass
 	}
 
 
-	}
+
+}
 

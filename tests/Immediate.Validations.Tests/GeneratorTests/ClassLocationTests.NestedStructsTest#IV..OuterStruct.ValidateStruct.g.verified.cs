@@ -31,6 +31,7 @@ partial struct ValidateStruct
 	}
 
 
-	}
+
+}
 
 }

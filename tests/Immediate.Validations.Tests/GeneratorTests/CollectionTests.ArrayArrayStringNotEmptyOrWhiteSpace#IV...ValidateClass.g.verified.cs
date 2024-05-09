@@ -30,7 +30,8 @@ partial class ValidateClass
 	}
 
 
-		private static void __ValidateStringProperty00(
+
+	private static void __ValidateStringProperty00(
 		List<ValidationError> errors, string target, int counter0, int counter1
 	)
 	{
