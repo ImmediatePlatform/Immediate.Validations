@@ -30,7 +30,8 @@ partial class ValidateClass
 	}
 
 
-		private static void __ValidateValidationTargets00(
+
+	private static void __ValidateValidationTargets00(
 		List<ValidationError> errors, global::ValidationTarget target, int counter0, int counter1
 	)
 	{

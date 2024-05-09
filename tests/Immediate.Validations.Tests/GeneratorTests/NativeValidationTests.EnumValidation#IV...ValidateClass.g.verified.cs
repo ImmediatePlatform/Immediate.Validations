@@ -30,7 +30,8 @@ partial class ValidateClass
 	}
 
 
-		private static void __ValidateTestEnum(
+
+	private static void __ValidateTestEnum(
 		List<ValidationError> errors, global::TestEnum target
 	)
 	{

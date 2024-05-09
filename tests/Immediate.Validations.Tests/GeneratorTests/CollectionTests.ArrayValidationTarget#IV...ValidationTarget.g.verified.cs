@@ -30,7 +30,8 @@ partial class ValidationTarget
 	}
 
 
-		private static void __ValidateStringProperty(
+
+	private static void __ValidateStringProperty(
 		List<ValidationError> errors, string target
 	)
 	{
