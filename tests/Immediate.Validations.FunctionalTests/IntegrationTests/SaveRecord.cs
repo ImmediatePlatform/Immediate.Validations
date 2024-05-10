@@ -20,7 +20,7 @@ public static partial class SaveRecord
 	{
 		public required int Operand { get; init; }
 
-		public static (bool Invalid, string Message) ValidateProperty(int value, int operand) =>
+		public static (bool Invalid, string? Message) ValidateProperty(int value, int operand) =>
 			value > operand ? default : (true, $"Value `{value}` is not greater than `{operand}`.");
 	}
 
