@@ -152,6 +152,7 @@ internal static class Utility
 	{
 		return Visit(type);
 
+		[ExcludeFromCodeCoverage]
 		ITypeSymbol Visit(ITypeSymbol type)
 		{
 			switch (type)
