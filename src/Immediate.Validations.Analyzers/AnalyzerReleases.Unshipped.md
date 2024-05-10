@@ -9,3 +9,4 @@ IV0004 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0005 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0006 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0007 | ImmediateValidations | Error | ValidatorClassAnalyzer
+IV0008 | ImmediateValidations | Error | ValidatorClassAnalyzer
