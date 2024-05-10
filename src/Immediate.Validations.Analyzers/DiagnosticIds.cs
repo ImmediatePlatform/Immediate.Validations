@@ -9,4 +9,5 @@ public static class DiagnosticIds
 	public const string IV0005ValidateMethodIsMissingParameter = "IV0005";
 	public const string IV0006ValidateMethodHasExtraParameter = "IV0006";
 	public const string IV0007ValidateMethodParameterIsIncorrectType = "IV0007";
+	public const string IV0008ValidatePropertyMustBeRequired = "IV0008";
 }

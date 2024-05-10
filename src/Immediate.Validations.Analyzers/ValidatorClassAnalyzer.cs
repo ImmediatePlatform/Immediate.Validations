@@ -85,6 +85,17 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 			description: "`Validate()` parameters must exist as properties on the containing Validator class."
 		);
 
+	public static readonly DiagnosticDescriptor ValidatePropertyMustBeRequired =
+		new(
+			id: DiagnosticIds.IV0008ValidatePropertyMustBeRequired,
+			title: "Validator property must be `required`",
+			messageFormat: "Property `{0}` must have the `required` modifier",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Error,
+			isEnabledByDefault: true,
+			description: "`Validate()` parameters without a default value require values to be set on their matching properties."
+		);
+
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create<DiagnosticDescriptor>(
 		[
@@ -95,6 +106,7 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 			ValidateMethodIsMissingParameter,
 			ValidateMethodHasExtraParameter,
 			ValidateMethodParameterIsIncorrectType,
+			ValidatePropertyMustBeRequired,
 		]);
 
 	public override void Initialize(AnalysisContext context)
@@ -232,6 +244,20 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 									ValidateMethodParameterIsIncorrectType,
 									property.Locations[0],
 									parameter.Name,
+									property.Name
+								)
+							);
+						}
+
+						if (
+							!parameter.HasExplicitDefaultValue
+							&& !property.IsRequired
+						)
+						{
+							context.ReportDiagnostic(
+								Diagnostic.Create(
+									ValidatePropertyMustBeRequired,
+									property.Locations[0],
 									property.Name
 								)
 							);

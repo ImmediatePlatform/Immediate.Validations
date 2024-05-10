@@ -141,6 +141,33 @@ public sealed class ValidatorClassAnalyzerTests
 		).RunAsync();
 
 	[Fact]
+	public async Task ValidateMethodGeneralParameterVarianceShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute : ValidatorAttribute
+			{
+				public required int {|IV0005:Alpha|} { get; init; }
+				public required int {|IV0005:Charlie|} { get; init; }
+				public required int {|IV0005:Echo|} { get; init; }
+
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(
+					int value, 
+					int {|IV0006:bravo|},
+					int {|IV0006:delta|},
+					int {|IV0006:foxtrot|}
+				)
+				{
+					return value <= 0
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
 	public async Task ValidateMethodMismatchTypesShouldWarn1() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -179,4 +206,25 @@ public sealed class ValidatorClassAnalyzerTests
 			}
 			"""
 		).RunAsync();
+
+	[Fact]
+	public async Task ValidatePropertyMissingRequiredShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute : ValidatorAttribute
+			{
+				public int {|IV0008:Operand|} { get; init; }
+
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int operand)
+				{
+					return value <= operand
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
 }
