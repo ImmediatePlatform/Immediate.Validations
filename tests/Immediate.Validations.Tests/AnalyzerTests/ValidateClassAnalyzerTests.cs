@@ -22,12 +22,16 @@ public sealed class ValidateClassAnalyzerTests
 	public async Task ValidTargetShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
+			using System.Diagnostics.CodeAnalysis;
 			using System.Collections.Generic;
 			using Immediate.Validations.Shared;
 			
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
+				[SuppressMessage("", "")]
+				public required int Unrelated { get; init; }
+
 				public static List<ValidationError> Validate(Target target) => [];
 			}
 			"""
@@ -240,6 +244,42 @@ public sealed class ValidateClassAnalyzerTests
 			{
 				[{|IV0013:EnumValue|}]
 				public required List<int> Id { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn6() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[NotEmptyOrWhiteSpace]
+				public required string[] Id { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn6() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[{|IV0013:NotEmptyOrWhiteSpace|}]
+				public required int[] Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
 			}

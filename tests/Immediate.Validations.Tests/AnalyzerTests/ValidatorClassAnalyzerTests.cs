@@ -8,12 +8,14 @@ public sealed class ValidatorClassAnalyzerTests
 	public async Task ValidateMethodPresentShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
+			using System.Diagnostics.CodeAnalysis;
 			using Immediate.Validations.Shared;
 
 			public sealed class GreaterThanAttribute : ValidatorAttribute
 			{
 				public required int Operand { get; init; }
 
+				[SuppressMessage("", "")]
 				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int operand)
 				{
 					return value <= operand
