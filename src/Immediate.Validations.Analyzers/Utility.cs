@@ -1,28 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Scriban;
 
-namespace Immediate.Validations.Generators;
+namespace Immediate.Validations.Analyzers;
 
 internal static class Utility
 {
-	public static Template GetTemplate(string name)
-	{
-		using var stream = Assembly
-			.GetExecutingAssembly()
-			.GetManifestResourceStream(
-				$"Immediate.Validations.Generators.Templates.{name}.sbntxt"
-			)!;
-
-		using var reader = new StreamReader(stream);
-		return Template.Parse(reader.ReadToEnd());
-	}
-
-	public static string? NullIf(this string value, string check) =>
-		value.Equals(check, StringComparison.Ordinal) ? null : value;
-
 	public static T? SingleValue<T>(this IEnumerable<T> source)
 	{
 		using var enumerator = source.GetEnumerator();

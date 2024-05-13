@@ -6,14 +6,14 @@ namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 public sealed partial class ReferenceTypeNullTests
 {
 	[Validate]
-	public sealed partial record Command
+	public sealed partial record Command : IValidationTarget<Command>
 	{
 		public required CommandObject NotNull { get; init; }
 		public required CommandObject? Null { get; init; }
 	}
 
 	[Validate]
-	public sealed partial record CommandObject
+	public sealed partial record CommandObject : IValidationTarget<CommandObject>
 	{
 		public required string Id { get; init; }
 	}

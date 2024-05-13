@@ -6,13 +6,13 @@ namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 public sealed partial class CollectionTests
 {
 	[Validate]
-	public sealed partial record ListValidationTargetRecord
+	public sealed partial record ListValidationTargetRecord : IValidationTarget<ListValidationTargetRecord>
 	{
 		public required IReadOnlyList<IReadOnlyList<ReferenceTypeNullTests.CommandObject?>> Commands { get; init; }
 	}
 
 	[Validate]
-	public sealed partial record ListStringRecord
+	public sealed partial record ListStringRecord : IValidationTarget<ListStringRecord>
 	{
 		[NotEmptyOrWhiteSpace]
 		public required IReadOnlyList<IReadOnlyList<string>> Strings { get; init; }

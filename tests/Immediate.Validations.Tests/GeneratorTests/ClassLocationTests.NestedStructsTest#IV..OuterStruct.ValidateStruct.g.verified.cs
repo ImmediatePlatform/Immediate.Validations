@@ -10,19 +10,9 @@ partial struct OuterStruct
 
 partial struct ValidateStruct
 {
-	public static List<ValidationError> Validate(ValidateStruct? target)
+	public static List<ValidationError> Validate(ValidateStruct target)
 	{
-		if (target is not { } t)
-		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
-		}
+		var t = target;
 		
 		var errors = new List<ValidationError>();
 

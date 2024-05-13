@@ -196,7 +196,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 			if (targetParameterType is ITypeParameterSymbol tps)
 			{
-				if (!Utility.SatisfiesConstraints(validateMethod, [propertyType], compilation))
+				if (!Utility.SatisfiesConstraints(tps, propertyType, compilation))
 					continue;
 			}
 			else

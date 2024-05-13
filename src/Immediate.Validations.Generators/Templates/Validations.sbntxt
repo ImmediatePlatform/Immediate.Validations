@@ -15,8 +15,9 @@ partial {{ c.type }} {{ c.name }}
 
 partial {{ class.type }} {{ class.name }}
 {
-	public static List<ValidationError> Validate({{ class.name }}? target)
+	public static List<ValidationError> Validate({{ class.name; if is_reference_type; "?"; end }} target)
 	{
+		{{~ if is_reference_type ~}}
 		if (target is not { } t)
 		{
 			return 
@@ -28,6 +29,9 @@ partial {{ class.type }} {{ class.name }}
 				},
 			];
 		}
+		{{~ else ~}}
+		var t = target;
+		{{~ end ~}}
 		
 		var errors = new List<ValidationError>();
 
