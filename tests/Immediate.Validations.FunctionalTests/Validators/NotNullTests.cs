@@ -6,7 +6,7 @@ namespace Immediate.Validations.FunctionalTests.Validators;
 public sealed partial class NotNullTests
 {
 	[Validate]
-	public partial record StringRecord
+	public partial record StringRecord : IValidationTarget<StringRecord>
 	{
 		public required string StringValue { get; init; }
 	}

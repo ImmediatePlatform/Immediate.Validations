@@ -6,13 +6,13 @@ namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 public sealed partial class StructTests
 {
 	[Validate]
-	public readonly partial record struct RecordStructTarget
+	public readonly partial record struct RecordStructTarget : IValidationTarget<RecordStructTarget>
 	{
 		public required string StringProperty { get; init; }
 	}
 
 	[Validate]
-	public readonly partial record struct StructTarget
+	public readonly partial record struct StructTarget : IValidationTarget<StructTarget>
 	{
 		public required string StringProperty { get; init; }
 	}
@@ -25,23 +25,6 @@ public sealed partial class StructTests
 		var errors = RecordStructTarget.Validate(rs);
 
 		Assert.Empty(errors);
-	}
-
-	[Fact]
-	public void InvalidRecordStructNullSelf()
-	{
-		var errors = RecordStructTarget.Validate(null);
-
-		Assert.Equal(
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				}
-			],
-			errors
-		);
 	}
 
 	[Fact]
@@ -71,23 +54,6 @@ public sealed partial class StructTests
 		var errors = StructTarget.Validate(rs);
 
 		Assert.Empty(errors);
-	}
-
-	[Fact]
-	public void InvalidStructNullSelf()
-	{
-		var errors = StructTarget.Validate(null);
-
-		Assert.Equal(
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				}
-			],
-			errors
-		);
 	}
 
 	[Fact]

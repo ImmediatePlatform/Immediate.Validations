@@ -13,7 +13,7 @@ public sealed partial class EnumValueTests
 	}
 
 	[Validate]
-	public partial record EnumRecord
+	public partial record EnumRecord : IValidationTarget<EnumRecord>
 	{
 		public required ValidState ValidState { get; init; }
 	}

@@ -6,7 +6,7 @@ namespace Immediate.Validations.FunctionalTests.Validators;
 public sealed partial class NotEmptyOrWhiteSpaceTests
 {
 	[Validate]
-	public partial record StringRecord
+	public partial record StringRecord : IValidationTarget<StringRecord>
 	{
 		[NotEmptyOrWhiteSpace]
 		public required string StringValue { get; init; }

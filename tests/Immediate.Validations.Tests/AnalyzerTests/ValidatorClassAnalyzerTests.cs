@@ -5,6 +5,21 @@ namespace Immediate.Validations.Tests.AnalyzerTests;
 public sealed class ValidatorClassAnalyzerTests
 {
 	[Fact]
+	public async Task NonValdiatorShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute
+			{
+				public static void ValidateProperty(int value, int operand)
+				{
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
 	public async Task ValidateMethodPresentShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""

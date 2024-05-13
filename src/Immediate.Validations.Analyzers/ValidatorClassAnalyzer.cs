@@ -125,14 +125,14 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		"CA1308:Normalize strings to uppercase",
 		Justification = "lower/upper case is not done for normalization"
 	)]
-	private void AnalyzeSymbol(SymbolAnalysisContext context)
+	private static void AnalyzeSymbol(SymbolAnalysisContext context)
 	{
 		var token = context.CancellationToken;
 		token.ThrowIfCancellationRequested();
 
 		var symbol = (INamedTypeSymbol)context.Symbol;
 
-		if (!symbol.BaseType.IsValidator())
+		if (!symbol.BaseType.IsValidatorAttribute())
 			return;
 
 		token.ThrowIfCancellationRequested();
