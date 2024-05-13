@@ -5,7 +5,7 @@ namespace Immediate.Validations.Tests.AnalyzerTests;
 public sealed class ValidatorClassAnalyzerTests
 {
 	[Fact]
-	public async Task NonValdiatorShouldNotWarn() =>
+	public async Task NonValidatorShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
 			using Immediate.Validations.Shared;
