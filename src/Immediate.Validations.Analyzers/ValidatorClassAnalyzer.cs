@@ -89,11 +89,33 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		new(
 			id: DiagnosticIds.IV0008ValidatePropertyMustBeRequired,
 			title: "Validator property must be `required`",
-			messageFormat: "Property `{0}` must have the `required` modifier",
+			messageFormat: "Property/parameter `{0}` must have the `required` modifier",
 			category: "ImmediateValidations",
 			defaultSeverity: DiagnosticSeverity.Error,
 			isEnabledByDefault: true,
 			description: "`Validate()` parameters without a default value require values to be set on their matching properties."
+		);
+
+	public static readonly DiagnosticDescriptor ValidatorHasTooManyConstructors =
+		new(
+			id: DiagnosticIds.IV0009ValidatorHasTooManyConstructors,
+			title: "Validator has too many constructors",
+			messageFormat: "Validator `{0}` has too many constructors",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Error,
+			isEnabledByDefault: true,
+			description: "Validators with two or more constructors are not yet supported."
+		);
+
+	public static readonly DiagnosticDescriptor ValidatorTargetTypeParameterIncorrectType =
+		new(
+			id: DiagnosticIds.IV0010ValidatorTargetTypeParameterIncorrectType,
+			title: "Validator parameter is incorrect type",
+			messageFormat: "Validator parameter `{0}` does not have expected type `{1}`",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Error,
+			isEnabledByDefault: true,
+			description: "A `[TargetType]` parameter must have the same type as the target property."
 		);
 
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
@@ -107,6 +129,8 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 			ValidateMethodHasExtraParameter,
 			ValidateMethodParameterIsIncorrectType,
 			ValidatePropertyMustBeRequired,
+			ValidatorHasTooManyConstructors,
+			ValidatorTargetTypeParameterIncorrectType,
 		]);
 
 	public override void Initialize(AnalysisContext context)
@@ -120,24 +144,19 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
 	}
 
-	[SuppressMessage(
-		"Globalization",
-		"CA1308:Normalize strings to uppercase",
-		Justification = "lower/upper case is not done for normalization"
-	)]
 	private static void AnalyzeSymbol(SymbolAnalysisContext context)
 	{
 		var token = context.CancellationToken;
 		token.ThrowIfCancellationRequested();
 
-		var symbol = (INamedTypeSymbol)context.Symbol;
+		var validatorClassSymbol = (INamedTypeSymbol)context.Symbol;
 
-		if (!symbol.BaseType.IsValidatorAttribute())
+		if (!validatorClassSymbol.BaseType.IsValidatorAttribute())
 			return;
 
 		token.ThrowIfCancellationRequested();
 
-		if (symbol
+		if (validatorClassSymbol
 				.GetMembers()
 				.OfType<IMethodSymbol>()
 				.Where(m => m.Name is "ValidateProperty")
@@ -148,11 +167,25 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 			context.ReportDiagnostic(
 				Diagnostic.Create(
 					ValidateMethodMustExist,
-					symbol.Locations[0],
-					symbol.Name)
+					validatorClassSymbol.Locations[0],
+					validatorClassSymbol.Name)
 			);
 
 			return;
+		}
+
+		token.ThrowIfCancellationRequested();
+		if (validatorClassSymbol.Constructors is { Length: > 1 })
+		{
+			foreach (var constructor in validatorClassSymbol.Constructors)
+			{
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidatorHasTooManyConstructors,
+						constructor.Locations[0],
+						validatorClassSymbol.Name)
+				);
+			}
 		}
 
 		token.ThrowIfCancellationRequested();
@@ -181,97 +214,169 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 
 			case [var methodSymbol]:
 			{
-				if (!methodSymbol.ReturnType.IsValidValidatorReturn())
-				{
-					context.ReportDiagnostic(
-						Diagnostic.Create(
-							ValidateMethodMustReturnValueTuple,
-							methodSymbol.Locations[0]
-						)
-					);
-				}
-
-				var parameters = methodSymbol.Parameters.Skip(1).OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase);
-				var properties = symbol
-					.GetMembers()
-					.OfType<IPropertySymbol>()
-					.Where(p => p.Name != "Message")
-					.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase);
-
-				foreach (var (parameter, property) in parameters.JoinMerge(properties, x => x.Name, x => x.Name, StringComparer.OrdinalIgnoreCase))
-				{
-					if (parameter is null)
-					{
-						var paramName = $"{property!.Name[..1].ToLowerInvariant()}{property.Name[1..]}";
-
-						context.ReportDiagnostic(
-							Diagnostic.Create(
-								ValidateMethodIsMissingParameter,
-								property.Locations[0],
-								property.Name,
-								paramName
-							)
-						);
-					}
-					else if (property is null)
-					{
-						var propName = $"{parameter!.Name[..1].ToUpperInvariant()}{parameter.Name[1..]}";
-
-						context.ReportDiagnostic(
-							Diagnostic.Create(
-								ValidateMethodHasExtraParameter,
-								parameter.Locations[0],
-								parameter.Name,
-								propName
-							)
-						);
-					}
-					else
-					{
-						if (!SymbolEqualityComparer.IncludeNullability.Equals(parameter.Type, property.Type))
-						{
-							context.ReportDiagnostic(
-								Diagnostic.Create(
-									ValidateMethodParameterIsIncorrectType,
-									parameter.Locations[0],
-									parameter.Name,
-									property.Name
-								)
-							);
-
-							context.ReportDiagnostic(
-								Diagnostic.Create(
-									ValidateMethodParameterIsIncorrectType,
-									property.Locations[0],
-									parameter.Name,
-									property.Name
-								)
-							);
-						}
-
-						if (
-							!parameter.HasExplicitDefaultValue
-							&& !property.IsRequired
-						)
-						{
-							context.ReportDiagnostic(
-								Diagnostic.Create(
-									ValidatePropertyMustBeRequired,
-									property.Locations[0],
-									property.Name
-								)
-							);
-						}
-					}
-				}
-
+				CheckValidateMethod(context, validatorClassSymbol, methodSymbol);
 				break;
-
 			}
 
 			default:
 				// should never happen - all count cases are covered above
 				break;
+		}
+	}
+
+	[SuppressMessage(
+		"Globalization",
+		"CA1308:Normalize strings to uppercase",
+		Justification = "lower/upper case is not done for normalization"
+	)]
+	private static void CheckValidateMethod(
+		SymbolAnalysisContext context,
+		INamedTypeSymbol validatorClassSymbol,
+		IMethodSymbol methodSymbol
+	)
+	{
+		if (!methodSymbol.ReturnType.IsValidValidatorReturn())
+		{
+			context.ReportDiagnostic(
+				Diagnostic.Create(
+					ValidateMethodMustReturnValueTuple,
+					methodSymbol.Locations[0]
+				)
+			);
+		}
+
+		var parameters = methodSymbol.Parameters.Skip(1).OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase);
+		var targetType = methodSymbol.Parameters[0].Type;
+
+		var properties = validatorClassSymbol
+			.GetMembers()
+			.OfType<IPropertySymbol>()
+			.Where(p => p.Name != "Message")
+			.Cast<ISymbol>()
+			.ToList();
+
+		if (validatorClassSymbol.Constructors is [{ } constructor])
+		{
+			foreach (var p in constructor.Parameters)
+			{
+				var i = 0;
+				for (; i < properties.Count; i++)
+				{
+					if (properties[i].Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase))
+						break;
+				}
+
+				properties[i] = p;
+			}
+		}
+
+		foreach (var (parameter, property) in parameters.JoinMerge(properties, x => x.Name, x => x.Name, StringComparer.OrdinalIgnoreCase))
+		{
+			if (parameter is null)
+			{
+				var paramName = $"{property!.Name[..1].ToLowerInvariant()}{property.Name[1..]}";
+
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateMethodIsMissingParameter,
+						property.Locations[0],
+						property.Name,
+						paramName
+					)
+				);
+			}
+			else if (property is null)
+			{
+				var propName = $"{parameter!.Name[..1].ToUpperInvariant()}{parameter.Name[1..]}";
+
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateMethodHasExtraParameter,
+						parameter.Locations[0],
+						parameter.Name,
+						propName
+					)
+				);
+			}
+			else
+			{
+				var (propertyType, isRequired) = property switch
+				{
+					IParameterSymbol ps => (ps.Type, !ps.HasExplicitDefaultValue),
+					IPropertySymbol ps => (ps.Type, ps.IsRequired),
+					_ => throw new InvalidOperationException(),
+				};
+
+				CheckParameterAllowedType(context, parameter, property, propertyType, targetType);
+				CheckParameterIsRequired(context, parameter, property, isRequired);
+			}
+		}
+	}
+
+	private static void CheckParameterAllowedType(
+		SymbolAnalysisContext context,
+		IParameterSymbol parameter,
+		ISymbol property,
+		ITypeSymbol propertyType,
+		ITypeSymbol targetType
+	)
+	{
+		if (
+			propertyType is { SpecialType: SpecialType.System_Object }
+			&& property.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute())
+		)
+		{
+			if (!SymbolEqualityComparer.IncludeNullability.Equals(targetType, parameter.Type))
+			{
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidatorTargetTypeParameterIncorrectType,
+						parameter.Locations[0],
+						parameter.Name,
+						targetType.MetadataName
+					)
+				);
+			}
+		}
+		else
+		{
+			if (!SymbolEqualityComparer.IncludeNullability.Equals(propertyType, parameter.Type))
+			{
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateMethodParameterIsIncorrectType,
+						parameter.Locations[0],
+						parameter.Name,
+						property.Name
+					)
+				);
+
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateMethodParameterIsIncorrectType,
+						property.Locations[0],
+						parameter.Name,
+						property.Name
+					)
+				);
+			}
+		}
+	}
+
+	private static void CheckParameterIsRequired(SymbolAnalysisContext context, IParameterSymbol parameter, ISymbol property, bool isRequired)
+	{
+		if (
+			!parameter.HasExplicitDefaultValue
+			&& !isRequired
+		)
+		{
+			context.ReportDiagnostic(
+				Diagnostic.Create(
+					ValidatePropertyMustBeRequired,
+					property.Locations[0],
+					property.Name
+				)
+			);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Immediate.Validations.Analyzers;
@@ -10,7 +11,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 {
 	public static readonly DiagnosticDescriptor ValidateAttributeMissing =
 		new(
-			id: DiagnosticIds.IV0011ValidateAttributeMissing,
+			id: DiagnosticIds.IV0012ValidateAttributeMissing,
 			title: "Validation targets must be marked `[Validate]`",
 			messageFormat: "Validation target `{0}` must be marked with `[Validate]`",
 			category: "ImmediateValidations",
@@ -21,7 +22,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 	public static readonly DiagnosticDescriptor IValidationTargetMissing =
 		new(
-			id: DiagnosticIds.IV0012IValidationTargetMissing,
+			id: DiagnosticIds.IV0013IValidationTargetMissing,
 			title: "Validation targets should implement the interface `IValidationTarget<>`",
 			messageFormat: "Validation target `{0}` should declare that it implements `IValidationTarget<{0}>`",
 			category: "ImmediateValidations",
@@ -32,7 +33,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 	public static readonly DiagnosticDescriptor ValidatePropertyIncompatibleType =
 		new(
-			id: DiagnosticIds.IV0013ValidatePropertyIncompatibleType,
+			id: DiagnosticIds.IV0014ValidatePropertyIncompatibleType,
 			title: "Validator will not be used",
 			messageFormat: "Validator `{0}` will not be used for property `{1}` due to incompatible types",
 			category: "ImmediateValidations",
@@ -42,12 +43,36 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			customTags: [WellKnownDiagnosticTags.Unnecessary]
 		);
 
+	public static readonly DiagnosticDescriptor ValidateParameterIncompatibleType =
+		new(
+			id: DiagnosticIds.IV0015ValidateParameterIncompatibleType,
+			title: "Parameter is incompatible type",
+			messageFormat: "Property/parameter `{0}` is marked `[TargetType]`, but value is not of the type `{1}`",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Warning,
+			isEnabledByDefault: true,
+			description: "Incompatible types will lead to incorrect validation code."
+		);
+
+	public static readonly DiagnosticDescriptor ValidateParameterPropertyIncompatibleType =
+		new(
+			id: DiagnosticIds.IV0016ValidateParameterPropertyIncompatibleType,
+			title: "Parameter is incompatible type",
+			messageFormat: "Property/parameter `{0}` is marked `[TargetType]`, but property `{1}` is not of the type `{2}`",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Warning,
+			isEnabledByDefault: true,
+			description: "Incompatible types will lead to incorrect validation code."
+		);
+
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create<DiagnosticDescriptor>(
 		[
 			ValidateAttributeMissing,
 			IValidationTargetMissing,
 			ValidatePropertyIncompatibleType,
+			ValidateParameterIncompatibleType,
+			ValidateParameterPropertyIncompatibleType,
 		]);
 
 	public override void Initialize(AnalysisContext context)
@@ -105,13 +130,16 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 		var properties = symbol
 			.GetMembers()
-			.OfType<IPropertySymbol>();
+			.OfType<IPropertySymbol>()
+			.ToList();
 
 		foreach (var property in properties)
 		{
 			foreach (var attribute in property.GetAttributes())
 			{
-				if (!IsAttributeValid(context.Compilation, property.Type, attribute.AttributeClass!, token))
+				var status = ValidateAttribute(context.Compilation, property.Type, attribute.AttributeClass!, token);
+
+				if (status.Report)
 				{
 					context.ReportDiagnostic(
 						Diagnostic.Create(
@@ -122,11 +150,21 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 						)
 					);
 				}
+				else if (status.TargetType is not null)
+				{
+					ValidateArguments(context, properties, attribute, status.TargetType);
+				}
 			}
 		}
 	}
 
-	private static bool IsAttributeValid(
+	private sealed record AttributeValidationStatus
+	{
+		public required bool Report { get; init; }
+		public ITypeSymbol? TargetType { get; init; }
+	}
+
+	private static AttributeValidationStatus ValidateAttribute(
 		Compilation compilation,
 		ITypeSymbol propertyType,
 		INamedTypeSymbol attributeSymbol,
@@ -136,7 +174,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		token.ThrowIfCancellationRequested();
 
 		if (!attributeSymbol.ImplementsValidatorAttribute())
-			return true;
+			return new() { Report = false };
 
 		token.ThrowIfCancellationRequested();
 
@@ -170,13 +208,13 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		)
 		{
 			// covered by other analyzers
-			return true;
+			return new() { Report = false };
 		}
 
 		if (targetParameterType is ITypeParameterSymbol tps)
 		{
 			if (Utility.SatisfiesConstraints(tps, propertyType, compilation))
-				return true;
+				return new() { Report = false, TargetType = propertyType };
 		}
 		else
 		{
@@ -191,14 +229,14 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 					or { IsBoxing: true }
 			)
 			{
-				return true;
+				return new() { Report = false };
 			}
 		}
 
 		return propertyType switch
 		{
 			IArrayTypeSymbol ats =>
-				IsAttributeValid(
+				ValidateAttribute(
 					compilation,
 					ats.ElementType,
 					attributeSymbol,
@@ -211,14 +249,173 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				TypeArguments: [{ } type],
 				TypeArgumentNullableAnnotations: [{ } annotation],
 			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
-				IsAttributeValid(
+				ValidateAttribute(
 					compilation,
 					type,
 					attributeSymbol,
 					token
 				),
 
-			_ => false,
+			_ => new() { Report = true, },
 		};
+	}
+
+	private static void ValidateArguments(
+		SymbolAnalysisContext context,
+		List<IPropertySymbol> properties,
+		AttributeData attribute,
+		ITypeSymbol targetType
+	)
+	{
+		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
+		var argumentListSyntax = attributeSyntax.ArgumentList?.Arguments ?? [];
+
+		var attributeParameters = attribute.AttributeConstructor!.Parameters;
+		var attributeArguments = attribute.ConstructorArguments;
+		var attributeNamedArguments = attribute.NamedArguments;
+		List<IPropertySymbol>? attributeProperties = null;
+
+		for (var i = 0; i < argumentListSyntax.Count; i++)
+		{
+			switch (argumentListSyntax[i])
+			{
+				case { NameColon.Name.Identifier.ValueText: var name }:
+				{
+					for (var j = 0; j < attributeArguments.Length; j++)
+					{
+						if (attributeParameters[j].Name == name)
+						{
+							ValidateArgument(
+								context,
+								argumentListSyntax[i],
+								attributeParameters[j],
+								attributeArguments[j],
+								targetType,
+								properties
+							);
+
+							break;
+						}
+					}
+
+					break;
+				}
+
+				case { NameEquals.Name.Identifier.ValueText: var name }:
+				{
+					var argument = attributeNamedArguments.First(a => a.Key == name).Value;
+
+					attributeProperties ??= attribute.AttributeClass!.GetMembers()
+						.OfType<IPropertySymbol>()
+						.ToList();
+					var property = attributeProperties.First(a => a.Name == name);
+
+					ValidateArgument(
+						context,
+						argumentListSyntax[i],
+						property,
+						argument,
+						targetType,
+						properties
+					);
+
+					break;
+				}
+
+				default:
+				{
+					if (i < attributeParameters.Length
+						&& i < attributeArguments.Length)
+					{
+						ValidateArgument(
+							context,
+							argumentListSyntax[i],
+							attributeParameters[i],
+							attributeArguments[i],
+							targetType,
+							properties
+						);
+					}
+
+					break;
+				}
+			}
+		}
+	}
+
+	private static void ValidateArgument(
+		SymbolAnalysisContext context,
+		AttributeArgumentSyntax syntax,
+		ISymbol parameter,
+		TypedConstant argument,
+		ITypeSymbol targetType,
+		List<IPropertySymbol> properties
+	)
+	{
+		if (parameter.IsTargetTypeSymbol()
+			&& argument.Type is not null
+		)
+		{
+			if (syntax.Expression.IsNameOfExpression(out var propertyName))
+			{
+				var property = properties
+					.FirstOrDefault(p => p.Name == propertyName);
+
+				if (property is null)
+					return;
+
+				if (!context.Compilation.ClassifyConversion(property.Type, targetType).IsValidConversion())
+				{
+					context.ReportDiagnostic(
+						Diagnostic.Create(
+							ValidateParameterPropertyIncompatibleType,
+							syntax.GetLocation(),
+							parameter.Name,
+							property.Name,
+							targetType.Name
+						)
+					);
+				}
+			}
+			else
+			{
+				if (!context.Compilation.ClassifyConversion(argument.Type, targetType).IsValidConversion())
+				{
+					context.ReportDiagnostic(
+						Diagnostic.Create(
+							ValidateParameterIncompatibleType,
+							syntax.GetLocation(),
+							parameter.Name,
+							targetType.Name
+						)
+					);
+				}
+			}
+		}
+	}
+}
+
+file static class Extensions
+{
+	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
+		symbol is IParameterSymbol { Type.SpecialType: SpecialType.System_Object }
+			or IPropertySymbol { Type.SpecialType: SpecialType.System_Object }
+		&& symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
+
+	public static bool IsNameOfExpression(this ExpressionSyntax syntax, out string? name)
+	{
+		name = null;
+		if (syntax is InvocationExpressionSyntax
+			{
+				Expression: SimpleNameSyntax { Identifier.ValueText: "nameof" },
+				ArgumentList.Arguments: [{ Expression: SimpleNameSyntax { Identifier.ValueText: var n } }],
+			}
+		)
+		{
+			name = n;
+			return true;
+		}
+		else
+			return false;
 	}
 }

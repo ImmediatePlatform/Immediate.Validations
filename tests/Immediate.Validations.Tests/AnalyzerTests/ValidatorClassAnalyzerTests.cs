@@ -20,7 +20,7 @@ public sealed class ValidatorClassAnalyzerTests
 		).RunAsync();
 
 	[Fact]
-	public async Task ValidateMethodPresentShouldNotWarn() =>
+	public async Task CorrectlyDefinedValidatorShouldNotWarn1() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
 			using Immediate.Validations.Shared;
@@ -32,6 +32,72 @@ public sealed class ValidatorClassAnalyzerTests
 				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int operand)
 				{
 					return value <= operand
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task CorrectlyDefinedValidatorShouldNotWarn2() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(int operand) : ValidatorAttribute
+			{
+				public int Operand { get; } = operand;
+
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int operand)
+				{
+					return value <= operand
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task CorrectlyDefinedValidatorShouldNotWarn3() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute : ValidatorAttribute
+			{
+				[TargetType]
+				public required object Operand { get; init; }
+
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, T operand)
+				{
+					return Comparer<T>.Default.Compare(value, operand) <= 0
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task CorrectlyDefinedValidatorShouldNotWarn4() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(
+				[TargetType]
+				object operand
+			) : ValidatorAttribute
+			{
+				public object Operand { get; } = operand;
+
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, T operand)
+				{
+					return Comparer<T>.Default.Compare(value, operand) <= 0
 						? (true, "Property must not be `null`.")
 						: default;
 				}
@@ -242,4 +308,68 @@ public sealed class ValidatorClassAnalyzerTests
 			"""
 		).RunAsync();
 
+	[Fact]
+	public async Task ValidatorMultipleConstructors() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute : ValidatorAttribute
+			{
+				public {|IV0009:GreaterThanAttribute|}(int operand) { }
+				public {|IV0009:GreaterThanAttribute|}(string operand) { }
+			
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int {|IV0006:operand|})
+				{
+					return value <= operand
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+						}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidateMethodMismatchTargetTypesShouldWarn1() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			public sealed class GreaterThanAttribute : ValidatorAttribute
+			{
+				[TargetType]
+				public required object Operand { get; init; }
+			
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, T? {|IV0010:operand|})
+				{
+					return Comparer<T>.Default.Compare(value, operand) <= 0
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidateMethodMismatchTargetTypesShouldWarn2() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			public sealed class GreaterThanAttribute : ValidatorAttribute
+			{
+				[TargetType]
+				public required object Operand { get; init; }
+			
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, int {|IV0010:operand|})
+				{
+					return Comparer<T>.Default.Compare(value, (T)(object)operand) <= 0
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
 }

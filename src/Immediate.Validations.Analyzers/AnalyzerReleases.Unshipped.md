@@ -10,7 +10,11 @@ IV0005 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0006 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0007 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0008 | ImmediateValidations | Error | ValidatorClassAnalyzer
-IV0009 | ImmediateValidations | Warning | AssemblyBehaviorAnalyzer
-IV0011 | ImmediateValidations | Error | ValidateClassAnalyzer
-IV0012 | ImmediateValidations | Warning | ValidateClassAnalyzer
+IV0009 | ImmediateValidations | Error | ValidatorClassAnalyzer
+IV0010 | ImmediateValidations | Error | ValidatorClassAnalyzer
+IV0011 | ImmediateValidations | Warning | AssemblyBehaviorAnalyzer
+IV0012 | ImmediateValidations | Error | ValidateClassAnalyzer
 IV0013 | ImmediateValidations | Warning | ValidateClassAnalyzer
+IV0014 | ImmediateValidations | Warning | ValidateClassAnalyzer
+IV0015 | ImmediateValidations | Warning | ValidateClassAnalyzer
+IV0016 | ImmediateValidations | Warning | ValidateClassAnalyzer
