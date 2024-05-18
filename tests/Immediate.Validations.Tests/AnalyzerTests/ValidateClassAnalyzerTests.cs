@@ -366,6 +366,80 @@ public sealed class ValidateClassAnalyzerTests
 			"""
 			using System.Collections.Generic;
 			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[MaxLength(0)]
+				public required string Id { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn9() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[MaxLength({|IV0015:"test"|})]
+				public required string Id { get; init; }
+			
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn10() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[MaxLength(nameof(KeyValue))]
+				public required string Id { get; init; }
+				public required int KeyValue { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn10() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[MaxLength({|IV0016:nameof(KeyValue)|})]
+				public required string Id { get; init; }
+				public required string KeyValue { get; init; }
+						
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn11() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
 
 			public sealed class DummyAttribute(
 				[TargetType] object first,
@@ -399,7 +473,7 @@ public sealed class ValidateClassAnalyzerTests
 		).RunAsync();
 
 	[Fact]
-	public async Task InvalidValidatorTypeShouldWarn9() =>
+	public async Task InvalidValidatorTypeShouldWarn11() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
 			using System.Collections.Generic;
