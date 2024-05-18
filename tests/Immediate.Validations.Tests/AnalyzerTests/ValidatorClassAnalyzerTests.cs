@@ -328,48 +328,4 @@ public sealed class ValidatorClassAnalyzerTests
 						}
 			"""
 		).RunAsync();
-
-	[Fact]
-	public async Task ValidateMethodMismatchTargetTypesShouldWarn1() =>
-		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
-			"""
-			using System.Collections.Generic;
-			using Immediate.Validations.Shared;
-			
-			public sealed class GreaterThanAttribute : ValidatorAttribute
-			{
-				[TargetType]
-				public required object Operand { get; init; }
-			
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, T? {|IV0010:operand|})
-				{
-					return Comparer<T>.Default.Compare(value, operand) <= 0
-						? (true, "Property must not be `null`.")
-						: default;
-				}
-			}
-			"""
-		).RunAsync();
-
-	[Fact]
-	public async Task ValidateMethodMismatchTargetTypesShouldWarn2() =>
-		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
-			"""
-			using System.Collections.Generic;
-			using Immediate.Validations.Shared;
-			
-			public sealed class GreaterThanAttribute : ValidatorAttribute
-			{
-				[TargetType]
-				public required object Operand { get; init; }
-			
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, int {|IV0010:operand|})
-				{
-					return Comparer<T>.Default.Compare(value, (T)(object)operand) <= 0
-						? (true, "Property must not be `null`.")
-						: default;
-				}
-			}
-			"""
-		).RunAsync();
 }

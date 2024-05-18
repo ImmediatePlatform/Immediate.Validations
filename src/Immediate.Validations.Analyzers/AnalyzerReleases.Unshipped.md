@@ -11,7 +11,6 @@ IV0006 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0007 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0008 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0009 | ImmediateValidations | Error | ValidatorClassAnalyzer
-IV0010 | ImmediateValidations | Error | ValidatorClassAnalyzer
 IV0011 | ImmediateValidations | Warning | AssemblyBehaviorAnalyzer
 IV0012 | ImmediateValidations | Error | ValidateClassAnalyzer
 IV0013 | ImmediateValidations | Warning | ValidateClassAnalyzer

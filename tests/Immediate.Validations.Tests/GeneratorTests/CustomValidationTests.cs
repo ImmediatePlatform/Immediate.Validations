@@ -333,6 +333,82 @@ public sealed class CustomValidationTests
 	}
 
 	[Fact]
+	public async Task MaxLengthValidatorSimple()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[MaxLength(0)]
+				public string StringProperty { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task MaxLengthValidatorMessage()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[MaxLength(0, Message = "Must be MaxLength to zero.")]
+				public string StringProperty { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task MaxLengthValidatorNameof()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[MaxLength(nameof(KeyValue))]
+				public string StringProperty { get; init; }
+				public int KeyValue { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
 	public async Task ComplexValidator()
 	{
 		var driver = GeneratorTestHelper.GetDriver(
