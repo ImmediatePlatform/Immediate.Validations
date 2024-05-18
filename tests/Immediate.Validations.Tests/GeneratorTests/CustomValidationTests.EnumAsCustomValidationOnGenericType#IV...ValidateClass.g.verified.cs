@@ -24,7 +24,7 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
-		__ValidateEnumProperty(errors, t.EnumProperty);
+		__ValidateEnumProperty(errors, t, t.EnumProperty);
 
 		return errors;
 	}
@@ -32,7 +32,7 @@ partial class ValidateClass
 
 
 	private static void __ValidateEnumProperty(
-		List<ValidationError> errors, global::TestEnum? target
+		List<ValidationError> errors, ValidateClass instance, global::TestEnum? target
 	)
 	{
 

@@ -24,7 +24,7 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
-		__ValidateValidationTargets(errors, t.ValidationTargets);
+		__ValidateValidationTargets(errors, t, t.ValidationTargets);
 
 		return errors;
 	}
@@ -32,7 +32,7 @@ partial class ValidateClass
 
 
 	private static void __ValidateValidationTargets00(
-		List<ValidationError> errors, global::ValidationTarget target, int counter0, int counter1
+		List<ValidationError> errors, ValidateClass instance, global::ValidationTarget target, int counter0, int counter1
 	)
 	{
 
@@ -59,7 +59,7 @@ partial class ValidateClass
 	}
 
 	private static void __ValidateValidationTargets0(
-		List<ValidationError> errors, global::ValidationTarget[] target, int counter0
+		List<ValidationError> errors, ValidateClass instance, global::ValidationTarget[] target, int counter0
 	)
 	{
 
@@ -79,7 +79,7 @@ partial class ValidateClass
 		foreach (var item1 in t)
 		{
 			__ValidateValidationTargets00(
-				errors, item1, counter0, counter1
+				errors, instance, item1, counter0, counter1
 			);
 			counter1++;
 		}
@@ -87,7 +87,7 @@ partial class ValidateClass
 	}
 
 	private static void __ValidateValidationTargets(
-		List<ValidationError> errors, global::ValidationTarget[][] target
+		List<ValidationError> errors, ValidateClass instance, global::ValidationTarget[][] target
 	)
 	{
 
@@ -107,7 +107,7 @@ partial class ValidateClass
 		foreach (var item0 in t)
 		{
 			__ValidateValidationTargets0(
-				errors, item0, counter0
+				errors, instance, item0, counter0
 			);
 			counter0++;
 		}

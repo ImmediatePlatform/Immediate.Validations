@@ -47,7 +47,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		new(
 			id: DiagnosticIds.IV0015ValidateParameterIncompatibleType,
 			title: "Parameter is incompatible type",
-			messageFormat: "Property/parameter `{0}` is marked `[TargetType]`, but value is not of the type `{1}`",
+			messageFormat: "Property/parameter `{0}` is marked `[TargetType]`, but value is not of type `{1}`",
 			category: "ImmediateValidations",
 			defaultSeverity: DiagnosticSeverity.Warning,
 			isEnabledByDefault: true,
@@ -58,7 +58,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		new(
 			id: DiagnosticIds.IV0016ValidateParameterPropertyIncompatibleType,
 			title: "Parameter is incompatible type",
-			messageFormat: "Property/parameter `{0}` is marked `[TargetType]`, but property `{1}` is not of the type `{2}`",
+			messageFormat: "Property/parameter `{0}` is marked `[TargetType]`, but property `{1}` is not of type `{2}`",
 			category: "ImmediateValidations",
 			defaultSeverity: DiagnosticSeverity.Warning,
 			isEnabledByDefault: true,
@@ -372,7 +372,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 							syntax.GetLocation(),
 							parameter.Name,
 							property.Name,
-							targetType.Name
+							targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
 						)
 					);
 				}
@@ -386,7 +386,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 							ValidateParameterIncompatibleType,
 							syntax.GetLocation(),
 							parameter.Name,
-							targetType.Name
+							targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
 						)
 					);
 				}

@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Immediate.Validations.Generators;
 
@@ -214,11 +215,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 			token.ThrowIfCancellationRequested();
 
-			var parameters = validateMethod.Parameters
-				.Skip(1)
-				.Select(p => GetValue(p, attribute))
-				.Where(p => p is not null)
-				.ToList();
+			var parameters = BuildParameterValues(attribute, validateMethod.Parameters);
 
 			if (parameters.Count != validateMethod.Parameters.Length - 1)
 				continue;
@@ -301,31 +298,161 @@ public sealed partial class ImmediateValidationsGenerator
 		};
 	}
 
-	private static TypedConstant? GetValue(AttributeData attribute, string name)
+	private static string? GetMessage(AttributeData attribute)
 	{
 		foreach (var p in attribute.NamedArguments)
 		{
-			if (p.Key.Equals(name, StringComparison.OrdinalIgnoreCase))
-				return p.Value;
+			if (p is { Key: "Message", Value.Value: string s })
+				return $"\"{s}\"";
 		}
 
 		return null;
 	}
 
-	private static string? GetMessage(AttributeData attribute)
+	private static List<string> BuildParameterValues(AttributeData attribute, ImmutableArray<IParameterSymbol> parameters)
 	{
-		if (GetValue(attribute, "Message")?.Value is not string s)
-			return null;
+		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
+		var argumentListSyntax = attributeSyntax.ArgumentList?.Arguments ?? [];
 
-		return $"\"{s}\"";
+		var attributeParameters = attribute.AttributeConstructor!.Parameters;
+		var attributeArguments = attribute.ConstructorArguments;
+		var attributeNamedArguments = attribute.NamedArguments;
+		List<IPropertySymbol>? attributeProperties = null;
+
+		var parameterValues = new List<string>();
+
+		for (var i = 0; i < argumentListSyntax.Count; i++)
+		{
+			switch (argumentListSyntax[i])
+			{
+				case { NameColon.Name.Identifier.ValueText: var name }:
+				{
+					for (var j = 0; j < attributeArguments.Length; j++)
+					{
+						if (attributeParameters[j].Name == name)
+						{
+							var parameterValue = BuildParameterValue(
+								argumentListSyntax[i],
+								attributeArguments[j],
+								attributeParameters[j],
+								parameters
+							);
+							parameterValues.Add(parameterValue);
+
+							break;
+						}
+					}
+
+					break;
+				}
+
+				case { NameEquals.Name.Identifier.ValueText: var name }:
+				{
+					if (name is "Message")
+						break;
+
+					var argument = attributeNamedArguments.First(a => a.Key == name).Value;
+
+					attributeProperties ??= attribute.AttributeClass!.GetMembers()
+						.OfType<IPropertySymbol>()
+						.ToList();
+					var property = attributeProperties.First(a => a.Name == name);
+
+					var parameterValue = BuildParameterValue(
+						argumentListSyntax[i],
+						argument,
+						property,
+						parameters
+					);
+					parameterValues.Add(parameterValue);
+
+					break;
+				}
+
+				default:
+				{
+					if (i < attributeParameters.Length
+						&& i < attributeArguments.Length)
+					{
+						var parameterValue = BuildParameterValue(
+							argumentListSyntax[i],
+							attributeArguments[i],
+							attributeParameters[i],
+							parameters
+						);
+						parameterValues.Add(parameterValue);
+
+					}
+
+					break;
+				}
+
+			}
+		}
+
+		return parameterValues;
 	}
 
-	private static string? GetValue(IParameterSymbol parameter, AttributeData attribute)
+	private static string BuildParameterValue(
+		AttributeArgumentSyntax attributeArgumentSyntax,
+		TypedConstant typedConstant,
+		ISymbol parameterSymbol,
+		ImmutableArray<IParameterSymbol> parameters
+	)
 	{
-		if (GetValue(attribute, parameter.Name) is not { } constant)
-			return null;
+		var parameterName = GetParameterName(parameterSymbol.Name, parameters);
+		var parameterValue = GetParameterValue(parameterSymbol, typedConstant, attributeArgumentSyntax);
 
-		var value = constant.Value?.ToString();
-		return $"{parameter.Name}: {value}";
+		return $"{parameterName}: {parameterValue}";
+	}
+
+	private static string GetParameterName(string name, ImmutableArray<IParameterSymbol> parameters)
+	{
+		foreach (var p in parameters)
+		{
+			if (p.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+				return p.Name;
+		}
+
+		return name;
+	}
+
+	private static string GetParameterValue(ISymbol parameterSymbol, TypedConstant typedConstant, AttributeArgumentSyntax attributeArgumentSyntax)
+	{
+		if (parameterSymbol.IsTargetTypeSymbol()
+			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var name))
+		{
+			return $"instance.{name}";
+		}
+
+		if (typedConstant is { Value: string s })
+			return $"\"{s}\"";
+
+		return typedConstant.Value?.ToString() ?? "";
+	}
+}
+
+file static class Extensions
+{
+	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
+		symbol is IParameterSymbol { Type.SpecialType: SpecialType.System_Object }
+			or IPropertySymbol { Type.SpecialType: SpecialType.System_Object }
+		&& symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
+
+	public static bool IsNameOfExpression(this ExpressionSyntax syntax, out string? name)
+	{
+		name = null;
+		if (syntax is InvocationExpressionSyntax
+			{
+				Expression: SimpleNameSyntax { Identifier.ValueText: "nameof" },
+				ArgumentList.Arguments: [{ Expression: SimpleNameSyntax { Identifier.ValueText: var n } }],
+			}
+		)
+		{
+			name = n;
+			return true;
+		}
+		else
+			return false;
 	}
 }

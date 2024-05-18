@@ -24,15 +24,15 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
-		__ValidateTestEnum(errors, t, t.TestEnum);
+		__ValidateIntProperty(errors, t, t.IntProperty);
 
 		return errors;
 	}
 
 
 
-	private static void __ValidateTestEnum(
-		List<ValidationError> errors, ValidateClass instance, global::TestEnum target
+	private static void __ValidateIntProperty(
+		List<ValidationError> errors, ValidateClass instance, int target
 	)
 	{
 
@@ -41,15 +41,16 @@ partial class ValidateClass
 
 
 		if (
-			global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
+			global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
 				t
+				, operand: 0
 			) is (true, { } message)
 		)
 		{
 			errors.Add(new()
 			{
-				PropertyName = $"TestEnum", 
-				ErrorMessage = message,
+				PropertyName = $"IntProperty", 
+				ErrorMessage = "Must be equal to zero.",
 			});
 		}
 	}
