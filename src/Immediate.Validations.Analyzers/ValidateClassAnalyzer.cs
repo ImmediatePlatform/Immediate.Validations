@@ -150,9 +150,15 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 						)
 					);
 				}
-				else if (status.TargetType is not null)
+				else if (status.ValidateArguments)
 				{
-					ValidateArguments(context, properties, attribute, status.TargetType);
+					ValidateArguments(
+						context,
+						properties,
+						attribute,
+						status.ValidateParameterSymbols,
+						property.Type
+					);
 				}
 			}
 		}
@@ -161,7 +167,8 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 	private sealed record AttributeValidationStatus
 	{
 		public required bool Report { get; init; }
-		public ITypeSymbol? TargetType { get; init; }
+		public bool ValidateArguments { get; init; }
+		public ImmutableArray<IParameterSymbol> ValidateParameterSymbols { get; init; }
 	}
 
 	private static AttributeValidationStatus ValidateAttribute(
@@ -214,7 +221,14 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		if (targetParameterType is ITypeParameterSymbol tps)
 		{
 			if (Utility.SatisfiesConstraints(tps, propertyType, compilation))
-				return new() { Report = false, TargetType = propertyType };
+			{
+				return new()
+				{
+					Report = false,
+					ValidateArguments = true,
+					ValidateParameterSymbols = validateMethod.Parameters,
+				};
+			}
 		}
 		else
 		{
@@ -229,7 +243,12 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 					or { IsBoxing: true }
 			)
 			{
-				return new() { Report = false, TargetType = propertyType };
+				return new()
+				{
+					Report = false,
+					ValidateArguments = true,
+					ValidateParameterSymbols = validateMethod.Parameters,
+				};
 			}
 		}
 
@@ -264,7 +283,8 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		SymbolAnalysisContext context,
 		List<IPropertySymbol> properties,
 		AttributeData attribute,
-		ITypeSymbol targetType
+		ImmutableArray<IParameterSymbol> validateParameterSymbols,
+		ITypeSymbol propertyType
 	)
 	{
 		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
@@ -290,7 +310,8 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 								argumentListSyntax[i],
 								attributeParameters[j],
 								attributeArguments[j],
-								targetType,
+								validateParameterSymbols,
+								propertyType,
 								properties
 							);
 
@@ -318,7 +339,8 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 						argumentListSyntax[i],
 						property,
 						argument,
-						targetType,
+						validateParameterSymbols,
+						propertyType,
 						properties
 					);
 
@@ -335,7 +357,8 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 							argumentListSyntax[i],
 							attributeParameters[i],
 							attributeArguments[i],
-							targetType,
+							validateParameterSymbols,
+							propertyType,
 							properties
 						);
 					}
@@ -351,7 +374,8 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		AttributeArgumentSyntax syntax,
 		ISymbol parameter,
 		TypedConstant argument,
-		ITypeSymbol targetType,
+		ImmutableArray<IParameterSymbol> validateParameterSymbols,
+		ITypeSymbol propertyType,
 		List<IPropertySymbol> properties
 	)
 	{
@@ -359,6 +383,11 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			&& argument.Type is not null
 		)
 		{
+			var validateParameter = validateParameterSymbols.First(p => p.Name == parameter.Name);
+			var targetType = validateParameter.Type;
+			if (targetType is ITypeParameterSymbol)
+				targetType = propertyType;
+
 			if (syntax.Expression.IsNameOfExpression(out var propertyName))
 			{
 				var property = properties

@@ -107,17 +107,6 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 			description: "Validators with two or more constructors are not yet supported."
 		);
 
-	public static readonly DiagnosticDescriptor ValidatorTargetTypeParameterIncorrectType =
-		new(
-			id: DiagnosticIds.IV0010ValidatorTargetTypeParameterIncorrectType,
-			title: "Validator parameter is incorrect type",
-			messageFormat: "Validator parameter `{0}` does not have expected type `{1}`",
-			category: "ImmediateValidations",
-			defaultSeverity: DiagnosticSeverity.Error,
-			isEnabledByDefault: true,
-			description: "A `[TargetType]` parameter must have the same type as the target property."
-		);
-
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create<DiagnosticDescriptor>(
 		[
@@ -130,7 +119,6 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 			ValidateMethodParameterIsIncorrectType,
 			ValidatePropertyMustBeRequired,
 			ValidatorHasTooManyConstructors,
-			ValidatorTargetTypeParameterIncorrectType,
 		]);
 
 	public override void Initialize(AnalysisContext context)
@@ -246,7 +234,6 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		}
 
 		var parameters = methodSymbol.Parameters.Skip(1).OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase);
-		var targetType = methodSymbol.Parameters[0].Type;
 
 		var properties = validatorClassSymbol
 			.GetMembers()
@@ -307,7 +294,7 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 					_ => throw new InvalidOperationException(),
 				};
 
-				CheckParameterAllowedType(context, parameter, property, propertyType, targetType);
+				CheckParameterAllowedType(context, parameter, property, propertyType);
 				CheckParameterIsRequired(context, parameter, property, isRequired);
 			}
 		}
@@ -317,28 +304,13 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		SymbolAnalysisContext context,
 		IParameterSymbol parameter,
 		ISymbol property,
-		ITypeSymbol propertyType,
-		ITypeSymbol targetType
+		ITypeSymbol propertyType
 	)
 	{
 		if (
-			propertyType is { SpecialType: SpecialType.System_Object }
-			&& property.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute())
+			propertyType is not { SpecialType: SpecialType.System_Object }
+			|| !property.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute())
 		)
-		{
-			if (!SymbolEqualityComparer.IncludeNullability.Equals(targetType, parameter.Type))
-			{
-				context.ReportDiagnostic(
-					Diagnostic.Create(
-						ValidatorTargetTypeParameterIncorrectType,
-						parameter.Locations[0],
-						parameter.Name,
-						targetType.MetadataName
-					)
-				);
-			}
-		}
-		else
 		{
 			if (!SymbolEqualityComparer.IncludeNullability.Equals(propertyType, parameter.Type))
 			{
