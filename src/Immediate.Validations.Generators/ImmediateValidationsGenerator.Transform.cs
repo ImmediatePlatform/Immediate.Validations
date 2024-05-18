@@ -217,9 +217,6 @@ public sealed partial class ImmediateValidationsGenerator
 
 			var parameters = BuildParameterValues(attribute, validateMethod.Parameters);
 
-			if (parameters.Count != validateMethod.Parameters.Length - 1)
-				continue;
-
 			token.ThrowIfCancellationRequested();
 
 			validations.Add(

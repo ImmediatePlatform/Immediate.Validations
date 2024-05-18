@@ -229,7 +229,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 					or { IsBoxing: true }
 			)
 			{
-				return new() { Report = false };
+				return new() { Report = false, TargetType = propertyType };
 			}
 		}
 
@@ -303,6 +303,9 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 				case { NameEquals.Name.Identifier.ValueText: var name }:
 				{
+					if (name is "Message")
+						break;
+
 					var argument = attributeNamedArguments.First(a => a.Key == name).Value;
 
 					attributeProperties ??= attribute.AttributeClass!.GetMembers()
