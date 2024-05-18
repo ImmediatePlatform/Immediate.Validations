@@ -453,6 +453,8 @@ file static class Extensions
 			return true;
 		}
 		else
+		{
 			return false;
+		}
 	}
 }
