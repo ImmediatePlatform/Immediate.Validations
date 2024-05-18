@@ -24,7 +24,7 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
-		__ValidateStringProperty(errors, t.StringProperty);
+		__ValidateStringProperty(errors, t, t.StringProperty);
 
 		return errors;
 	}
@@ -32,7 +32,7 @@ partial class ValidateClass
 
 
 	private static void __ValidateStringProperty00(
-		List<ValidationError> errors, string target, int counter0, int counter1
+		List<ValidationError> errors, ValidateClass instance, string target, int counter0, int counter1
 	)
 	{
 
@@ -52,7 +52,7 @@ partial class ValidateClass
 	}
 
 	private static void __ValidateStringProperty0(
-		List<ValidationError> errors, global::System.Collections.Generic.List<string> target, int counter0
+		List<ValidationError> errors, ValidateClass instance, global::System.Collections.Generic.List<string> target, int counter0
 	)
 	{
 
@@ -72,7 +72,7 @@ partial class ValidateClass
 		foreach (var item1 in t)
 		{
 			__ValidateStringProperty00(
-				errors, item1, counter0, counter1
+				errors, instance, item1, counter0, counter1
 			);
 			counter1++;
 		}
@@ -80,7 +80,7 @@ partial class ValidateClass
 	}
 
 	private static void __ValidateStringProperty(
-		List<ValidationError> errors, global::System.Collections.Generic.List<global::System.Collections.Generic.List<string>> target
+		List<ValidationError> errors, ValidateClass instance, global::System.Collections.Generic.List<global::System.Collections.Generic.List<string>> target
 	)
 	{
 
@@ -100,7 +100,7 @@ partial class ValidateClass
 		foreach (var item0 in t)
 		{
 			__ValidateStringProperty0(
-				errors, item0, counter0
+				errors, instance, item0, counter0
 			);
 			counter0++;
 		}

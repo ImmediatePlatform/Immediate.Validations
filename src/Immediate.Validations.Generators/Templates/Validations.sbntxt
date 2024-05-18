@@ -36,7 +36,7 @@ partial {{ class.type }} {{ class.name }}
 		var errors = new List<ValidationError>();
 
 		{{~ for p in properties ~}}
-		__Validate{{ p.property_name }}(errors, t.{{ p.property_name }});
+		__Validate{{ p.property_name }}(errors, t, t.{{ p.property_name }});
 		{{~ end ~}}
 
 		return errors;
@@ -76,7 +76,7 @@ partial {{ class.type }} {{ class.name }}
 	{{~ func validate_property(p, depth = 0) ~}}
 	{{- if p.collection_property_details; validate_property(p.collection_property_details, depth + 1); end ~}}
 	private static void __Validate{{ p.property_name }}{{ if depth != 0; for i in 1..depth; "0"; end; end }}(
-		List<ValidationError> errors, {{ p.type_full_name }} target{{ if depth != 0; for i in 1..depth }}, int counter{{i-1}}{{ end; end }}
+		List<ValidationError> errors, {{ class.name }} instance, {{ p.type_full_name }} target{{ if depth != 0; for i in 1..depth }}, int counter{{i-1}}{{ end; end }}
 	)
 	{
 		{{~ 
@@ -117,7 +117,7 @@ partial {{ class.type }} {{ class.name }}
 		foreach (var item{{depth}} in t)
 		{
 			__Validate{{ p.property_name }}{{ for i in 1..(depth + 1); "0"; end }}(
-				errors, item{{depth}}{{ for i in 1..(depth + 1) }}, counter{{ i - 1 }}{{ end }}
+				errors, instance, item{{depth}}{{ for i in 1..(depth + 1) }}, counter{{ i - 1 }}{{ end }}
 			);
 			counter{{depth}}++;
 		}

@@ -44,7 +44,7 @@ public sealed class ValidateClassAnalyzerTests
 			using System.Collections.Generic;
 			using Immediate.Validations.Shared;
 			
-			public sealed partial record {|IV0011:Target|} : IValidationTarget<Target>
+			public sealed partial record {|IV0012:Target|} : IValidationTarget<Target>
 			{
 				public static List<ValidationError> Validate(Target target) => [];
 			}
@@ -59,7 +59,7 @@ public sealed class ValidateClassAnalyzerTests
 			using Immediate.Validations.Shared;
 			
 			[Validate]
-			public sealed partial record {|IV0012:Target|}
+			public sealed partial record {|IV0013:Target|}
 			{
 				public static List<ValidationError> Validate(Target target) => [];
 			}
@@ -94,7 +94,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0013:NotNull|}]
+				[{|IV0014:NotNull|}]
 				public required int Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -132,7 +132,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0013:EnumValue|}]
+				[{|IV0014:EnumValue|}]
 				public required int Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -168,7 +168,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0013:NotEmptyOrWhiteSpace|}]
+				[{|IV0014:NotEmptyOrWhiteSpace|}]
 				public required int Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -204,7 +204,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0013:NotEmptyOrWhiteSpace|}]
+				[{|IV0014:NotEmptyOrWhiteSpace|}]
 				public required List<int> Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -242,7 +242,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0013:EnumValue|}]
+				[{|IV0014:EnumValue|}]
 				public required List<int> Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -278,8 +278,164 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0013:NotEmptyOrWhiteSpace|}]
+				[{|IV0014:NotEmptyOrWhiteSpace|}]
 				public required int[] Id { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn7() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal(0)]
+				public required int Id { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn7() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal({|IV0015:"test"|})]
+				public required int Id { get; init; }
+			
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn8() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal(nameof(KeyValue))]
+				public required int Id { get; init; }
+				public required int KeyValue { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn8() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal({|IV0016:nameof(KeyValue)|})]
+				public required int Id { get; init; }
+				public required string KeyValue { get; init; }
+						
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn9() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] object first,
+				string second
+			) : ValidatorAttribute
+			{
+				public required string Third { get; init; }
+
+				public static (bool Invalid, string? Message) ValidateProperty(
+					string target, 
+					string first,
+					string second,
+					string third,
+					string fourth = "fourth"
+				) =>
+					target == $"{first}-{second}-{third}-{fourth}"
+						? default
+						: (true, $"Value '{target}' is not equal to '{first}-{second}-{third}-{fourth}'");
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy(first: nameof(FirstValue), "Hello World", Third = "Value", Message = "What's going on?")]
+				public required string Id { get; init; }
+				public required string FirstValue { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn9() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] object first,
+				string second
+			) : ValidatorAttribute
+			{
+				public required string Third { get; init; }
+
+				public static (bool Invalid, string? Message) ValidateProperty(
+					string target, 
+					string first,
+					string second,
+					string third,
+					string fourth = "fourth"
+				) =>
+					target == $"{first}-{second}-{third}-{fourth}"
+						? default
+						: (true, $"Value '{target}' is not equal to '{first}-{second}-{third}-{fourth}'");
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy(
+					{|IV0016:first: nameof(FirstValue)|}, 
+					"Hello World", 
+					Third = "Value", 
+					Message = "What's going on?"
+				)]
+				public required string Id { get; init; }
+
+				public required int FirstValue { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
 			}

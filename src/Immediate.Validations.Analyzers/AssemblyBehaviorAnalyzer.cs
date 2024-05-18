@@ -10,7 +10,7 @@ public sealed class AssemblyBehaviorAnalyzer : DiagnosticAnalyzer
 {
 	public static readonly DiagnosticDescriptor AssemblyBehaviorsShouldUseValidation =
 		new(
-			id: DiagnosticIds.IV0009AssemblyBehaviorsShouldUseValidation,
+			id: DiagnosticIds.IV0011AssemblyBehaviorsShouldUseValidation,
 			title: "Assembly-wide `Behaviors` attribute should use `ValidationBehavior<,>`",
 			messageFormat: "Assembly-wide `Behaviors` attribute should use `ValidationBehavior<,>`",
 			category: "ImmediateValidations",

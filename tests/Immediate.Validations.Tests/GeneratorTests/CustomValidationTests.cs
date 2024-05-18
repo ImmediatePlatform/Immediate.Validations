@@ -255,4 +255,126 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
+
+	[Fact]
+	public async Task EqualValidatorSimple()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[Equal(0)]
+				public int IntProperty { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task EqualValidatorMessage()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[Equal(0, Message = "Must be equal to zero.")]
+				public int IntProperty { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task EqualValidatorNameof()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[Equal(nameof(KeyValue))]
+				public int IntProperty { get; init; }
+				public int KeyValue { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task ComplexValidator()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] object first,
+				string second
+			) : ValidatorAttribute
+			{
+				public required string Third { get; init; }
+
+				public static (bool Invalid, string? Message) ValidateProperty(
+					string target, 
+					string first,
+					string second,
+					string third,
+					string fourth = "fourth"
+				) =>
+					target == $"{first}-{second}-{third}-{fourth}"
+						? default
+						: (true, $"Value '{target}' is not equal to '{first}-{second}-{third}-{fourth}'");
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy(first: nameof(FirstValue), "Hello World", Third = "Value", Message = "What's going on?")]
+				public required string Id { get; init; }
+				public required string FirstValue { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
 }

@@ -25,7 +25,7 @@ public sealed class AssemblyBehaviorAnalyzerTests
 			using System.Threading.Tasks;
 			using Immediate.Handlers.Shared;
 
-			[assembly: {|IV0009:Behaviors(
+			[assembly: {|IV0011:Behaviors(
 				typeof(DummyBehavior<,>)
 			)|}]
 

@@ -24,7 +24,7 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
-		__ValidateIntProperty(errors, t.IntProperty);
+		__ValidateIntProperty(errors, t, t.IntProperty);
 
 		return errors;
 	}
@@ -32,7 +32,7 @@ partial class ValidateClass
 
 
 	private static void __ValidateIntProperty(
-		List<ValidationError> errors, int target
+		List<ValidationError> errors, ValidateClass instance, int target
 	)
 	{
 

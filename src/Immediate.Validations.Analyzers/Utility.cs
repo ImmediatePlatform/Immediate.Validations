@@ -20,6 +20,12 @@ internal static class Utility
 		return c;
 	}
 
+	public static bool IsValidConversion(this Conversion conversion) =>
+		conversion is { IsIdentity: true }
+			or { IsImplicit: true, IsReference: true }
+			or { IsImplicit: true, IsNullable: true }
+			or { IsBoxing: true };
+
 	public static bool SatisfiesConstraints(ITypeParameterSymbol typeParameter, ITypeSymbol typeArgument, Compilation compilation)
 	{
 		if (typeArgument.IsPointerOrFunctionPointer() || typeArgument.IsRefLikeType)
