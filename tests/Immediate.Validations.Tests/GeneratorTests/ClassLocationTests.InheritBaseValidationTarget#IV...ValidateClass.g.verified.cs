@@ -24,6 +24,7 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
+		global::BaseClass.Validate(t);
 
 
 		return errors;

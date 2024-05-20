@@ -24,6 +24,7 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
+
 		__ValidateValidationTargets(errors, t, t.ValidationTargets);
 
 		return errors;

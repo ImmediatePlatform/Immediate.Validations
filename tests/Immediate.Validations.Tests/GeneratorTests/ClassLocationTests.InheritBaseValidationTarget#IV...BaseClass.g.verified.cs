@@ -1,4 +1,4 @@
-﻿//HintName: IV...ValidateClass.g.cs
+﻿//HintName: IV...BaseClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
@@ -6,9 +6,9 @@ using Immediate.Validations.Shared;
 #pragma warning disable CS1591
 
 
-partial class ValidateClass
+partial class BaseClass
 {
-	public static List<ValidationError> Validate(ValidateClass? target)
+	public static List<ValidationError> Validate(BaseClass? target)
 	{
 		if (target is not { } t)
 		{

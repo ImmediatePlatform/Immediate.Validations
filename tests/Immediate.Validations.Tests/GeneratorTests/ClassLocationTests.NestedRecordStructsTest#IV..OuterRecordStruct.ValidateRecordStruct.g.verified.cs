@@ -17,6 +17,7 @@ partial record struct ValidateRecordStruct
 		var errors = new List<ValidationError>();
 
 
+
 		return errors;
 	}
 

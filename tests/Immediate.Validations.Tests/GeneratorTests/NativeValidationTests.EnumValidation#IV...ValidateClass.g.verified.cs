@@ -24,6 +24,7 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
+
 		__ValidateTestEnum(errors, t, t.TestEnum);
 
 		return errors;

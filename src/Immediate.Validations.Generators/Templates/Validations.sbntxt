@@ -35,6 +35,10 @@ partial {{ class.type }} {{ class.name }}
 		
 		var errors = new List<ValidationError>();
 
+		{{~ for bc in base_validator_types ~}}
+		{{ bc }}.Validate(t);
+		{{~ end ~}}
+
 		{{~ for p in properties ~}}
 		__Validate{{ p.property_name }}(errors, t, t.{{ p.property_name }});
 		{{~ end ~}}

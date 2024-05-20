@@ -6,6 +6,7 @@ public sealed record ValidationTarget
 	public required EquatableReadOnlyList<Class> OuterClasses { get; init; }
 	public required Class Class { get; init; }
 	public required bool IsReferenceType { get; init; }
+	public required EquatableReadOnlyList<string> BaseValidatorTypes { get; init; }
 	public required EquatableReadOnlyList<ValidationTargetProperty> Properties { get; init; }
 }
 

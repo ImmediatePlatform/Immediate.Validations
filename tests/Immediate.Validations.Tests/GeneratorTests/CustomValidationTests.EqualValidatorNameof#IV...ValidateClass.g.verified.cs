@@ -24,6 +24,7 @@ partial class ValidateClass
 		
 		var errors = new List<ValidationError>();
 
+
 		__ValidateIntProperty(errors, t, t.IntProperty);
 		__ValidateKeyValue(errors, t, t.KeyValue);
 

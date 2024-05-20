@@ -24,6 +24,7 @@ partial class ValidationTarget
 		
 		var errors = new List<ValidationError>();
 
+
 		__ValidateStringProperty(errors, t, t.StringProperty);
 
 		return errors;
