@@ -8,7 +8,7 @@ namespace Immediate.Validations.Shared;
 /// <typeparam name="T">
 ///		The type which should be validated.
 /// </typeparam>
-public interface IValidationTarget<T> where T : IValidationTarget<T>
+public interface IValidationTarget<T>
 {
 	/// <summary>
 	///	    A method which can be used to validate instances of the type <typeparamref name="T"/>.
