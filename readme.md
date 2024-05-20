@@ -11,9 +11,6 @@
 Immediate.Validations is a source generator validating
 [`Immediate.Handlers`](https://github.com/ImmediatePlatform/Immediate.Handlers) handler parameters.
 
-#### Examples
-* [Immediate.Validations.FunctionalTests](./tests/Immediate.Validations.FunctionalTests)
-
 ## Installing Immediate.Validations
 
 You can install [Immediate.Validations with NuGet](https://www.nuget.org/packages/Immediate.Validations):
@@ -24,4 +21,43 @@ Or via the .NET Core command line interface:
 
     dotnet add package Immediate.Validations
 
-Either commands, from Package Manager Console or .NET Core CLI, will download and install Immediate.Handlers.
+Either command, from Package Manager Console or .NET Core CLI, will download and install Immediate.Validations.
+
+## Using Immediate.Validations
+
+Add Immediate.Validations to the Immediate.Handlers behaviors pipeline by including it in the list of default Behaviors
+for the assembly:
+
+```cs
+using Immediate.Validations.Shared;
+
+[assembly: Behaviors(
+	typeof(ValidationBehavior<,>)
+)]
+```
+
+### Creating Validation Classes
+
+Indicate that a class should be validated by adding the `[Validate]` attribute and `IValidationTarget<>` interface:
+
+```cs
+[Validate]
+public record Query : IValidationTarget<Query>;
+```
+
+When Nullable Reference Types is enabled, any non-nullable reference types are automatically checked for `null`. Other
+validations are available like so:
+
+```cs
+[Validate]
+public record Query : IValidationTarget<Query>
+{
+	[GreaterThan(0)]
+	public required int Id { get; init; }
+}
+```
+
+### Results
+
+The result of doing the above is that when a parameter fails one or more validations, a `ValidationException` is thrown,
+which can be handled via ProblemDetails or any other infrastructure mechanism.
