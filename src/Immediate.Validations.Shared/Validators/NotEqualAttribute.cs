@@ -4,7 +4,7 @@ namespace Immediate.Validations.Shared;
 ///	    Applied to a property to indicate that the value should not be equal to <paramref name="operand"/>.
 /// </summary>
 /// <param name="operand">
-///		The value that the applied property should not be.
+///		The value that the applied property should be different than.
 /// </param>
 public sealed class NotEqualAttribute(
 	[TargetType]
@@ -12,7 +12,7 @@ public sealed class NotEqualAttribute(
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///		The value that the applied property should not be.
+	///		The value that the applied property should be different than.
 	/// </summary>
 	public object Operand { get; } = operand;
 
@@ -23,7 +23,7 @@ public sealed class NotEqualAttribute(
 	///	    The value to validate.
 	/// </param>
 	/// <param name="operand">
-	///		The value that the applied property should not be.
+	///		The value that the applied property should be different than.
 	/// </param>
 	/// <returns>
 	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
