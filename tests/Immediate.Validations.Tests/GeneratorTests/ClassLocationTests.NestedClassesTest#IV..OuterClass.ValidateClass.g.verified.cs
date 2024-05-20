@@ -10,7 +10,10 @@ partial class OuterClass
 
 partial class ValidateClass
 {
-	public static List<ValidationError> Validate(ValidateClass? target)
+	static List<ValidationError> IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
+		Validate(target);
+
+	public static  List<ValidationError> Validate(ValidateClass? target)
 	{
 		if (target is not { } t)
 		{

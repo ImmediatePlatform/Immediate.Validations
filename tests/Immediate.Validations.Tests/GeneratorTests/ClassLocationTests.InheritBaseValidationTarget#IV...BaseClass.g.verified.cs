@@ -8,7 +8,10 @@ using Immediate.Validations.Shared;
 
 partial class BaseClass
 {
-	public static List<ValidationError> Validate(BaseClass? target)
+	static List<ValidationError> IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
+		Validate(target);
+
+	public static  List<ValidationError> Validate(BaseClass? target)
 	{
 		if (target is not { } t)
 		{

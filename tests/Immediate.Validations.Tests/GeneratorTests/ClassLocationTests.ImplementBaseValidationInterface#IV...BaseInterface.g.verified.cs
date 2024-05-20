@@ -8,7 +8,10 @@ using Immediate.Validations.Shared;
 
 partial interface BaseInterface
 {
-	public static List<ValidationError> Validate(BaseInterface? target)
+	static List<ValidationError> IValidationTarget<BaseInterface>.Validate(BaseInterface? target) =>
+		Validate(target);
+
+	public static new List<ValidationError> Validate(BaseInterface? target)
 	{
 		if (target is not { } t)
 		{

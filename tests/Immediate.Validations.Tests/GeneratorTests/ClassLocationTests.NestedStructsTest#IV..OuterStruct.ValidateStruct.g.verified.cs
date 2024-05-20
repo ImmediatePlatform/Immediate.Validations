@@ -10,7 +10,10 @@ partial struct OuterStruct
 
 partial struct ValidateStruct
 {
-	public static List<ValidationError> Validate(ValidateStruct target)
+	static List<ValidationError> IValidationTarget<ValidateStruct>.Validate(ValidateStruct target) =>
+		Validate(target);
+
+	public static  List<ValidationError> Validate(ValidateStruct target)
 	{
 		var t = target;
 		
