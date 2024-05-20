@@ -29,8 +29,7 @@ public sealed class LessThanOrEqualAttribute(
 	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
 	///     message if the property is not valid.
 	/// </returns>
-	public static (bool Invalid, string? Message) ValidateProperty<T>(T target, T operand)
-			where T : IComparable<T> =>
+	public static (bool Invalid, string? Message) ValidateProperty<T>(T target, T operand) =>
 		Comparer<T>.Default.Compare(target, operand) <= 0
 			? default
 			: (true, $"Value '{target}' is not less than or equal to '{operand}'");
