@@ -1,7 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
-[assembly: ExcludeFromCodeCoverage]
-
 namespace Immediate.Validations.Shared;
 
 /// <summary>
