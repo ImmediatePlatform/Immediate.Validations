@@ -8,7 +8,10 @@ using Immediate.Validations.Shared;
 
 partial record Target
 {
-	public static List<ValidationError> Validate(Target? target)
+	static List<ValidationError> IValidationTarget<Target>.Validate(Target? target) =>
+		Validate(target);
+
+	public static  List<ValidationError> Validate(Target? target)
 	{
 		if (target is not { } t)
 		{
@@ -23,6 +26,7 @@ partial record Target
 		}
 		
 		var errors = new List<ValidationError>();
+
 
 		__ValidateId(errors, t, t.Id);
 		__ValidateFirstValue(errors, t, t.FirstValue);

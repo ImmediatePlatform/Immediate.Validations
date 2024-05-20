@@ -8,9 +8,12 @@ using Immediate.Validations.Shared;
 partial interface OuterInterface
 {
 
-partial class ValidateClass
+partial interface ValidateClass
 {
-	public static List<ValidationError> Validate(ValidateClass? target)
+	static List<ValidationError> IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
+		Validate(target);
+
+	public static new List<ValidationError> Validate(ValidateClass? target)
 	{
 		if (target is not { } t)
 		{
@@ -25,6 +28,7 @@ partial class ValidateClass
 		}
 		
 		var errors = new List<ValidationError>();
+
 
 
 		return errors;

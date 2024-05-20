@@ -1,19 +1,17 @@
-﻿//HintName: IV..OuterRecord.ValidateRecord.g.cs
+﻿//HintName: IV...BaseClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
-partial record OuterRecord
-{
 
-partial record ValidateRecord
+partial class BaseClass
 {
-	static List<ValidationError> IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target) =>
+	static List<ValidationError> IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidateRecord? target)
+	public static  List<ValidationError> Validate(BaseClass? target)
 	{
 		if (target is not { } t)
 		{
@@ -38,4 +36,3 @@ partial record ValidateRecord
 
 }
 
-}

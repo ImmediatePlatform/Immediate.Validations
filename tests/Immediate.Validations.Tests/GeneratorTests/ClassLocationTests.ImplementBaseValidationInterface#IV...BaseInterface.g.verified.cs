@@ -1,19 +1,17 @@
-﻿//HintName: IV..OuterRecord.ValidateRecord.g.cs
+﻿//HintName: IV...BaseInterface.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
-partial record OuterRecord
-{
 
-partial record ValidateRecord
+partial interface BaseInterface
 {
-	static List<ValidationError> IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target) =>
+	static List<ValidationError> IValidationTarget<BaseInterface>.Validate(BaseInterface? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidateRecord? target)
+	public static new List<ValidationError> Validate(BaseInterface? target)
 	{
 		if (target is not { } t)
 		{
@@ -38,4 +36,3 @@ partial record ValidateRecord
 
 }
 
-}

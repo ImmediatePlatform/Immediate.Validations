@@ -126,7 +126,7 @@ public sealed class ClassLocationTests
 			public partial interface OuterInterface
 			{
 				[Validate]
-				public partial class ValidateClass;
+				public partial interface ValidateClass;
 			}
 			""");
 
@@ -158,6 +158,54 @@ public sealed class ClassLocationTests
 
 		Assert.Empty(result.Diagnostics);
 		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task InheritBaseValidationTarget()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			using Immediate.Validations.Shared;
+
+			using Namespace
+
+			[Validate]
+			public partial class BaseClass : IValidationTarget<BaseClass>;
+
+			[Validate]
+			public partial class ValidateClass : BaseClass, IValidationTarget<ValidateClass>;
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		Assert.Equal(2, result.GeneratedTrees.Length);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task ImplementBaseValidationInterface()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			using Immediate.Validations.Shared;
+
+			using Namespace
+
+			[Validate]
+			public partial interface BaseInterface : IValidationTarget<BaseInterface>;
+
+			[Validate]
+			public partial class ValidateClass : BaseInterface, IValidationTarget<ValidateClass>;
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		Assert.Equal(2, result.GeneratedTrees.Length);
 
 		_ = await Verify(result);
 	}

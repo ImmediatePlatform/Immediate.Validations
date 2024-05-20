@@ -29,5 +29,5 @@ public interface IValidationTarget<T>
 		"CA1002:Do not expose generic lists",
 		Justification = "List<> is returned for performance; this method is generally only used internally."
 	)]
-	static abstract List<ValidationError> Validate(T target);
+	static abstract List<ValidationError> Validate(T? target);
 }

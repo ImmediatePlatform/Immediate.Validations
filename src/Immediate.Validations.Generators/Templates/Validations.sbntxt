@@ -15,7 +15,10 @@ partial {{ c.type }} {{ c.name }}
 
 partial {{ class.type }} {{ class.name }}
 {
-	public static List<ValidationError> Validate({{ class.name; if is_reference_type; "?"; end }} target)
+	static List<ValidationError> IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
+		Validate(target);
+
+	public static {{ if class.type == "interface"; "new"; end }} List<ValidationError> Validate({{ class.name; if is_reference_type; "?"; end }} target)
 	{
 		{{~ if is_reference_type ~}}
 		if (target is not { } t)
@@ -34,6 +37,10 @@ partial {{ class.type }} {{ class.name }}
 		{{~ end ~}}
 		
 		var errors = new List<ValidationError>();
+
+		{{~ for bc in base_validator_types ~}}
+		errors.AddRange({{ bc }}.Validate(t));
+		{{~ end ~}}
 
 		{{~ for p in properties ~}}
 		__Validate{{ p.property_name }}(errors, t, t.{{ p.property_name }});

@@ -103,4 +103,31 @@ internal static class ITypeSymbolExtensions
 				},
 			},
 		};
+
+	public static bool IsIValidationTarget(this INamedTypeSymbol? typeSymbol) =>
+		typeSymbol is
+		{
+			MetadataName: "IValidationTarget`1",
+			ContainingNamespace:
+			{
+				Name: "Shared",
+				ContainingNamespace:
+				{
+					Name: "Validations",
+					ContainingNamespace:
+					{
+						Name: "Immediate",
+						ContainingNamespace.IsGlobalNamespace: true,
+					},
+				},
+			},
+		};
+
+	public static bool IsValidationTarget([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
+		typeSymbol is not null
+		&& typeSymbol.Interfaces
+			.Any(i =>
+				i.IsIValidationTarget()
+				&& SymbolEqualityComparer.Default.Equals(typeSymbol, i.TypeArguments[0])
+			);
 }
