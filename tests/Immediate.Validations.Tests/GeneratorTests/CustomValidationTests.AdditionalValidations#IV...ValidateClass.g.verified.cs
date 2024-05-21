@@ -1,12 +1,10 @@
-﻿//HintName: IV..OuterClass.ValidateClass.g.cs
+﻿//HintName: IV...ValidateClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
-partial class OuterClass
-{
 
 partial class ValidateClass
 {
@@ -31,6 +29,7 @@ partial class ValidateClass
 
 
 
+		errors.AddRange(AdditionalValidations(t));
 
 		return errors;
 	}
@@ -39,4 +38,3 @@ partial class ValidateClass
 
 }
 
-}

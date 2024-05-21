@@ -30,6 +30,7 @@ partial class ValidateClass
 
 		__ValidateEnumProperty(errors, t, t.EnumProperty);
 
+
 		return errors;
 	}
 

@@ -453,4 +453,57 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
+
+	[Fact]
+	public async Task AdditionalValidations()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				private static IEnumerable<ValidationError> AdditionalValidations(ValidateClass target) => [];
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task AdditionalValidationsInherited()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public partial class BaseClass : IValidationTarget<BaseClass>
+			{
+				private static IEnumerable<ValidationError> AdditionalValidations(BaseClass target) => [];
+			}
+			
+			[Validate]
+			public partial class SubClass : BaseClass, IValidationTarget<SubClass>;
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		Assert.Equal(2, result.GeneratedTrees.Length);
+
+		_ = await Verify(result);
+	}
 }

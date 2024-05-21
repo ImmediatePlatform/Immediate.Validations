@@ -1,19 +1,17 @@
-﻿//HintName: IV..OuterClass.ValidateClass.g.cs
+﻿//HintName: IV...BaseClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
-partial class OuterClass
-{
 
-partial class ValidateClass
+partial class BaseClass
 {
-	static List<ValidationError> IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
+	static List<ValidationError> IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidateClass? target)
+	public static  List<ValidationError> Validate(BaseClass? target)
 	{
 		if (target is not { } t)
 		{
@@ -31,6 +29,7 @@ partial class ValidateClass
 
 
 
+		errors.AddRange(AdditionalValidations(t));
 
 		return errors;
 	}
@@ -39,4 +38,3 @@ partial class ValidateClass
 
 }
 
-}

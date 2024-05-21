@@ -29,7 +29,7 @@ partial class ValidateClass
 
 
 		__ValidateStringProperty(errors, t, t.StringProperty);
-		__ValidateKeyValue(errors, t, t.KeyValue);
+
 
 		return errors;
 	}
@@ -67,17 +67,6 @@ partial class ValidateClass
 				ErrorMessage = message,
 			});
 		}
-	}
-
-	private static void __ValidateKeyValue(
-		List<ValidationError> errors, ValidateClass instance, int target
-	)
-	{
-
-		var t = target;
-
-
-
 	}
 
 }

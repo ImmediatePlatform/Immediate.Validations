@@ -31,6 +31,7 @@ partial interface ValidateClass
 
 
 
+
 		return errors;
 	}
 
