@@ -33,6 +33,7 @@ public sealed partial class ImmediateValidationsGenerator
 			Namespace = @namespace,
 			OuterClasses = outerClasses,
 			Class = GetClass(symbol),
+			HasAdditionalValidationsMethod = symbol.HasAdditionalValidationsMethod(),
 			IsReferenceType = symbol.IsReferenceType,
 			BaseValidatorTypes = baseValidatorTypes,
 			Properties = properties,
@@ -287,7 +288,7 @@ public sealed partial class ImmediateValidationsGenerator
 		};
 
 		if (
-			isNullable
+			(isNullable || !isReferenceType)
 			&& !isValidationProperty
 			&& collectionPropertyDetails is null
 			&& validations is []
@@ -478,4 +479,44 @@ file static class Extensions
 			return false;
 		}
 	}
+
+	public static bool HasAdditionalValidationsMethod(this INamedTypeSymbol typeSymbol) =>
+		typeSymbol.GetMembers()
+			.OfType<IMethodSymbol>()
+			.Any(m =>
+				m is
+				{
+					Name: "AdditionalValidations",
+					IsStatic: true,
+					ReturnType: INamedTypeSymbol
+					{
+						ConstructedFrom: INamedTypeSymbol
+						{
+							SpecialType: SpecialType.System_Collections_Generic_IEnumerable_T,
+						},
+						TypeArguments:
+						[
+							INamedTypeSymbol
+						{
+							Name: "ValidationError",
+							ContainingNamespace:
+							{
+								Name: "Shared",
+								ContainingNamespace:
+								{
+									Name: "Validations",
+									ContainingNamespace:
+									{
+										Name: "Immediate",
+										ContainingNamespace.IsGlobalNamespace: true,
+									},
+								},
+							},
+						}
+						],
+					},
+					Parameters: [{ Type: INamedTypeSymbol parameterType }],
+				}
+				&& SymbolEqualityComparer.Default.Equals(parameterType, typeSymbol)
+			);
 }

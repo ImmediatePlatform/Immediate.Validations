@@ -30,6 +30,7 @@ partial class ValidateClass
 
 		__ValidateTestEnum(errors, t, t.TestEnum);
 
+
 		return errors;
 	}
 

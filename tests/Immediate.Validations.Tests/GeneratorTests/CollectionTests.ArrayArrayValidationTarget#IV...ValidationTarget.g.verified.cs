@@ -30,6 +30,7 @@ partial class ValidationTarget
 
 		__ValidateStringProperty(errors, t, t.StringProperty);
 
+
 		return errors;
 	}
 

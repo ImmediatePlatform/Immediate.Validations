@@ -46,6 +46,10 @@ partial {{ class.type }} {{ class.name }}
 		__Validate{{ p.property_name }}(errors, t, t.{{ p.property_name }});
 		{{~ end ~}}
 
+		{{~ if has_additional_validations_method ~}}
+		errors.AddRange(AdditionalValidations(t));
+		{{~ end ~}}
+
 		return errors;
 	}
 

@@ -30,6 +30,7 @@ partial class ValidateClass
 
 		__ValidateValidationTargets(errors, t, t.ValidationTargets);
 
+
 		return errors;
 	}
 
