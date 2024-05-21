@@ -13,11 +13,13 @@ public sealed partial class AdditionalValidationsTests
 		private static IEnumerable<ValidationError> AdditionalValidations(ValidateRecord target)
 		{
 			if (target.Id % 2 == 1)
+			{
 				yield return new()
 				{
 					PropertyName = "Id",
 					ErrorMessage = "Value is not even.",
 				};
+			}
 		}
 	}
 
