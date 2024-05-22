@@ -106,6 +106,77 @@ public sealed class ValidatorClassAnalyzerTests
 		).RunAsync();
 
 	[Fact]
+	public async Task CorrectlyDefinedValidatorShouldNotWarn5() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(
+				[TargetType]
+				object operand
+			) : ValidatorAttribute
+			{
+				public object Operand { get; } = operand;
+
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, int operand)
+				{
+					return Comparer<T>.Default.Compare(value, (T)(object)operand) <= 0
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task CorrectlyDefinedValidatorShouldNotWarn6() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(
+				params string[] operand
+			) : ValidatorAttribute
+			{
+				public object Operand { get; } = operand;
+
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(string value, params string[] operand)
+				{
+					return Comparer<string>.Default.Compare(value, operand[0]) <= 0
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task CorrectlyDefinedValidatorShouldNotWarn7() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(
+				[TargetType]
+				params object[] operand
+			) : ValidatorAttribute
+			{
+				public object Operand { get; } = operand;
+
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, params T[] operand)
+				{
+					return Comparer<T>.Default.Compare(value, operand[0]) <= 0
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
 	public async Task MissingValidateMethodShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -281,6 +352,60 @@ public sealed class ValidatorClassAnalyzerTests
 				public static (bool Invalid, string? DefaultMessage) ValidateProperty(string value, string {|IV0007:operand|})
 				{
 					return value != operand
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidateMethodMismatchTypesShouldWarn3() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(int? {|IV0007:operand|}) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int {|IV0007:operand|})
+				{
+					return value <= operand
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidateMethodMismatchTypesShouldWarn4() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class EqualToAttribute(string? {|IV0007:operand|}) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(string value, string {|IV0007:operand|})
+				{
+					return value != operand
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidateMethodMismatchTypesShouldWarn5() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class EqualToAttribute(params string?[] {|IV0007:operand|}) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(string value, params string[] {|IV0007:operand|})
+				{
+					return value != operand[0]
 						? (true, "Property must not be `null`.")
 						: default;
 				}
