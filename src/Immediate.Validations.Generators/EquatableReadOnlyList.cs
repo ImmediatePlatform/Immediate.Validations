@@ -6,8 +6,8 @@ namespace Immediate.Validations.Generators;
 [ExcludeFromCodeCoverage]
 public static class EquatableReadOnlyList
 {
-	public static EquatableReadOnlyList<T> ToEquatableReadOnlyList<T>(this IEnumerable<T> enumerable)
-		=> new((enumerable as IReadOnlyList<T>) ?? enumerable.ToArray());
+	public static EquatableReadOnlyList<T> ToEquatableReadOnlyList<T>(this IEnumerable<T>? enumerable)
+		=> new((enumerable as IReadOnlyList<T>) ?? enumerable?.ToArray());
 }
 
 /// <summary>

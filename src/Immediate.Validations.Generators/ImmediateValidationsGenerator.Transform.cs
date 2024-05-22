@@ -331,49 +331,49 @@ public sealed partial class ImmediateValidationsGenerator
 		return null;
 	}
 
-	private static List<string> BuildParameterValues(AttributeData attribute, ImmutableArray<IParameterSymbol> parameters)
+	private static string[]? BuildParameterValues(AttributeData attribute, ImmutableArray<IParameterSymbol> parameters)
 	{
 		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
 		var argumentListSyntax = attributeSyntax.ArgumentList?.Arguments ?? [];
 
+		if (argumentListSyntax.Count == 0)
+			return null;
+
 		var attributeParameters = attribute.AttributeConstructor!.Parameters;
-		var attributeArguments = attribute.ConstructorArguments;
-		var attributeNamedArguments = attribute.NamedArguments;
+		var attributeParameterIndex = 0;
 		List<IPropertySymbol>? attributeProperties = null;
 
-		var parameterValues = new List<string>();
+		var count = argumentListSyntax.Count;
+		if (argumentListSyntax.Any(a => a is { NameEquals.Name.Identifier.ValueText: "Message", }))
+			count--;
+
+		var parameterValues = new string[count];
+		var propertyValuesIndex = 0;
+		var propertyParameterCount = 0;
 
 		for (var i = 0; i < argumentListSyntax.Count; i++)
 		{
 			switch (argumentListSyntax[i])
 			{
-				case { NameColon.Name.Identifier.ValueText: var name }:
-				{
-					for (var j = 0; j < attributeArguments.Length; j++)
-					{
-						if (attributeParameters[j].Name == name)
-						{
-							var parameterValue = BuildParameterValue(
-								argumentListSyntax[i],
-								attributeArguments[j],
-								attributeParameters[j],
-								parameters
-							);
-							parameterValues.Add(parameterValue);
-
-							break;
-						}
-					}
-
-					break;
-				}
-
 				case { NameEquals.Name.Identifier.ValueText: var name }:
 				{
 					if (name is "Message")
 						break;
 
-					var argument = attributeNamedArguments.First(a => a.Key == name).Value;
+					if (propertyParameterCount > 0)
+					{
+						var remaining = count - i;
+						Array.Copy(
+							parameterValues,
+							i - propertyParameterCount,
+							parameterValues,
+							count - propertyParameterCount,
+							propertyParameterCount
+						);
+
+						propertyValuesIndex -= propertyParameterCount;
+						propertyParameterCount = 0;
+					}
 
 					attributeProperties ??= attribute.AttributeClass!.GetMembers()
 						.OfType<IPropertySymbol>()
@@ -382,33 +382,57 @@ public sealed partial class ImmediateValidationsGenerator
 
 					var parameterValue = BuildParameterValue(
 						argumentListSyntax[i],
-						argument,
 						property,
 						parameters
 					);
-					parameterValues.Add(parameterValue);
+					parameterValues[propertyValuesIndex++] = parameterValue;
 
+					break;
+				}
+
+				case { NameColon.Name.Identifier.ValueText: var name, Expression: { } expr }:
+				{
+					for (var j = 0; j < attributeParameters.Length; j++)
+					{
+						if (attributeParameters[j].Name == name)
+						{
+							var parameterValue = BuildParameterValue(
+								argumentListSyntax[i],
+								attributeParameters[j],
+								parameters
+							);
+
+							parameterValues[propertyValuesIndex++] = parameterValue;
+							break;
+						}
+					}
+
+					attributeParameterIndex++;
 					break;
 				}
 
 				default:
 				{
-					if (i < attributeParameters.Length
-						&& i < attributeArguments.Length)
+					var attributeParameter = attributeParameters[attributeParameterIndex];
+					if (!attributeParameter.IsParams)
 					{
 						var parameterValue = BuildParameterValue(
 							argumentListSyntax[i],
-							attributeArguments[i],
-							attributeParameters[i],
+							attributeParameter,
 							parameters
 						);
-						parameterValues.Add(parameterValue);
-
+						parameterValues[propertyValuesIndex++] = parameterValue;
+						attributeParameterIndex++;
+					}
+					else
+					{
+						var parameterValue = GetParameterValue(attributeParameter, argumentListSyntax[i]);
+						parameterValues[propertyValuesIndex++] = parameterValue;
+						propertyParameterCount++;
 					}
 
 					break;
 				}
-
 			}
 		}
 
@@ -417,13 +441,12 @@ public sealed partial class ImmediateValidationsGenerator
 
 	private static string BuildParameterValue(
 		AttributeArgumentSyntax attributeArgumentSyntax,
-		TypedConstant typedConstant,
 		ISymbol parameterSymbol,
 		ImmutableArray<IParameterSymbol> parameters
 	)
 	{
 		var parameterName = GetParameterName(parameterSymbol.Name, parameters);
-		var parameterValue = GetParameterValue(parameterSymbol, typedConstant, attributeArgumentSyntax);
+		var parameterValue = GetParameterValue(parameterSymbol, attributeArgumentSyntax);
 
 		return $"{parameterName}: {parameterValue}";
 	}
@@ -439,7 +462,7 @@ public sealed partial class ImmediateValidationsGenerator
 		return name;
 	}
 
-	private static string GetParameterValue(ISymbol parameterSymbol, TypedConstant typedConstant, AttributeArgumentSyntax attributeArgumentSyntax)
+	private static string GetParameterValue(ISymbol parameterSymbol, AttributeArgumentSyntax attributeArgumentSyntax)
 	{
 		if (parameterSymbol.IsTargetTypeSymbol()
 			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var name))
@@ -447,10 +470,7 @@ public sealed partial class ImmediateValidationsGenerator
 			return $"instance.{name}";
 		}
 
-		if (typedConstant is { Value: string s })
-			return $"\"{s}\"";
-
-		return typedConstant.Value?.ToString() ?? "";
+		return attributeArgumentSyntax.Expression.ToString();
 	}
 }
 
