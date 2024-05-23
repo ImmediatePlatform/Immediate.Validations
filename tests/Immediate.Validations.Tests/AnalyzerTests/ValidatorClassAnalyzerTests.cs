@@ -255,7 +255,7 @@ public sealed class ValidatorClassAnalyzerTests
 		).RunAsync();
 
 	[Fact]
-	public async Task ValidateMethodMissingParameterShouldWarn() =>
+	public async Task ValidateMethodMissingParameterFromPropertyShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
 			using Immediate.Validations.Shared;
@@ -264,6 +264,26 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public required int {|IV0005:Operand|} { get; init; }
 
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value)
+				{
+					return value <= -1
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidateMethodMissingParameterFromParameterShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(
+				int {|IV0005:operand|}
+			): ValidatorAttribute
+			{
 				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value)
 				{
 					return value <= -1
@@ -293,7 +313,7 @@ public sealed class ValidatorClassAnalyzerTests
 		).RunAsync();
 
 	[Fact]
-	public async Task ValidateMethodGeneralParameterVarianceShouldWarn() =>
+	public async Task ValidateMethodGeneralParameterVarianceFromPropertyShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
 			using Immediate.Validations.Shared;
@@ -304,6 +324,33 @@ public sealed class ValidatorClassAnalyzerTests
 				public required int {|IV0005:Charlie|} { get; init; }
 				public required int {|IV0005:Echo|} { get; init; }
 
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty(
+					int value, 
+					int {|IV0006:bravo|},
+					int {|IV0006:delta|},
+					int {|IV0006:foxtrot|}
+				)
+				{
+					return value <= 0
+						? (true, "Property must not be `null`.")
+						: default;
+				}
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidateMethodGeneralParameterVarianceFromParametersShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(
+				int {|IV0005:alpha|},
+				int {|IV0005:charlie|},
+				int {|IV0005:echo|}
+			): ValidatorAttribute
+			{
 				public static (bool Invalid, string? DefaultMessage) ValidateProperty(
 					int value, 
 					int {|IV0006:bravo|},
