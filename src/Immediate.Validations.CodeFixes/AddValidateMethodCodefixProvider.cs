@@ -11,7 +11,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Immediate.Validations.CodeFixes;
 
 [ExportCodeFixProvider(LanguageNames.CSharp)]
-public class ValidateMethodMustExistCodefixProvider : CodeFixProvider
+public class AddValidateMethodCodefixProvider : CodeFixProvider
 {
 	public sealed override ImmutableArray<string> FixableDiagnosticIds { get; } =
 		ImmutableArray.Create([DiagnosticIds.IV0001ValidateMethodMustExist]);
@@ -36,7 +36,7 @@ public class ValidateMethodMustExistCodefixProvider : CodeFixProvider
 					title: "Add 'ValidateProperty' method",
 					createChangedDocument: _ =>
 						AddValidatePropertyMethod(context.Document, compilationUnitSyntax, classDeclarationSyntax),
-					equivalenceKey: nameof(ValidateMethodMustExistCodefixProvider)
+					equivalenceKey: nameof(AddValidateMethodCodefixProvider)
 				),
 				diagnostic);
 		}

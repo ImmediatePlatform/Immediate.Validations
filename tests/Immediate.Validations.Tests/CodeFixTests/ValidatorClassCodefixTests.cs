@@ -8,7 +8,7 @@ public sealed class ValidatorClassCodefixTests
 	[Fact]
 	public async Task MissingValidatePropertyMethodShouldAddMethod()
 	{
-		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, ValidateMethodMustExistCodefixProvider>(
+		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, AddValidateMethodCodefixProvider>(
 			$$"""
 			namespace Immediate.Validations.Shared;
 			
