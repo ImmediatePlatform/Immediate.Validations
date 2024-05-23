@@ -54,6 +54,20 @@ partial class ValidateClass
 
 
 
+		{
+			if (
+				global::Immediate.Validations.Shared.NotEmptyAttribute.ValidateProperty(
+					t
+				) is (true, { } message)
+			)
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty[{counter0}][{counter1}]", 
+					ErrorMessage = message,
+				});
+			}
+		}
 	}
 
 	private static void __ValidateStringProperty0(
@@ -82,6 +96,20 @@ partial class ValidateClass
 			counter1++;
 		}
 
+		{
+			if (
+				global::Immediate.Validations.Shared.NotEmptyAttribute.ValidateProperty(
+					t
+				) is (true, { } message)
+			)
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty[{counter0}]", 
+					ErrorMessage = message,
+				});
+			}
+		}
 	}
 
 	private static void __ValidateStringProperty(
@@ -110,6 +138,20 @@ partial class ValidateClass
 			counter0++;
 		}
 
+		{
+			if (
+				global::Immediate.Validations.Shared.NotEmptyAttribute.ValidateProperty(
+					t
+				) is (true, { } message)
+			)
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty", 
+					ErrorMessage = message,
+				});
+			}
+		}
 	}
 
 }

@@ -27,7 +27,7 @@ public static partial class SaveRecord
 	[Validate]
 	public sealed partial record Command : IValidationTarget<Command>
 	{
-		[NotEmptyOrWhiteSpace(Message = "Name must be provided.")]
+		[NotEmpty(Message = "Name must be provided.")]
 		[MaxLength(250)]
 		public required string Name { get; init; }
 		public required Status Status { get; init; }

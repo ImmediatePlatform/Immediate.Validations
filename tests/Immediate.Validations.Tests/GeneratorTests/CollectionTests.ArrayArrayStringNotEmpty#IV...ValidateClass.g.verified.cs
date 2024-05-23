@@ -54,10 +54,24 @@ partial class ValidateClass
 
 
 
+		{
+			if (
+				global::Immediate.Validations.Shared.NotEmptyAttribute.ValidateProperty(
+					t
+				) is (true, { } message)
+			)
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty[{counter0}][{counter1}]", 
+					ErrorMessage = message,
+				});
+			}
+		}
 	}
 
 	private static void __ValidateStringProperty0(
-		List<ValidationError> errors, ValidateClass instance, global::System.Collections.Generic.List<string> target, int counter0
+		List<ValidationError> errors, ValidateClass instance, string[] target, int counter0
 	)
 	{
 
@@ -82,10 +96,24 @@ partial class ValidateClass
 			counter1++;
 		}
 
+		{
+			if (
+				global::Immediate.Validations.Shared.NotEmptyAttribute.ValidateProperty(
+					t
+				) is (true, { } message)
+			)
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty[{counter0}]", 
+					ErrorMessage = message,
+				});
+			}
+		}
 	}
 
 	private static void __ValidateStringProperty(
-		List<ValidationError> errors, ValidateClass instance, global::System.Collections.Generic.List<global::System.Collections.Generic.List<string>> target
+		List<ValidationError> errors, ValidateClass instance, string[][] target
 	)
 	{
 
@@ -110,6 +138,20 @@ partial class ValidateClass
 			counter0++;
 		}
 
+		{
+			if (
+				global::Immediate.Validations.Shared.NotEmptyAttribute.ValidateProperty(
+					t
+				) is (true, { } message)
+			)
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty", 
+					ErrorMessage = message,
+				});
+			}
+		}
 	}
 
 }
