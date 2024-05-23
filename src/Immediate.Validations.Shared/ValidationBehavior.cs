@@ -20,9 +20,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>
 	/// </exception>
 	public override async ValueTask<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken)
 	{
-		var errors = TRequest.Validate(request);
-		if (errors is { Count: > 0 })
-			throw new ValidationException(errors);
+		TRequest.Validate(request).ValidateAndThrow();
 
 		return await Next(request, cancellationToken).ConfigureAwait(false);
 	}
