@@ -55,24 +55,26 @@ partial record Target
 
 
 
-		if (
-			global::DummyAttribute.ValidateProperty(
-				t
-				, first: instance.FirstValue
-				, second: "Hello World"
-				, fourth: "Abcd"
-				, fifth: "The end?"
-				, "Test1"
-				, nameof(FirstValue)
-				, "Test3"
-			) is (true, { } message)
-		)
 		{
-			errors.Add(new()
+			if (
+				global::DummyAttribute.ValidateProperty(
+					t
+					, first: instance.FirstValue
+					, second: "Hello World"
+					, fourth: "Abcd"
+					, fifth: "The end?"
+					, "Test1"
+					, nameof(FirstValue)
+					, "Test3"
+				) is (true, { } message)
+			)
 			{
-				PropertyName = $"Id", 
-				ErrorMessage = "What's going on?",
-			});
+				errors.Add(new()
+				{
+					PropertyName = $"Id", 
+					ErrorMessage = "What's going on?",
+				});
+			}
 		}
 	}
 

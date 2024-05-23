@@ -49,17 +49,19 @@ partial class ValidateClass
 
 
 
-		if (
-			global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
-				t
-			) is (true, { } message)
-		)
 		{
-			errors.Add(new()
+			if (
+				global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
+					t
+				) is (true, { } message)
+			)
 			{
-				PropertyName = $"EnumProperty", 
-				ErrorMessage = message,
-			});
+				errors.Add(new()
+				{
+					PropertyName = $"EnumProperty", 
+					ErrorMessage = message,
+				});
+			}
 		}
 	}
 
