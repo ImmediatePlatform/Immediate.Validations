@@ -14,7 +14,7 @@ public sealed partial class CollectionTests
 	[Validate]
 	public sealed partial record ListStringRecord : IValidationTarget<ListStringRecord>
 	{
-		[NotEmptyOrWhiteSpace]
+		[NotEmpty]
 		public required IReadOnlyList<IReadOnlyList<string>> Strings { get; init; }
 	}
 
@@ -119,7 +119,7 @@ public sealed partial class CollectionTests
 				new()
 				{
 					PropertyName = "Strings[2][0]",
-					ErrorMessage = "Property must not be `null` or whitespace.",
+					ErrorMessage = "Property must not be empty.",
 				},
 				new()
 				{

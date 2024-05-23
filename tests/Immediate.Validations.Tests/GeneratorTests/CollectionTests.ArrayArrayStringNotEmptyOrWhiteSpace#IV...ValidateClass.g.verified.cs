@@ -54,20 +54,6 @@ partial class ValidateClass
 
 
 
-		{
-			if (
-				global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.ValidateProperty(
-					t
-				) is (true, { } message)
-			)
-			{
-				errors.Add(new()
-				{
-					PropertyName = $"StringProperty[{counter0}][{counter1}]", 
-					ErrorMessage = message,
-				});
-			}
-		}
 	}
 
 	private static void __ValidateStringProperty0(

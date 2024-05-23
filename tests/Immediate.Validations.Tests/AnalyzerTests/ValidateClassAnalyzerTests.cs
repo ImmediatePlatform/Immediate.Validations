@@ -150,7 +150,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[NotEmptyOrWhiteSpace]
+				[MaxLength(3)]
 				public required string Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -168,7 +168,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0014:NotEmptyOrWhiteSpace|}]
+				[{|IV0014:MaxLength(3)|}]
 				public required int Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -186,7 +186,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[NotEmptyOrWhiteSpace]
+				[MaxLength(3)]
 				public required List<string> Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -204,7 +204,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0014:NotEmptyOrWhiteSpace|}]
+				[{|IV0014:MaxLength(3)|}]
 				public required List<int> Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -260,7 +260,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[NotEmptyOrWhiteSpace]
+				[MaxLength(3)]
 				public required string[] Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
@@ -278,7 +278,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0014:NotEmptyOrWhiteSpace|}]
+				[{|IV0014:MaxLength(3)|}]
 				public required int[] Id { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];

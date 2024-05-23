@@ -3,7 +3,7 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 public sealed class CustomValidationTests
 {
 	[Fact]
-	public async Task NotEmptyOrWhiteSpaceOnString()
+	public async Task NotEmptyOnString()
 	{
 		var driver = GeneratorTestHelper.GetDriver(
 			"""
@@ -14,7 +14,7 @@ public sealed class CustomValidationTests
 			[Validate]
 			public partial class ValidateClass
 			{
-				[NotEmptyOrWhiteSpace]
+				[NotEmpty]
 				public string StringProperty { get; init; }
 			}
 			""");
@@ -28,7 +28,7 @@ public sealed class CustomValidationTests
 	}
 
 	[Fact]
-	public async Task NotEmptyOrWhiteSpaceOnInt()
+	public async Task NotEmptyOnInt()
 	{
 		var driver = GeneratorTestHelper.GetDriver(
 			"""
@@ -39,7 +39,7 @@ public sealed class CustomValidationTests
 			[Validate]
 			public partial class ValidateClass
 			{
-				[NotEmptyOrWhiteSpace]
+				[NotEmpty]
 				public int IntProperty { get; init; }
 			}
 			""");
@@ -65,7 +65,7 @@ public sealed class CustomValidationTests
 			{
 				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value) =>
 					value <= 0
-						? (true, "Property must not be `null` or whitespace.")
+						? (true, "Property must not be empty.")
 						: default;
 			}
 
@@ -98,7 +98,7 @@ public sealed class CustomValidationTests
 			{
 				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value) =>
 					value <= 0
-						? (true, "Property must not be `null` or whitespace.")
+						? (true, "Property must not be empty.")
 						: default;
 			}
 

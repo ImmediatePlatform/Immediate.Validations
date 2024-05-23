@@ -8,7 +8,7 @@ public sealed partial class InheritanceTests
 	[Validate]
 	public partial interface IBaseInterface : IValidationTarget<IBaseInterface>
 	{
-		[NotEmptyOrWhiteSpace]
+		[NotEmpty]
 		string Description { get; }
 	}
 
@@ -78,7 +78,7 @@ public sealed partial class InheritanceTests
 				new()
 				{
 					PropertyName = "Description",
-					ErrorMessage = "Property must not be `null` or whitespace.",
+					ErrorMessage = "Property must not be empty.",
 				}
 			],
 			errors

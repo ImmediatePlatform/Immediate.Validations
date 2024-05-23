@@ -54,6 +54,20 @@ partial class ValidateClass
 
 
 
+		{
+			if (
+				global::Immediate.Validations.Shared.NotEmptyAttribute.ValidateProperty(
+					t
+				) is (true, { } message)
+			)
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty", 
+					ErrorMessage = message,
+				});
+			}
+		}
 	}
 
 }

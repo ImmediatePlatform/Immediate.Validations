@@ -53,7 +53,7 @@ public sealed class CollectionTests
 	}
 
 	[Fact]
-	public async Task ListListStringNotEmptyOrWhiteSpace()
+	public async Task ListListStringNotEmpty()
 	{
 		var driver = GeneratorTestHelper.GetDriver(
 			"""
@@ -65,7 +65,7 @@ public sealed class CollectionTests
 			[Validate]
 			public partial class ValidateClass
 			{
-				[NotEmptyOrWhiteSpace]
+				[NotEmpty]
 				public List<List<string>> StringProperty { get; init; }
 			}
 			""");
@@ -127,7 +127,7 @@ public sealed class CollectionTests
 	}
 
 	[Fact]
-	public async Task ArrayArrayStringNotEmptyOrWhiteSpace()
+	public async Task ArrayArrayStringNotEmpty()
 	{
 		var driver = GeneratorTestHelper.GetDriver(
 			"""
@@ -138,7 +138,7 @@ public sealed class CollectionTests
 			[Validate]
 			public partial class ValidateClass
 			{
-				[NotEmptyOrWhiteSpace]
+				[NotEmpty]
 				public string[][] StringProperty { get; init; }
 			}
 			""");
