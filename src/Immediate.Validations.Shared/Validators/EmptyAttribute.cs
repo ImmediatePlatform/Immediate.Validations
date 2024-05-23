@@ -30,12 +30,4 @@ public sealed class EmptyAttribute : ValidatorAttribute
 			ICollection { Count: 0 } => true,
 			_ => EqualityComparer<T>.Default.Equals(value, default)
 		};
-
-	private static bool IsEmpty(IEnumerable enumerable)
-	{
-		var enumerator = enumerable.GetEnumerator();
-
-		using (enumerator as IDisposable)
-			return !enumerator.MoveNext();
-	}
 }

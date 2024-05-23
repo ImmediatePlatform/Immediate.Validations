@@ -13,16 +13,22 @@ namespace Immediate.Validations.Shared;
 public sealed class ValidationException : Exception
 {
 	internal ValidationException(List<ValidationError> errors)
-		: base(BuildErrorMessage(errors))
+		: base(BuildErrorMessage("Validation failed: ", errors))
 	{
 		Errors = errors;
 	}
 
-	private static string? BuildErrorMessage(List<ValidationError> errors)
+	internal ValidationException(string message, List<ValidationError> errors)
+		: base(BuildErrorMessage(message, errors))
+	{
+		Errors = errors;
+	}
+
+	private static string? BuildErrorMessage(string message, List<ValidationError> errors)
 	{
 		var messages = errors
 			.Select(e => $"{Environment.NewLine} -- {e.PropertyName}: {e.ErrorMessage}")
-			.Prepend($"Validation failed: ");
+			.Prepend(message);
 		return string.Concat(messages);
 	}
 
