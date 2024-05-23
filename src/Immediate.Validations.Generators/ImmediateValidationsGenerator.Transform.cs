@@ -343,9 +343,7 @@ public sealed partial class ImmediateValidationsGenerator
 		var attributeParameterIndex = 0;
 		List<IPropertySymbol>? attributeProperties = null;
 
-		var count = argumentListSyntax.Count;
-		if (argumentListSyntax.Any(a => a is { NameEquals.Name.Identifier.ValueText: "Message", }))
-			count--;
+		var count = GetArgumentCount(argumentListSyntax);
 
 		var parameterValues = new string[count];
 		var propertyValuesIndex = 0;
@@ -437,6 +435,14 @@ public sealed partial class ImmediateValidationsGenerator
 		}
 
 		return parameterValues;
+	}
+
+	private static int GetArgumentCount(SeparatedSyntaxList<AttributeArgumentSyntax> argumentListSyntax)
+	{
+		var count = argumentListSyntax.Count;
+		if (argumentListSyntax.Any(a => a is { NameEquals.Name.Identifier.ValueText: "Message", }))
+			return count - 1;
+		return count;
 	}
 
 	private static string BuildParameterValue(
