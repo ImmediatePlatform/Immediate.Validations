@@ -424,7 +424,7 @@ public sealed class CustomValidationTests
 				public required string Third { get; init; }
 
 				public static (bool Invalid, string? Message) ValidateProperty(
-					string target, 
+					string target,
 					string first,
 					string second,
 					string third,
@@ -439,6 +439,64 @@ public sealed class CustomValidationTests
 			public sealed partial record Target : IValidationTarget<Target>
 			{
 				[Dummy(first: nameof(FirstValue), "Hello World", Third = "Value", Message = "What's going on?")]
+				public required string Id { get; init; }
+				public required string FirstValue { get; init; }
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task ParamsConstructor()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] object first,
+				string second,
+				[TargetType] params object[] third
+			) : ValidatorAttribute
+			{
+				public required string Fourth { get; init; }
+				public required string Fifth { get; init; }
+
+				public static (bool Invalid, string? Message) ValidateProperty(
+					string target,
+					string first,
+					string second,
+					string fourth,
+					string fifth,
+					params string[] third
+				) =>
+					target == first
+						? default
+						: (true, $"Value '{target}' is not equal to '{first}'");
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy(
+					first: nameof(FirstValue),
+					"Hello World",
+					"Test1",
+					nameof(FirstValue),
+					"Test3",
+					Fourth = "Abcd",
+					Message = "What's going on?",
+					Fifth = "The end?"
+				)]
 				public required string Id { get; init; }
 				public required string FirstValue { get; init; }
 

@@ -253,7 +253,10 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 						break;
 				}
 
-				properties[i] = p;
+				if (i == properties.Count)
+					properties.Add(p);
+				else
+					properties[i] = p;
 			}
 		}
 
@@ -307,32 +310,44 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		ITypeSymbol propertyType
 	)
 	{
-		if (
-			propertyType is not { SpecialType: SpecialType.System_Object }
-			|| !property.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute())
+		var parameterType = parameter.Type;
+
+		if (parameter.IsParams
+			&& property is IParameterSymbol { IsParams: true }
 		)
 		{
-			if (!SymbolEqualityComparer.IncludeNullability.Equals(propertyType, parameter.Type))
-			{
-				context.ReportDiagnostic(
-					Diagnostic.Create(
-						ValidateMethodParameterIsIncorrectType,
-						parameter.Locations[0],
-						parameter.Name,
-						property.Name
-					)
-				);
-
-				context.ReportDiagnostic(
-					Diagnostic.Create(
-						ValidateMethodParameterIsIncorrectType,
-						property.Locations[0],
-						parameter.Name,
-						property.Name
-					)
-				);
-			}
+			propertyType = ((IArrayTypeSymbol)propertyType).ElementType;
+			parameterType = ((IArrayTypeSymbol)parameterType).ElementType;
 		}
+
+		if (
+			propertyType is { SpecialType: SpecialType.System_Object }
+			&& property.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute())
+		)
+		{
+			return;
+		}
+
+		if (SymbolEqualityComparer.IncludeNullability.Equals(propertyType, parameterType))
+			return;
+
+		context.ReportDiagnostic(
+			Diagnostic.Create(
+				ValidateMethodParameterIsIncorrectType,
+				parameter.Locations[0],
+				parameter.Name,
+				property.Name
+			)
+		);
+
+		context.ReportDiagnostic(
+			Diagnostic.Create(
+				ValidateMethodParameterIsIncorrectType,
+				property.Locations[0],
+				parameter.Name,
+				property.Name
+			)
+		);
 	}
 
 	private static void CheckParameterIsRequired(SymbolAnalysisContext context, IParameterSymbol parameter, ISymbol property, bool isRequired)

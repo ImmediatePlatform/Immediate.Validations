@@ -66,7 +66,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		);
 
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-		ImmutableArray.Create<DiagnosticDescriptor>(
+		ImmutableArray.Create(
 		[
 			ValidateAttributeMissing,
 			IValidationTargetMissing,
@@ -83,15 +83,22 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 		context.EnableConcurrentExecution();
 
-		context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
+		context.RegisterSyntaxNodeAction(
+			AnalyzeSymbol,
+			SyntaxKind.ClassDeclaration,
+			SyntaxKind.RecordDeclaration,
+			SyntaxKind.StructDeclaration,
+			SyntaxKind.RecordStructDeclaration,
+			SyntaxKind.InterfaceDeclaration
+		);
 	}
 
-	private static void AnalyzeSymbol(SymbolAnalysisContext context)
+	private static void AnalyzeSymbol(SyntaxNodeAnalysisContext context)
 	{
 		var token = context.CancellationToken;
 		token.ThrowIfCancellationRequested();
 
-		var symbol = (INamedTypeSymbol)context.Symbol;
+		var symbol = (INamedTypeSymbol)context.ContainingSymbol!;
 
 		var hasValidateAttribute = symbol
 			.GetAttributes()
@@ -280,54 +287,32 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 	}
 
 	private static void ValidateArguments(
-		SymbolAnalysisContext context,
+		SyntaxNodeAnalysisContext context,
 		List<IPropertySymbol> properties,
 		AttributeData attribute,
 		ImmutableArray<IParameterSymbol> validateParameterSymbols,
-		ITypeSymbol propertyType
+		ITypeSymbol typeArgumentType
 	)
 	{
 		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
 		var argumentListSyntax = attributeSyntax.ArgumentList?.Arguments ?? [];
 
+		if (argumentListSyntax.Count == 0)
+			return;
+
 		var attributeParameters = attribute.AttributeConstructor!.Parameters;
-		var attributeArguments = attribute.ConstructorArguments;
-		var attributeNamedArguments = attribute.NamedArguments;
+		var attributeParameterIndex = 0;
+
 		List<IPropertySymbol>? attributeProperties = null;
 
 		for (var i = 0; i < argumentListSyntax.Count; i++)
 		{
 			switch (argumentListSyntax[i])
 			{
-				case { NameColon.Name.Identifier.ValueText: var name }:
-				{
-					for (var j = 0; j < attributeArguments.Length; j++)
-					{
-						if (attributeParameters[j].Name == name)
-						{
-							ValidateArgument(
-								context,
-								argumentListSyntax[i],
-								attributeParameters[j],
-								attributeArguments[j],
-								validateParameterSymbols,
-								propertyType,
-								properties
-							);
-
-							break;
-						}
-					}
-
-					break;
-				}
-
 				case { NameEquals.Name.Identifier.ValueText: var name }:
 				{
 					if (name is "Message")
 						break;
-
-					var argument = attributeNamedArguments.First(a => a.Key == name).Value;
 
 					attributeProperties ??= attribute.AttributeClass!.GetMembers()
 						.OfType<IPropertySymbol>()
@@ -338,30 +323,51 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 						context,
 						argumentListSyntax[i],
 						property,
-						argument,
 						validateParameterSymbols,
-						propertyType,
+						typeArgumentType,
 						properties
 					);
 
 					break;
 				}
 
+				case { NameColon.Name.Identifier.ValueText: var name }:
+				{
+					for (var j = 0; j < attributeParameters.Length; j++)
+					{
+						if (attributeParameters[j].Name == name)
+						{
+							ValidateArgument(
+								context,
+								argumentListSyntax[i],
+								attributeParameters[j],
+								validateParameterSymbols,
+								typeArgumentType,
+								properties
+							);
+
+							break;
+						}
+					}
+
+					attributeParameterIndex++;
+					break;
+				}
+
 				default:
 				{
-					if (i < attributeParameters.Length
-						&& i < attributeArguments.Length)
-					{
-						ValidateArgument(
-							context,
-							argumentListSyntax[i],
-							attributeParameters[i],
-							attributeArguments[i],
-							validateParameterSymbols,
-							propertyType,
-							properties
-						);
-					}
+					var attributeParameter = attributeParameters[attributeParameterIndex];
+					ValidateArgument(
+						context,
+						argumentListSyntax[i],
+						attributeParameter,
+						validateParameterSymbols,
+						typeArgumentType,
+						properties
+					);
+
+					if (!attributeParameter.IsParams)
+						attributeParameterIndex++;
 
 					break;
 				}
@@ -370,58 +376,62 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 	}
 
 	private static void ValidateArgument(
-		SymbolAnalysisContext context,
+		SyntaxNodeAnalysisContext context,
 		AttributeArgumentSyntax syntax,
 		ISymbol parameter,
-		TypedConstant argument,
 		ImmutableArray<IParameterSymbol> validateParameterSymbols,
-		ITypeSymbol propertyType,
+		ITypeSymbol typeArgumentType,
 		List<IPropertySymbol> properties
 	)
 	{
-		if (parameter.IsTargetTypeSymbol()
-			&& argument.Type is not null
-		)
+		if (!parameter.IsTargetTypeSymbol())
+			return;
+
+		var validateParameter = validateParameterSymbols.First(p => p.Name == parameter.Name);
+		var targetType = validateParameter.Type;
+
+		if (validateParameter.IsParams && targetType is IArrayTypeSymbol { ElementType: { } et })
+			targetType = et;
+
+		if (targetType is ITypeParameterSymbol)
+			targetType = typeArgumentType;
+
+		if (syntax.Expression.IsNameOfExpression(out var propertyName))
 		{
-			var validateParameter = validateParameterSymbols.First(p => p.Name == parameter.Name);
-			var targetType = validateParameter.Type;
-			if (targetType is ITypeParameterSymbol)
-				targetType = propertyType;
+			var property = properties
+				.FirstOrDefault(p => p.Name == propertyName);
 
-			if (syntax.Expression.IsNameOfExpression(out var propertyName))
+			if (property is null)
+				return;
+
+			if (!context.Compilation.ClassifyConversion(property.Type, targetType).IsValidConversion())
 			{
-				var property = properties
-					.FirstOrDefault(p => p.Name == propertyName);
-
-				if (property is null)
-					return;
-
-				if (!context.Compilation.ClassifyConversion(property.Type, targetType).IsValidConversion())
-				{
-					context.ReportDiagnostic(
-						Diagnostic.Create(
-							ValidateParameterPropertyIncompatibleType,
-							syntax.GetLocation(),
-							parameter.Name,
-							property.Name,
-							targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
-						)
-					);
-				}
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateParameterPropertyIncompatibleType,
+						syntax.GetLocation(),
+						parameter.Name,
+						property.Name,
+						targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
+					)
+				);
 			}
-			else
+		}
+		else
+		{
+			if (context.SemanticModel.GetOperation(syntax.Expression)?.Type is not ITypeSymbol argumentType)
+				return;
+
+			if (!context.Compilation.ClassifyConversion(argumentType, targetType).IsValidConversion())
 			{
-				if (!context.Compilation.ClassifyConversion(argument.Type, targetType).IsValidConversion())
-				{
-					context.ReportDiagnostic(
-						Diagnostic.Create(
-							ValidateParameterIncompatibleType,
-							syntax.GetLocation(),
-							parameter.Name,
-							targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
-						)
-					);
-				}
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateParameterIncompatibleType,
+						syntax.GetLocation(),
+						parameter.Name,
+						targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
+					)
+				);
 			}
 		}
 	}
@@ -430,13 +440,10 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 file static class Extensions
 {
 	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
-		symbol is IParameterSymbol { Type.SpecialType: SpecialType.System_Object }
-			or IPropertySymbol { Type.SpecialType: SpecialType.System_Object }
-		&& symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
+		symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
 
 	public static bool IsNameOfExpression(this ExpressionSyntax syntax, out string? name)
 	{
-		name = null;
 		if (syntax is InvocationExpressionSyntax
 			{
 				Expression: SimpleNameSyntax { Identifier.ValueText: "nameof" },
@@ -449,6 +456,7 @@ file static class Extensions
 		}
 		else
 		{
+			name = null;
 			return false;
 		}
 	}
