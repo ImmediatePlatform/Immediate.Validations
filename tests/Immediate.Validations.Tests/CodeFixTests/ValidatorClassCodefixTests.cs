@@ -49,4 +49,27 @@ public sealed class ValidatorClassCodefixTests
 			"""
 		).RunAsync();
 	}
+
+	[Fact]
+	public async Task CorrectValidatePropertyReturnType()
+	{
+		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, CorrectValidatePropertyReturnTypeCodefixProvider>(
+			$$"""
+			namespace Immediate.Validations.Shared;
+			
+			public sealed class TestAttribute : ValidatorAttribute
+			{
+				public static string {|IV0004:ValidateProperty|}<T>(T value) => default;
+			}
+			""",
+			$$"""
+			namespace Immediate.Validations.Shared;
+
+			public sealed class TestAttribute : ValidatorAttribute
+			{
+				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value) => default;
+			}
+			"""
+		).RunAsync();
+	}
 }
