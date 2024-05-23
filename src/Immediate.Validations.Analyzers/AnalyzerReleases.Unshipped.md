@@ -17,3 +17,4 @@ IV0013 | ImmediateValidations | Warning | ValidateClassAnalyzer
 IV0014 | ImmediateValidations | Warning | ValidateClassAnalyzer
 IV0015 | ImmediateValidations | Warning | ValidateClassAnalyzer
 IV0016 | ImmediateValidations | Warning | ValidateClassAnalyzer
+IV0017 | ImmediateValidations | Hidden | ValidateClassAnalyzer

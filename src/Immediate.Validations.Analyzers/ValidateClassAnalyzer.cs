@@ -65,6 +65,17 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			description: "Incompatible types will lead to incorrect validation code."
 		);
 
+	public static readonly DiagnosticDescriptor AdditionalValidationsMissing =
+		new(
+			id: DiagnosticIds.IV0017AdditionalValidationsMissing,
+			title: "Validation target is missing an `AdditionalValidations` method",
+			messageFormat: "Validation target `{0}` does not have an `AdditionalValidations` method",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Hidden,
+			isEnabledByDefault: true,
+			description: "An `AdditionalValidations` allows the developer to add validations not capable via attributes."
+		);
+
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create(
 		[
@@ -73,6 +84,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			ValidatePropertyIncompatibleType,
 			ValidateParameterIncompatibleType,
 			ValidateParameterPropertyIncompatibleType,
+			AdditionalValidationsMissing,
 		]);
 
 	public override void Initialize(AnalysisContext context)
@@ -129,6 +141,17 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			context.ReportDiagnostic(
 				Diagnostic.Create(
 					IValidationTargetMissing,
+					symbol.Locations[0],
+					symbol.Name
+				)
+			);
+		}
+
+		if (!symbol.HasAdditionalValidationsMethod())
+		{
+			context.ReportDiagnostic(
+				Diagnostic.Create(
+					AdditionalValidationsMissing,
 					symbol.Locations[0],
 					symbol.Name
 				)
@@ -460,4 +483,44 @@ file static class Extensions
 			return false;
 		}
 	}
+
+	public static bool HasAdditionalValidationsMethod(this INamedTypeSymbol typeSymbol) =>
+		typeSymbol.GetMembers()
+			.OfType<IMethodSymbol>()
+			.Any(m =>
+				m is
+				{
+					Name: "AdditionalValidations",
+					IsStatic: true,
+					ReturnType: INamedTypeSymbol
+					{
+						ConstructedFrom: INamedTypeSymbol
+						{
+							SpecialType: SpecialType.System_Collections_Generic_IEnumerable_T,
+						},
+						TypeArguments:
+						[
+							INamedTypeSymbol
+						{
+							Name: "ValidationError",
+							ContainingNamespace:
+							{
+								Name: "Shared",
+								ContainingNamespace:
+								{
+									Name: "Validations",
+									ContainingNamespace:
+									{
+										Name: "Immediate",
+										ContainingNamespace.IsGlobalNamespace: true,
+									},
+								},
+							},
+						}
+						],
+					},
+					Parameters: [{ Type: INamedTypeSymbol parameterType }],
+				}
+				&& SymbolEqualityComparer.Default.Equals(parameterType, typeSymbol)
+			);
 }
