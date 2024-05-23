@@ -85,16 +85,12 @@ public class AddParameterToValidatePropertyMethodCodefixProvider : CodeFixProvid
 		ParameterSyntax parameterSyntax
 	)
 	{
-		ClassDeclarationSyntax classDeclarationSyntax;
-
-#pragma warning disable IDE0045
-		if (parameterSyntax.Parent?.Parent is ClassDeclarationSyntax primaryCtorClassDeclSyntax)
-			classDeclarationSyntax = primaryCtorClassDeclSyntax;
-		else if (parameterSyntax.Parent?.Parent is ConstructorDeclarationSyntax constructorDeclarationSyntax)
-			classDeclarationSyntax = (ClassDeclarationSyntax)constructorDeclarationSyntax.Parent!;
-		else
-			throw new InvalidOperationException("Class declaration not found");
-#pragma warning restore IDE0045
+		var classDeclarationSyntax = parameterSyntax switch
+		{
+			{ Parent.Parent: ClassDeclarationSyntax syntax } => syntax,
+			{ Parent.Parent: ConstructorDeclarationSyntax { Parent: ClassDeclarationSyntax syntax } } => syntax,
+			_ => throw new InvalidOperationException("Class declaration not found"),
+		};
 
 		var methodDeclaration = classDeclarationSyntax.Members.OfType<MethodDeclarationSyntax>().FirstOrDefault(m => m.Identifier.Text == "ValidateProperty") ?? throw new InvalidOperationException("ValidateProperty method not found");
 
