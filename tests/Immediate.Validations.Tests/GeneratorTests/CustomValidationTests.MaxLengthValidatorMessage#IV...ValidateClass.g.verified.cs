@@ -54,18 +54,20 @@ partial class ValidateClass
 
 
 
-		if (
-			global::Immediate.Validations.Shared.MaxLengthAttribute.ValidateProperty(
-				t
-				, length: 0
-			) is (true, { } message)
-		)
 		{
-			errors.Add(new()
+			if (
+				global::Immediate.Validations.Shared.MaxLengthAttribute.ValidateProperty(
+					t
+					, length: 0
+				) is (true, { } message)
+			)
 			{
-				PropertyName = $"StringProperty", 
-				ErrorMessage = "Must be MaxLength to zero.",
-			});
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty", 
+					ErrorMessage = "Must be MaxLength to zero.",
+				});
+			}
 		}
 	}
 

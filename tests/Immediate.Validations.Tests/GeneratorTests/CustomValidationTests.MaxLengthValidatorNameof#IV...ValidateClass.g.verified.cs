@@ -54,18 +54,20 @@ partial class ValidateClass
 
 
 
-		if (
-			global::Immediate.Validations.Shared.MaxLengthAttribute.ValidateProperty(
-				t
-				, length: instance.KeyValue
-			) is (true, { } message)
-		)
 		{
-			errors.Add(new()
+			if (
+				global::Immediate.Validations.Shared.MaxLengthAttribute.ValidateProperty(
+					t
+					, length: instance.KeyValue
+				) is (true, { } message)
+			)
 			{
-				PropertyName = $"StringProperty", 
-				ErrorMessage = message,
-			});
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty", 
+					ErrorMessage = message,
+				});
+			}
 		}
 	}
 

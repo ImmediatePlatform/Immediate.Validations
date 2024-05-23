@@ -54,17 +54,19 @@ partial class ValidateClass
 
 
 
-		if (
-			global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.ValidateProperty(
-				t
-			) is (true, { } message)
-		)
 		{
-			errors.Add(new()
+			if (
+				global::Immediate.Validations.Shared.NotEmptyOrWhiteSpaceAttribute.ValidateProperty(
+					t
+				) is (true, { } message)
+			)
 			{
-				PropertyName = $"StringProperty", 
-				ErrorMessage = message,
-			});
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty", 
+					ErrorMessage = message,
+				});
+			}
 		}
 	}
 
