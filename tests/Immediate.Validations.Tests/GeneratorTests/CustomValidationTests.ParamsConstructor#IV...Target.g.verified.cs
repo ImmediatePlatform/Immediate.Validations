@@ -64,7 +64,7 @@ partial record Target
 					, fourth: "Abcd"
 					, fifth: "The end?"
 					, "Test1"
-					, nameof(FirstValue)
+					, "FirstValue"
 					, "Test3"
 				) is (true, { } message)
 			)

@@ -564,4 +564,31 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
+
+	[Fact]
+	public async Task ConstantAttributeArgument()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public partial class ValidateClass
+			{
+				[NotEqual(ArgumentValue)]
+				public string StringProperty { get; init; }
+
+				private const string ArgumentValue = "Hello World";
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
 }

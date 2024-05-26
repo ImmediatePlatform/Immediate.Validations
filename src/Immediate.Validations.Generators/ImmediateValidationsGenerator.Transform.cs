@@ -26,7 +26,7 @@ public sealed partial class ImmediateValidationsGenerator
 		var @namespace = symbol.ContainingNamespace.ToString().NullIf("<global namespace>");
 		var outerClasses = GetOuterClasses(symbol);
 		var baseValidatorTypes = GetBaseValidatorTypes(symbol);
-		var properties = GetProperties(context.SemanticModel.Compilation, symbol, token);
+		var properties = GetProperties(context.SemanticModel, symbol, token);
 
 		return new()
 		{
@@ -92,7 +92,7 @@ public sealed partial class ImmediateValidationsGenerator
 	}
 
 	private static EquatableReadOnlyList<ValidationTargetProperty> GetProperties(
-		Compilation compilation,
+		SemanticModel semanticModel,
 		INamedTypeSymbol symbol,
 		CancellationToken token
 	)
@@ -116,7 +116,7 @@ public sealed partial class ImmediateValidationsGenerator
 			token.ThrowIfCancellationRequested();
 
 			if (GetPropertyValidations(
-					compilation,
+					semanticModel,
 					property.Name,
 					property.Type,
 					property.NullableAnnotation,
@@ -132,7 +132,7 @@ public sealed partial class ImmediateValidationsGenerator
 	}
 
 	private static ValidationTargetProperty? GetPropertyValidations(
-		Compilation compilation,
+		SemanticModel semanticModel,
 		string propertyName,
 		ITypeSymbol propertyType,
 		NullableAnnotation nullableAnnotation,
@@ -222,12 +222,14 @@ public sealed partial class ImmediateValidationsGenerator
 
 			if (targetParameterType is ITypeParameterSymbol tps)
 			{
-				if (!Utility.SatisfiesConstraints(tps, propertyType, compilation))
+				if (!Utility.SatisfiesConstraints(tps, propertyType, semanticModel.Compilation))
 					continue;
 			}
 			else
 			{
-				var conversion = compilation.ClassifyConversion(baseType, targetParameterType);
+				var conversion = semanticModel.Compilation
+					.ClassifyConversion(baseType, targetParameterType);
+
 				if (conversion is not { IsIdentity: true }
 						or { IsImplicit: true, IsReference: true }
 						or { IsImplicit: true, IsNullable: true }
@@ -240,7 +242,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 			token.ThrowIfCancellationRequested();
 
-			var parameters = BuildParameterValues(attribute, validateMethod.Parameters);
+			var parameters = BuildParameterValues(semanticModel, attribute, validateMethod.Parameters);
 
 			token.ThrowIfCancellationRequested();
 
@@ -261,7 +263,7 @@ public sealed partial class ImmediateValidationsGenerator
 		{
 			IArrayTypeSymbol ats =>
 				GetPropertyValidations(
-					compilation,
+					semanticModel,
 					propertyName,
 					ats.ElementType,
 					ats.ElementNullableAnnotation,
@@ -276,7 +278,7 @@ public sealed partial class ImmediateValidationsGenerator
 				TypeArgumentNullableAnnotations: [{ } annotation],
 			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
 				GetPropertyValidations(
-					compilation,
+					semanticModel,
 					propertyName,
 					type,
 					annotation,
@@ -331,7 +333,11 @@ public sealed partial class ImmediateValidationsGenerator
 		return null;
 	}
 
-	private static string[]? BuildParameterValues(AttributeData attribute, ImmutableArray<IParameterSymbol> parameters)
+	private static string[]? BuildParameterValues(
+		SemanticModel semanticModel,
+		AttributeData attribute,
+		ImmutableArray<IParameterSymbol> parameters
+	)
 	{
 		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
 		var argumentListSyntax = attributeSyntax.ArgumentList?.Arguments ?? [];
@@ -379,6 +385,7 @@ public sealed partial class ImmediateValidationsGenerator
 					var property = attributeProperties.First(a => a.Name == name);
 
 					var parameterValue = BuildParameterValue(
+						semanticModel,
 						argumentListSyntax[i],
 						property,
 						parameters
@@ -395,6 +402,7 @@ public sealed partial class ImmediateValidationsGenerator
 						if (attributeParameters[j].Name == name)
 						{
 							var parameterValue = BuildParameterValue(
+								semanticModel,
 								argumentListSyntax[i],
 								attributeParameters[j],
 								parameters
@@ -415,6 +423,7 @@ public sealed partial class ImmediateValidationsGenerator
 					if (!attributeParameter.IsParams)
 					{
 						var parameterValue = BuildParameterValue(
+							semanticModel,
 							argumentListSyntax[i],
 							attributeParameter,
 							parameters
@@ -424,7 +433,12 @@ public sealed partial class ImmediateValidationsGenerator
 					}
 					else
 					{
-						var parameterValue = GetParameterValue(attributeParameter, argumentListSyntax[i]);
+						var parameterValue = GetParameterValue(
+							semanticModel,
+							attributeParameter,
+							argumentListSyntax[i]
+						);
+
 						parameterValues[propertyValuesIndex++] = parameterValue;
 						propertyParameterCount++;
 					}
@@ -446,13 +460,14 @@ public sealed partial class ImmediateValidationsGenerator
 	}
 
 	private static string BuildParameterValue(
+		SemanticModel semanticModel,
 		AttributeArgumentSyntax attributeArgumentSyntax,
 		ISymbol parameterSymbol,
 		ImmutableArray<IParameterSymbol> parameters
 	)
 	{
 		var parameterName = GetParameterName(parameterSymbol.Name, parameters);
-		var parameterValue = GetParameterValue(parameterSymbol, attributeArgumentSyntax);
+		var parameterValue = GetParameterValue(semanticModel, parameterSymbol, attributeArgumentSyntax);
 
 		return $"{parameterName}: {parameterValue}";
 	}
@@ -468,7 +483,11 @@ public sealed partial class ImmediateValidationsGenerator
 		return name;
 	}
 
-	private static string GetParameterValue(ISymbol parameterSymbol, AttributeArgumentSyntax attributeArgumentSyntax)
+	private static string GetParameterValue(
+		SemanticModel semanticModel,
+		ISymbol parameterSymbol,
+		AttributeArgumentSyntax attributeArgumentSyntax
+	)
 	{
 		if (parameterSymbol.IsTargetTypeSymbol()
 			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var name))
@@ -476,7 +495,15 @@ public sealed partial class ImmediateValidationsGenerator
 			return $"instance.{name}";
 		}
 
-		return attributeArgumentSyntax.Expression.ToString();
+		var operation = semanticModel
+			.GetOperation(attributeArgumentSyntax.Expression);
+
+		return operation?.ConstantValue switch
+		{
+			{ HasValue: true, Value: string s } => $"\"{s}\"",
+			{ HasValue: true, Value: { } o } => o.ToString(),
+			_ => "",
+		};
 	}
 }
 
