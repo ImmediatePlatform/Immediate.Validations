@@ -60,12 +60,12 @@ partial record Target
 				global::DummyAttribute.ValidateProperty(
 					t
 					, first: instance.FirstValue
-					, second: "Hello World"
-					, fourth: "Abcd"
-					, fifth: "The end?"
-					, "Test1"
-					, "FirstValue"
-					, "Test3"
+					, second: @"Hello World"
+					, fourth: @"Abcd"
+					, fifth: @"The end?"
+					, @"Test1"
+					, @"FirstValue"
+					, @"Test3"
 				) is (true, { } message)
 			)
 			{

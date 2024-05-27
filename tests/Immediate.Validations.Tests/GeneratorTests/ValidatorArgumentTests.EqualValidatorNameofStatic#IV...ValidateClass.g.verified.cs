@@ -28,7 +28,7 @@ partial class ValidateClass
 		var errors = new List<ValidationError>();
 
 
-		__ValidateStringProperty(errors, t, t.StringProperty);
+		__ValidateIntProperty(errors, t, t.IntProperty);
 
 
 		return errors;
@@ -36,24 +36,30 @@ partial class ValidateClass
 
 
 
-	private static void __ValidateStringProperty(
-		List<ValidationError> errors, ValidateClass instance, string target
+	private static void __ValidateIntProperty(
+		List<ValidationError> errors, ValidateClass instance, int target
 	)
 	{
 
-		if (target is not { } t)
+		var t = target;
+
+
+
 		{
-			errors.Add(new()
+			if (
+				global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
+					t
+					, operand: KeyValue
+				) is (true, { } message)
+			)
 			{
-				PropertyName = $"StringProperty",
-				ErrorMessage = "Property must not be `null`.",
-			});
-
-			return;
+				errors.Add(new()
+				{
+					PropertyName = $"IntProperty", 
+					ErrorMessage = message,
+				});
+			}
 		}
-
-
-
 	}
 
 }
