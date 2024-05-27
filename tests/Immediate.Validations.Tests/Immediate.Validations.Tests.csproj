@@ -11,8 +11,8 @@
 	<PackageReference Include="GitHubActionsTestLogger" PrivateAssets="All" />
 	<PackageReference Include="Immediate.Handlers" />
 	<PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
-	<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.XUnit" />
-	<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.XUnit" />
+	<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" />
+	<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing" />
 	<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
 	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 	<PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -27,6 +27,12 @@
 	<ProjectReference Include="../../src/Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" />
 	<ProjectReference Include="../../src/Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" />
 	<ProjectReference Include="../../src/Immediate.Validations.Generators/Immediate.Validations.Generators.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" PrivateAssets="all" GeneratePathProperty="true" />
+	<Reference Include="$(PkgMicrosoft_CodeAnalysis_NetAnalyzers)\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
+	<Reference Include="$(PkgMicrosoft_CodeAnalysis_NetAnalyzers)\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll" />
   </ItemGroup>
 
 </Project>

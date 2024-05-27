@@ -12,11 +12,6 @@ public sealed class OneOfAttribute(
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///		An array of values which the applied property should be.
-	/// </summary>
-	public IReadOnlyList<object> Values { get; } = values;
-
-	/// <summary>
 	///	    Validates that the property value is one of the specified <paramref name="values"/>.
 	/// </summary>
 	/// <param name="target"></param>

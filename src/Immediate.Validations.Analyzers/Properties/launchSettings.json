@@ -3,6 +3,10 @@
     "Immediate.Validations.FunctionalTests": {
       "commandName": "DebugRoslynComponent",
       "targetProject": "../../tests/Immediate.Validations.FunctionalTests/Immediate.Validations.FunctionalTests.csproj"
+    },
+    "Immediate.Validations.Shared": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Immediate.Validations.Shared\\Immediate.Validations.Shared.csproj"
     }
   }
 }

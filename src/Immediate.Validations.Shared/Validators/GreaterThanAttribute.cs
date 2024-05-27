@@ -12,11 +12,6 @@ public sealed class GreaterThanAttribute(
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///		The value that the applied property should be greater than.
-	/// </summary>
-	public object Operand { get; } = operand;
-
-	/// <summary>
 	///	    Validates that the value of the applied property is greater than <paramref name="operand"/>.
 	/// </summary>
 	/// <param name="target">
