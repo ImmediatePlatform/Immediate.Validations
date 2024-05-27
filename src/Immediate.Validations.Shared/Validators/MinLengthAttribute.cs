@@ -14,10 +14,6 @@ public sealed class MinLengthAttribute(
 	object length
 ) : ValidatorAttribute
 {
-	/// <summary>
-	///		The minimum length of the <see cref="string"/>.
-	/// </summary>
-	public object Length { get; } = length;
 
 	/// <summary>
 	///	    Validates that the <see cref="string"/> is less than <see cref="Length"/>

@@ -12,11 +12,6 @@ public sealed class EqualAttribute(
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///		The value that the applied property should be equal to.
-	/// </summary>
-	public object Operand { get; } = operand;
-
-	/// <summary>
 	///	    Validates that the value of the applied property is equal to <paramref name="operand"/>.
 	/// </summary>
 	/// <param name="target">

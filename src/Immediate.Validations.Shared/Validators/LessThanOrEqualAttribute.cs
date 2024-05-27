@@ -12,11 +12,6 @@ public sealed class LessThanOrEqualAttribute(
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///		The value that the applied property should be less than or equal to.
-	/// </summary>
-	public object Operand { get; } = operand;
-
-	/// <summary>
 	///	    Validates that the value of the applied property is less than <paramref name="operand"/>.
 	/// </summary>
 	/// <param name="target">
