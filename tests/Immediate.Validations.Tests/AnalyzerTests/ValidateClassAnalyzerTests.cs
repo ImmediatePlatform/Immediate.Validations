@@ -643,4 +643,132 @@ public sealed class ValidateClassAnalyzerTests
 			}
 			"""
 		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn14() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] params object[] first
+			) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? Message) ValidateProperty(
+					string target, 
+					params string[] first
+				) =>
+					target == first[0]
+						? default
+						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy("123", "456", nameof(FirstValue), Message = "What's going on?")]
+				public required string Id { get; init; }
+				public string FirstValue() => "Hello World!";
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn14() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] params object[] first
+			) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? Message) ValidateProperty(
+					string target, 
+					params string[] first
+				) =>
+					target == first[0]
+						? default
+						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy("123", {|IV0015:456|}, {|IV0016:nameof(FirstValue)|}, Message = "What's going on?")]
+				public required string Id { get; init; }
+				public int FirstValue() => 123;
+			
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn15() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] params object[] first
+			) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? Message) ValidateProperty<T>(
+					T target, 
+					params T[] first
+				) =>
+					EqualityComparer<T>.Default.Equals(target, first[0])
+						? default
+						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy("123", "456", nameof(FirstValue), Message = "What's going on?")]
+				public required string Id { get; init; }
+				public static string FirstValue() => "Hello World!";
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn15() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] params object[] first
+			) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? Message) ValidateProperty<T>(
+					T target, 
+					params T[] first
+				) =>
+					EqualityComparer<T>.Default.Equals(target, first[0])
+						? default
+						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy("123", {|IV0015:456|}, {|IV0016:nameof(FirstValue)|}, Message = "What's going on?")]
+				public required string Id { get; init; }
+				public static int FirstValue() => 123;
+			
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
 }
