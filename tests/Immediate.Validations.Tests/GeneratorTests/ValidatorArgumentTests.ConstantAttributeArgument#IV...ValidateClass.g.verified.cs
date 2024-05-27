@@ -58,7 +58,7 @@ partial class ValidateClass
 			if (
 				global::Immediate.Validations.Shared.NotEqualAttribute.ValidateProperty(
 					t
-					, operand: "Hello World"
+					, operand: @"Hello World"
 				) is (true, { } message)
 			)
 			{
