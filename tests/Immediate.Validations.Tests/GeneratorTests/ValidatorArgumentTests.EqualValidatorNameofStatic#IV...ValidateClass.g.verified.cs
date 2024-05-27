@@ -28,12 +28,39 @@ partial class ValidateClass
 		var errors = new List<ValidationError>();
 
 
+		__ValidateIntProperty(errors, t, t.IntProperty);
 
 
 		return errors;
 	}
 
 
+
+	private static void __ValidateIntProperty(
+		List<ValidationError> errors, ValidateClass instance, int target
+	)
+	{
+
+		var t = target;
+
+
+
+		{
+			if (
+				global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
+					t
+					, operand: KeyValue
+				) is (true, { } message)
+			)
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"IntProperty", 
+					ErrorMessage = message,
+				});
+			}
+		}
+	}
 
 }
 

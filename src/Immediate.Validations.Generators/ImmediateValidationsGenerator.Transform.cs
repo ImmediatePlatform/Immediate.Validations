@@ -99,6 +99,12 @@ public sealed partial class ImmediateValidationsGenerator
 	{
 		token.ThrowIfCancellationRequested();
 
+		var members = symbol
+			.GetMembers()
+			.Where(m => m is IPropertySymbol
+				or IMethodSymbol { Parameters: [] })
+			.ToList();
+
 		var properties = new List<ValidationTargetProperty>();
 		foreach (var member in symbol.GetMembers())
 		{
@@ -117,6 +123,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 			if (GetPropertyValidations(
 					semanticModel,
+					members,
 					property.Name,
 					property.Type,
 					property.NullableAnnotation,
@@ -133,6 +140,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 	private static ValidationTargetProperty? GetPropertyValidations(
 		SemanticModel semanticModel,
+		List<ISymbol> members,
 		string propertyName,
 		ITypeSymbol propertyType,
 		NullableAnnotation nullableAnnotation,
@@ -242,7 +250,12 @@ public sealed partial class ImmediateValidationsGenerator
 
 			token.ThrowIfCancellationRequested();
 
-			var parameters = BuildParameterValues(semanticModel, attribute, validateMethod.Parameters);
+			var parameters = BuildParameterValues(
+				semanticModel,
+				members,
+				attribute,
+				validateMethod.Parameters
+			);
 
 			token.ThrowIfCancellationRequested();
 
@@ -264,6 +277,7 @@ public sealed partial class ImmediateValidationsGenerator
 			IArrayTypeSymbol ats =>
 				GetPropertyValidations(
 					semanticModel,
+					members,
 					propertyName,
 					ats.ElementType,
 					ats.ElementNullableAnnotation,
@@ -279,6 +293,7 @@ public sealed partial class ImmediateValidationsGenerator
 			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
 				GetPropertyValidations(
 					semanticModel,
+					members,
 					propertyName,
 					type,
 					annotation,
@@ -335,6 +350,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 	private static string[]? BuildParameterValues(
 		SemanticModel semanticModel,
+		List<ISymbol> members,
 		AttributeData attribute,
 		ImmutableArray<IParameterSymbol> parameters
 	)
@@ -386,6 +402,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 					var parameterValue = BuildParameterValue(
 						semanticModel,
+						members,
 						argumentListSyntax[i],
 						property,
 						parameters
@@ -403,6 +420,7 @@ public sealed partial class ImmediateValidationsGenerator
 						{
 							var parameterValue = BuildParameterValue(
 								semanticModel,
+								members,
 								argumentListSyntax[i],
 								attributeParameters[j],
 								parameters
@@ -424,6 +442,7 @@ public sealed partial class ImmediateValidationsGenerator
 					{
 						var parameterValue = BuildParameterValue(
 							semanticModel,
+							members,
 							argumentListSyntax[i],
 							attributeParameter,
 							parameters
@@ -435,6 +454,7 @@ public sealed partial class ImmediateValidationsGenerator
 					{
 						var parameterValue = GetParameterValue(
 							semanticModel,
+							members,
 							attributeParameter,
 							argumentListSyntax[i]
 						);
@@ -461,13 +481,14 @@ public sealed partial class ImmediateValidationsGenerator
 
 	private static string BuildParameterValue(
 		SemanticModel semanticModel,
+		List<ISymbol> members,
 		AttributeArgumentSyntax attributeArgumentSyntax,
 		ISymbol parameterSymbol,
 		ImmutableArray<IParameterSymbol> parameters
 	)
 	{
 		var parameterName = GetParameterName(parameterSymbol.Name, parameters);
-		var parameterValue = GetParameterValue(semanticModel, parameterSymbol, attributeArgumentSyntax);
+		var parameterValue = GetParameterValue(semanticModel, members, parameterSymbol, attributeArgumentSyntax);
 
 		return $"{parameterName}: {parameterValue}";
 	}
@@ -485,6 +506,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 	private static string GetParameterValue(
 		SemanticModel semanticModel,
+		List<ISymbol> members,
 		ISymbol parameterSymbol,
 		AttributeArgumentSyntax attributeArgumentSyntax
 	)
@@ -492,7 +514,16 @@ public sealed partial class ImmediateValidationsGenerator
 		if (parameterSymbol.IsTargetTypeSymbol()
 			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var name))
 		{
-			return $"instance.{name}";
+			var member = members.First(m => m.Name.Equals(name, StringComparison.Ordinal));
+
+			return member switch
+			{
+				IMethodSymbol { IsStatic: true } => $"{name}()",
+				IMethodSymbol => $"instance.{name}()",
+				IPropertySymbol { IsStatic: true } => $"{name}",
+				IPropertySymbol => $"instance.{name}",
+				_ => "",
+			};
 		}
 
 		var operation = semanticModel

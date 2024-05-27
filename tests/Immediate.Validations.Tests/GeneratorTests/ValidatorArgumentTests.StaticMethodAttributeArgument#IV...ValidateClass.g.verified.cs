@@ -54,6 +54,21 @@ partial class ValidateClass
 
 
 
+		{
+			if (
+				global::Immediate.Validations.Shared.NotEqualAttribute.ValidateProperty(
+					t
+					, operand: ArgumentValue()
+				) is (true, { } message)
+			)
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"StringProperty", 
+					ErrorMessage = message,
+				});
+			}
+		}
 	}
 
 }

@@ -135,13 +135,16 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			);
 		}
 
-		var properties = symbol
+		var members = symbol
 			.GetMembers()
-			.OfType<IPropertySymbol>()
+			.Where(m => m is IPropertySymbol
+				or IMethodSymbol { Parameters: [] })
 			.ToList();
 
-		foreach (var property in properties)
+		foreach (var property in members.OfType<IPropertySymbol>())
 		{
+			if (property is { IsStatic: true }) continue;
+
 			foreach (var attribute in property.GetAttributes())
 			{
 				var status = ValidateAttribute(context.Compilation, property.Type, attribute.AttributeClass!, token);
@@ -161,7 +164,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				{
 					ValidateArguments(
 						context,
-						properties,
+						members,
 						attribute,
 						status.ValidateParameterSymbols,
 						property.Type
@@ -288,7 +291,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 	private static void ValidateArguments(
 		SyntaxNodeAnalysisContext context,
-		List<IPropertySymbol> properties,
+		List<ISymbol> members,
 		AttributeData attribute,
 		ImmutableArray<IParameterSymbol> validateParameterSymbols,
 		ITypeSymbol typeArgumentType
@@ -325,7 +328,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 						property,
 						validateParameterSymbols,
 						typeArgumentType,
-						properties
+						members
 					);
 
 					break;
@@ -343,7 +346,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 								attributeParameters[j],
 								validateParameterSymbols,
 								typeArgumentType,
-								properties
+								members
 							);
 
 							break;
@@ -363,7 +366,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 						attributeParameter,
 						validateParameterSymbols,
 						typeArgumentType,
-						properties
+						members
 					);
 
 					if (!attributeParameter.IsParams)
@@ -381,7 +384,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		ISymbol parameter,
 		ImmutableArray<IParameterSymbol> validateParameterSymbols,
 		ITypeSymbol typeArgumentType,
-		List<IPropertySymbol> properties
+		List<ISymbol> members
 	)
 	{
 		if (!parameter.IsTargetTypeSymbol())
@@ -398,20 +401,27 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 		if (syntax.Expression.IsNameOfExpression(out var propertyName))
 		{
-			var property = properties
+			var member = members
 				.FirstOrDefault(p => p.Name == propertyName);
 
-			if (property is null)
+			if (member is null)
 				return;
 
-			if (!context.Compilation.ClassifyConversion(property.Type, targetType).IsValidConversion())
+			var memberType = member switch
+			{
+				IPropertySymbol { Type: { } t } => t,
+				IMethodSymbol { ReturnType: { } t } => t,
+				_ => throw new InvalidOperationException(),
+			};
+
+			if (!context.Compilation.ClassifyConversion(memberType, targetType).IsValidConversion())
 			{
 				context.ReportDiagnostic(
 					Diagnostic.Create(
 						ValidateParameterPropertyIncompatibleType,
 						syntax.GetLocation(),
 						parameter.Name,
-						property.Name,
+						member.Name,
 						targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
 					)
 				);
