@@ -16,7 +16,7 @@ public sealed class MinLengthAttribute(
 {
 
 	/// <summary>
-	///	    Validates that the <see cref="string"/> is less than <see cref="Length"/>
+	///	    Validates that the <see cref="string"/> is less than <paramref name="length"/>.
 	/// </summary>
 	/// <param name="target">
 	///	    The value to validate.
