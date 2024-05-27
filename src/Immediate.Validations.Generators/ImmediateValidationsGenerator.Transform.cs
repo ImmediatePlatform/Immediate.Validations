@@ -531,7 +531,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 		return operation?.ConstantValue switch
 		{
-			{ HasValue: true, Value: string s } => $"\"{s}\"",
+			{ HasValue: true, Value: string s } => $"@\"{s}\"",
 			{ HasValue: true, Value: { } o } => o.ToString(),
 			_ => "",
 		};
