@@ -43,6 +43,21 @@ internal static class ITypeSymbolExtensions
 			},
 		};
 
+	public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol? type)
+	{
+		var current = type;
+		while (current != null)
+		{
+			yield return current;
+			current = current.BaseType;
+		}
+	}
+
+	public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol type) =>
+		type
+			.GetBaseTypesAndThis()
+			.SelectMany(t => t.GetMembers());
+
 	public static bool IsValidateAttribute(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{

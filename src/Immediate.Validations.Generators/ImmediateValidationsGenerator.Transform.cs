@@ -100,9 +100,15 @@ public sealed partial class ImmediateValidationsGenerator
 		token.ThrowIfCancellationRequested();
 
 		var members = symbol
-			.GetMembers()
-			.Where(m => m is IPropertySymbol
-				or IMethodSymbol { Parameters: [] })
+			.GetAllMembers()
+			.Where(m =>
+				m is IPropertySymbol
+					or IMethodSymbol
+				{
+					Parameters: [],
+					MethodKind: MethodKind.Ordinary,
+				}
+			)
 			.ToList();
 
 		var properties = new List<ValidationTargetProperty>();
@@ -110,6 +116,7 @@ public sealed partial class ImmediateValidationsGenerator
 		{
 			if (member is not IPropertySymbol
 				{
+					DeclaredAccessibility: Accessibility.Public,
 					IsStatic: false,
 					// ignore record `EqualityContract`
 					Name: not "EqualityContract",
@@ -514,7 +521,7 @@ public sealed partial class ImmediateValidationsGenerator
 		if (parameterSymbol.IsTargetTypeSymbol()
 			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var name))
 		{
-			var member = members.First(m => m.Name.Equals(name, StringComparison.Ordinal));
+			var member = members.FirstOrDefault(m => m.Name.Equals(name, StringComparison.Ordinal));
 
 			return member switch
 			{

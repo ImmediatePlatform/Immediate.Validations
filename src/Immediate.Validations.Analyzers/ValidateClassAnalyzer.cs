@@ -65,6 +65,17 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			description: "Incompatible types will lead to incorrect validation code."
 		);
 
+	public static readonly DiagnosticDescriptor ValidateParameterNameofInvalid =
+		new(
+			id: DiagnosticIds.IV0018ValidateParameterNameofInvalid,
+			title: "nameof() target is invalid",
+			messageFormat: "nameof({0}) must refer to a property or method on the class `{1}`",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Error,
+			isEnabledByDefault: true,
+			description: "Invalid nameof will generate incorrect code."
+		);
+
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create(
 		[
@@ -73,6 +84,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			ValidatePropertyIncompatibleType,
 			ValidateParameterIncompatibleType,
 			ValidateParameterPropertyIncompatibleType,
+			ValidateParameterNameofInvalid,
 		]);
 
 	public override void Initialize(AnalysisContext context)
@@ -136,14 +148,21 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		}
 
 		var members = symbol
-			.GetMembers()
-			.Where(m => m is IPropertySymbol
-				or IMethodSymbol { Parameters: [] })
+			.GetAllMembers()
+			.Where(m =>
+				m is IPropertySymbol
+					or IMethodSymbol
+				{
+					Parameters: [],
+					MethodKind: MethodKind.Ordinary,
+				}
+			)
 			.ToList();
 
-		foreach (var property in members.OfType<IPropertySymbol>())
+		foreach (var property in symbol.GetMembers().OfType<IPropertySymbol>())
 		{
-			if (property is { IsStatic: true }) continue;
+			if (property is { IsStatic: true } or { DeclaredAccessibility: not Accessibility.Public })
+				continue;
 
 			foreach (var attribute in property.GetAttributes())
 			{
@@ -405,7 +424,18 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				.FirstOrDefault(p => p.Name == propertyName);
 
 			if (member is null)
+			{
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateParameterNameofInvalid,
+						syntax.GetLocation(),
+						propertyName,
+						context.ContainingSymbol!.Name
+					)
+				);
+
 				return;
+			}
 
 			var memberType = member switch
 			{
