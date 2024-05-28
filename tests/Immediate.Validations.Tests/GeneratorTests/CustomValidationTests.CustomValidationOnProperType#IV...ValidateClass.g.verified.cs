@@ -45,20 +45,13 @@ partial class ValidateClass
 
 
 
-		{
-			if (
-				global::IntGreaterThanZeroAttribute.ValidateProperty(
-					t
-				) is (true, { } message)
-			)
-			{
-				errors.Add(new()
-				{
-					PropertyName = $"IntProperty", 
-					ErrorMessage = message,
-				});
-			}
-		}
+		errors.Add(
+			global::IntGreaterThanZeroAttribute.ValidateProperty(
+				t
+			),
+			$"IntProperty",
+			null
+		);
 	}
 
 }

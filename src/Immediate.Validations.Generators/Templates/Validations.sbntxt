@@ -56,23 +56,16 @@ partial {{ class.type }} {{ class.name }}
 		{{~
 			func validate(p, target, property_name)
 		~}}
-		{
-			if (
-				{{ p.validator_name }}.ValidateProperty(
-					{{ target }}
-					{{~ for param in p.parameters ~}}
-					, {{ param }}
-					{{~ end ~}}
-				) is (true, { } message)
-			)
-			{
-				errors.Add(new()
-				{
-					PropertyName = {{ property_name }}, 
-					ErrorMessage = {{ if string.empty p.message; "message"; else; p.message; end }},
-				});
-			}
-		}
+		errors.Add(
+			{{ p.validator_name }}.ValidateProperty(
+				{{ target }}
+				{{~ for param in p.parameters ~}}
+				, {{ param }}
+				{{~ end ~}}
+			),
+			{{ property_name }},
+			{{ if string.empty p.message; "null"; else; p.message; end }}
+		);
 		{{~ end ~}}
 
 	{{~
