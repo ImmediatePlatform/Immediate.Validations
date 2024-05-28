@@ -45,21 +45,14 @@ partial class ValidateClass
 
 
 
-		{
-			if (
-				global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
-					t
-					, operand: 0
-				) is (true, { } message)
-			)
-			{
-				errors.Add(new()
-				{
-					PropertyName = $"IntProperty", 
-					ErrorMessage = message,
-				});
-			}
-		}
+		errors.Add(
+			global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
+				t
+				, operand: 0
+			),
+			$"IntProperty",
+			null
+		);
 	}
 
 }

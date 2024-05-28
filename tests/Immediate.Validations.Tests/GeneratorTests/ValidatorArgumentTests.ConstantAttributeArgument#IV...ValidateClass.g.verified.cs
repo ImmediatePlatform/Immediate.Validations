@@ -54,21 +54,14 @@ partial class ValidateClass
 
 
 
-		{
-			if (
-				global::Immediate.Validations.Shared.NotEqualAttribute.ValidateProperty(
-					t
-					, operand: @"Hello World"
-				) is (true, { } message)
-			)
-			{
-				errors.Add(new()
-				{
-					PropertyName = $"StringProperty", 
-					ErrorMessage = message,
-				});
-			}
-		}
+		errors.Add(
+			global::Immediate.Validations.Shared.NotEqualAttribute.ValidateProperty(
+				t
+				, operand: @"Hello World"
+			),
+			$"StringProperty",
+			null
+		);
 	}
 
 }
