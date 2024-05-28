@@ -34,7 +34,7 @@ public sealed class MissingAdditionalValidationsMethodAnalyzerTests
 
 				public static List<ValidationError> Validate(Target target) => [];
 
-				private static IEnumerable<ValidationError> AdditionalValidations(Target target) => [];
+				private static void AdditionalValidations(List<ValidationError> errors, Target target) { }
 			}
 			"""
 		).RunAsync();

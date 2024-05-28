@@ -29,7 +29,7 @@ partial class ValidateClass
 
 
 
-		errors.AddRange(AdditionalValidations(t));
+		AdditionalValidations(errors, t);
 
 		return errors;
 	}
