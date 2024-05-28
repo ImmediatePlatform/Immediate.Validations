@@ -771,4 +771,23 @@ public sealed class ValidateClassAnalyzerTests
 			}
 			"""
 		).RunAsync();
+
+	[Fact]
+	public async Task InvalidNameofShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal({|IV0018:nameof(DateTime)|})]
+				public required string Id { get; init; }
+			
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
 }
