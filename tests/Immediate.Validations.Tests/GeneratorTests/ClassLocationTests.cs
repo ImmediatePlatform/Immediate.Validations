@@ -209,4 +209,38 @@ public sealed class ClassLocationTests
 
 		_ = await Verify(result);
 	}
+
+	[Fact]
+	public async Task InheritedClassesTest()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			using Immediate.Validations.Shared;
+
+			using Namespace
+
+			public partial class OuterClass
+			{
+				[Validate]
+				public partial class BaseClass : IValidationTarget<BaseClass>
+				{
+					public required int ValueA { get; init }
+				}
+
+				[Validate]
+				public partial class SubClass : BaseClass, IValidationTarget<SubClass>
+				{
+					[Equal(nameof(ValueA))]
+					public required int ValueB { get; init }
+				}
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		Assert.Equal(2, result.GeneratedTrees.Length);
+
+		_ = await Verify(result);
+	}
 }
