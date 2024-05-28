@@ -790,4 +790,60 @@ public sealed class ValidateClassAnalyzerTests
 			}
 			"""
 		).RunAsync();
+
+	[Fact]
+	public async Task ValidNameofInheritedClassShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class BaseClass : IValidationTarget<BaseClass>
+			{
+				public required int ValueA { get; init; }
+
+				public static List<ValidationError> Validate(BaseClass target) => [];
+			}
+
+			[Validate]
+			public partial class SubClass : BaseClass, IValidationTarget<SubClass>
+			{
+				[Equal(nameof(ValueA))]
+				public required int ValueB { get; init; }
+		
+				public static List<ValidationError> Validate(SubClass target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidNameofInheritedInterfaceShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial interface IBaseInterface : IValidationTarget<IBaseInterface>
+			{
+				int ValueA { get; }
+
+				static List<ValidationError> IValidationTarget<IBaseInterface>.Validate(IBaseInterface target) => [];
+				public static List<ValidationError> Validate(IBaseInterface target) => [];
+			}
+
+			[Validate]
+			public partial interface IInterface : IBaseInterface, IValidationTarget<IInterface>
+			{
+				[Equal(nameof(ValueA))]
+				int ValueB { get; }
+
+				static List<ValidationError> IValidationTarget<IInterface>.Validate(IInterface target) => [];
+				public static List<ValidationError> Validate(IInterface target) => [];
+			}
+			"""
+		).RunAsync();
 }

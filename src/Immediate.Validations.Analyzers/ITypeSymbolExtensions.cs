@@ -15,10 +15,23 @@ internal static class ITypeSymbolExtensions
 		}
 	}
 
-	public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol type) =>
-		type
-			.GetBaseTypesAndThis()
-			.SelectMany(t => t.GetMembers());
+	public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol type)
+	{
+		if (type is { TypeKind: TypeKind.Interface })
+		{
+			return type.GetMembers()
+				.Concat(
+					type.AllInterfaces
+					.SelectMany(i => i.GetMembers())
+				);
+		}
+		else
+		{
+			return type
+				.GetBaseTypesAndThis()
+				.SelectMany(t => t.GetMembers());
+		}
+	}
 
 	public static bool IsValidatorAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
