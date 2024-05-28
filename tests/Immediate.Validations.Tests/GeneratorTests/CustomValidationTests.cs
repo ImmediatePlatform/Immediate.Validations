@@ -373,7 +373,7 @@ public sealed class CustomValidationTests
 			[Validate]
 			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
-				private static IEnumerable<ValidationError> AdditionalValidations(ValidateClass target) => [];
+				private static void AdditionalValidations(List<ValidationError> errors, ValidateClass target) { }
 			}
 			""");
 
@@ -398,7 +398,7 @@ public sealed class CustomValidationTests
 			[Validate]
 			public partial class BaseClass : IValidationTarget<BaseClass>
 			{
-				private static IEnumerable<ValidationError> AdditionalValidations(BaseClass target) => [];
+				private static void AdditionalValidations(List<ValidationError> errors, BaseClass target) { }
 			}
 			
 			[Validate]

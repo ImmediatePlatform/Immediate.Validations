@@ -47,7 +47,7 @@ partial {{ class.type }} {{ class.name }}
 		{{~ end ~}}
 
 		{{~ if has_additional_validations_method ~}}
-		errors.AddRange(AdditionalValidations(t));
+		AdditionalValidations(errors, t);
 		{{~ end ~}}
 
 		return errors;
