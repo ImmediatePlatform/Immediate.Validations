@@ -53,10 +53,21 @@ internal static class ITypeSymbolExtensions
 		}
 	}
 
-	public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol type) =>
-		type
-			.GetBaseTypesAndThis()
-			.SelectMany(t => t.GetMembers());
+	public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol type)
+	{
+		if (type is { TypeKind: TypeKind.Interface })
+		{
+			return type.AllInterfaces
+				.SelectMany(i => i.GetMembers())
+				.Concat(type.GetMembers());
+		}
+		else
+		{
+			return type
+				.GetBaseTypesAndThis()
+				.SelectMany(t => t.GetMembers());
+		}
+	}
 
 	public static bool IsValidateAttribute(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
