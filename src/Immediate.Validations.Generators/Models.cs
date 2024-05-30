@@ -19,6 +19,7 @@ public sealed record Class
 
 public sealed record ValidationTargetProperty
 {
+	public required string Name { get; init; }
 	public required string PropertyName { get; init; }
 	public required string TypeFullName { get; init; }
 	public required bool IsReferenceType { get; init; }

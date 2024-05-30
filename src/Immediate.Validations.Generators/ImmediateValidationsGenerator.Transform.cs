@@ -157,6 +157,7 @@ public sealed partial class ImmediateValidationsGenerator
 	{
 		token.ThrowIfCancellationRequested();
 
+		var name = propertyName;
 		var isReferenceType = propertyType.IsReferenceType;
 		var isNullable = isReferenceType
 			? nullableAnnotation is NullableAnnotation.Annotated
@@ -196,6 +197,14 @@ public sealed partial class ImmediateValidationsGenerator
 			token.ThrowIfCancellationRequested();
 
 			var @class = attribute.AttributeClass?.OriginalDefinition;
+			if (@class.IsDescriptionAttribute())
+			{
+				if (attribute.ConstructorArguments is [{ Value: string v }] && !string.IsNullOrWhiteSpace(v))
+					name = v;
+
+				continue;
+			}
+
 			if (!@class.ImplementsValidatorAttribute())
 				continue;
 
@@ -323,6 +332,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 		return new()
 		{
+			Name = name,
 			PropertyName = propertyName,
 			TypeFullName = propertyType.ToDisplayString(s_fullyQualifiedPlusNullable),
 			IsReferenceType = isReferenceType,
