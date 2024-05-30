@@ -21,15 +21,6 @@ public sealed class MatchAttribute(
 ) : ValidatorAttribute
 {
 	/// <summary>
-	/// 
-	/// </summary>
-	public object? Expr { get; } = expr;
-	/// <summary>
-	/// 
-	/// </summary>
-	public object? Regex { get; } = regex;
-
-	/// <summary>
 	///	    Validates that the <see cref="string"/> matches a particular <see cref="Regex"/> pattern.
 	/// </summary>
 	/// <param name="target">
