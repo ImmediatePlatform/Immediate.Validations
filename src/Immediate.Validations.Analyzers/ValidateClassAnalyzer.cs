@@ -150,7 +150,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		var members = symbol
 			.GetAllMembers()
 			.Where(m =>
-				m is IPropertySymbol
+				m is IPropertySymbol or IFieldSymbol
 					or IMethodSymbol
 				{
 					Parameters: [],
@@ -410,13 +410,6 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			return;
 
 		var validateParameter = validateParameterSymbols.First(p => p.Name == parameter.Name);
-		var targetType = validateParameter.Type;
-
-		if (validateParameter.IsParams && targetType is IArrayTypeSymbol { ElementType: { } et })
-			targetType = et;
-
-		if (targetType is ITypeParameterSymbol)
-			targetType = typeArgumentType;
 
 		if (syntax.Expression.IsNameOfExpression(out var propertyName))
 		{
@@ -439,12 +432,13 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 			var memberType = member switch
 			{
-				IPropertySymbol { Type: { } t } => t,
 				IMethodSymbol { ReturnType: { } t } => t,
+				IPropertySymbol { Type: { } t } => t,
+				IFieldSymbol { Type: { } t } => t,
 				_ => throw new InvalidOperationException(),
 			};
 
-			if (!context.Compilation.ClassifyConversion(memberType, targetType).IsValidConversion())
+			if (!ValidateArgumentType(context.Compilation, validateParameter, memberType, typeArgumentType, out var targetType))
 			{
 				context.ReportDiagnostic(
 					Diagnostic.Create(
@@ -462,7 +456,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			if (context.SemanticModel.GetOperation(syntax.Expression)?.Type is not ITypeSymbol argumentType)
 				return;
 
-			if (!context.Compilation.ClassifyConversion(argumentType, targetType).IsValidConversion())
+			if (!ValidateArgumentType(context.Compilation, validateParameter, argumentType, typeArgumentType, out var targetType))
 			{
 				context.ReportDiagnostic(
 					Diagnostic.Create(
@@ -474,6 +468,41 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				);
 			}
 		}
+	}
+
+	private static bool ValidateArgumentType(
+		Compilation compilation,
+		IParameterSymbol parameter,
+		ITypeSymbol argumentType,
+		ITypeSymbol typeArgumentType,
+		out ITypeSymbol targetType
+	)
+	{
+		targetType = parameter.Type;
+		var buildArrayTypeSymbol = false;
+
+		if (parameter.IsParams
+			&& targetType is IArrayTypeSymbol { ElementType: { } paramElementType })
+		{
+			targetType = paramElementType;
+
+			if (argumentType is IArrayTypeSymbol { ElementType: { } argumentElementType })
+			{
+				argumentType = argumentElementType;
+				buildArrayTypeSymbol = true;
+			}
+		}
+
+		if (targetType is ITypeParameterSymbol)
+			targetType = typeArgumentType;
+
+		if (compilation.ClassifyConversion(argumentType, targetType).IsValidConversion())
+			return true;
+
+		if (buildArrayTypeSymbol)
+			targetType = compilation.CreateArrayTypeSymbol(targetType);
+
+		return false;
 	}
 }
 

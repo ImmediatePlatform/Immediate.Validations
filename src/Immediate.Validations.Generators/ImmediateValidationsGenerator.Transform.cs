@@ -102,7 +102,7 @@ public sealed partial class ImmediateValidationsGenerator
 		var members = symbol
 			.GetAllMembers()
 			.Where(m =>
-				m is IPropertySymbol
+				m is IPropertySymbol or IFieldSymbol
 					or IMethodSymbol
 				{
 					Parameters: [],
@@ -537,9 +537,8 @@ public sealed partial class ImmediateValidationsGenerator
 			{
 				IMethodSymbol { IsStatic: true } => $"{name}()",
 				IMethodSymbol => $"instance.{name}()",
-				IPropertySymbol { IsStatic: true } => $"{name}",
-				IPropertySymbol => $"instance.{name}",
-				_ => "",
+				{ IsStatic: true } => $"{name}",
+				_ => $"instance.{name}",
 			};
 		}
 

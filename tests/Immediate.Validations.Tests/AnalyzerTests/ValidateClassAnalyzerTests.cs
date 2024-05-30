@@ -535,7 +535,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -567,7 +567,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -599,7 +599,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -631,7 +631,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -663,7 +663,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -695,7 +695,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -727,7 +727,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -759,7 +759,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -767,6 +767,46 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public static int FirstValue() => 123;
 			
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn16() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[OneOf(nameof(Values))]
+				public required string Id { get; init; }
+
+				private static readonly string[] Values = ["123", "456", "789"];
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn16() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[OneOf({|IV0016:nameof(Values)|})]
+				public required int Id { get; init; }
+
+				private static readonly string[] Values = ["123", "456", "789"];
+
 				public static List<ValidationError> Validate(Target target) => [];
 			}
 			"""
