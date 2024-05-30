@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Immediate.Handlers.Shared;
 using Immediate.Validations.Shared;
 
@@ -30,6 +31,8 @@ public static partial class SaveRecord
 		[NotEmpty(Message = "Name must be provided.")]
 		[MaxLength(MaxLength)]
 		public required string Name { get; init; }
+
+		[Description("test")]
 		public required Status Status { get; init; }
 
 		[GreaterThan(Operand = 0)]

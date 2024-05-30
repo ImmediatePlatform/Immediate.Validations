@@ -87,7 +87,7 @@ partial {{ class.type }} {{ class.name }}
 	{
 		{{~ 
 			for v in p.null_validations
-				validate(v, "target", $"$\"{get_prop_name(p.property_name, depth)}\"")
+				validate(v, "target", $"$\"{get_prop_name(p.name, depth)}\"")
 			end
 		~}}
 
@@ -97,7 +97,7 @@ partial {{ class.type }} {{ class.name }}
 			{{~ if !p.is_nullable ~}}
 			errors.Add(new()
 			{
-				PropertyName = $"{{ get_prop_name(p.property_name, depth) }}",
+				PropertyName = $"{{ get_prop_name(p.name, depth) }}",
 				ErrorMessage = "Property must not be `null`.",
 			});
 			{{~ end ~}}
@@ -113,7 +113,7 @@ partial {{ class.type }} {{ class.name }}
 		{
 			errors.Add(error with 
 			{
-				PropertyName = $"{{ get_prop_name(p.property_name, depth) }}.{error.PropertyName}",
+				PropertyName = $"{{ get_prop_name(p.name, depth) }}.{error.PropertyName}",
 			});
 		}
 		{{~ end ~}}
@@ -131,7 +131,7 @@ partial {{ class.type }} {{ class.name }}
 
 		{{~ 
 			for v in p.validations
-				validate(v, "t", $"$\"{get_prop_name(p.property_name, depth)}\"")
+				validate(v, "t", $"$\"{get_prop_name(p.name, depth)}\"")
 			end
 		~}}
 	}

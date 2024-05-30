@@ -156,4 +156,19 @@ internal static class ITypeSymbolExtensions
 				i.IsIValidationTarget()
 				&& SymbolEqualityComparer.Default.Equals(typeSymbol, i.TypeArguments[0])
 			);
+
+	public static bool IsDescriptionAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
+		typeSymbol is
+		{
+			Name: "DescriptionAttribute",
+			ContainingNamespace:
+			{
+				Name: "ComponentModel",
+				ContainingNamespace:
+				{
+					Name: "System",
+					ContainingNamespace.IsGlobalNamespace: true,
+				},
+			},
+		};
 }
