@@ -535,7 +535,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -567,7 +567,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -599,7 +599,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -631,7 +631,7 @@ public sealed class ValidateClassAnalyzerTests
 						? default
 						: (true, $"Value '{target}' is not equal to '{first[0]}'");
 			}
-						
+
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
@@ -640,6 +640,249 @@ public sealed class ValidateClassAnalyzerTests
 				public required int FirstValue { get; init; }
 
 				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn14() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] params object[] first
+			) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? Message) ValidateProperty(
+					string target, 
+					params string[] first
+				) =>
+					target == first[0]
+						? default
+						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+			}
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy("123", "456", nameof(FirstValue), Message = "What's going on?")]
+				public required string Id { get; init; }
+				public string FirstValue() => "Hello World!";
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn14() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] params object[] first
+			) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? Message) ValidateProperty(
+					string target, 
+					params string[] first
+				) =>
+					target == first[0]
+						? default
+						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+			}
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy("123", {|IV0015:456|}, {|IV0016:nameof(FirstValue)|}, Message = "What's going on?")]
+				public required string Id { get; init; }
+				public int FirstValue() => 123;
+			
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn15() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] params object[] first
+			) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? Message) ValidateProperty<T>(
+					T target, 
+					params T[] first
+				) =>
+					EqualityComparer<T>.Default.Equals(target, first[0])
+						? default
+						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+			}
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy("123", "456", nameof(FirstValue), Message = "What's going on?")]
+				public required string Id { get; init; }
+				public static string FirstValue() => "Hello World!";
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn15() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] params object[] first
+			) : ValidatorAttribute
+			{
+				public static (bool Invalid, string? Message) ValidateProperty<T>(
+					T target, 
+					params T[] first
+				) =>
+					EqualityComparer<T>.Default.Equals(target, first[0])
+						? default
+						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+			}
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy("123", {|IV0015:456|}, {|IV0016:nameof(FirstValue)|}, Message = "What's going on?")]
+				public required string Id { get; init; }
+				public static int FirstValue() => 123;
+			
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidValidatorTypeShouldNotWarn16() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[OneOf(nameof(Values))]
+				public required string Id { get; init; }
+
+				private static readonly string[] Values = ["123", "456", "789"];
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidValidatorTypeShouldWarn16() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[OneOf({|IV0016:nameof(Values)|})]
+				public required int Id { get; init; }
+
+				private static readonly string[] Values = ["123", "456", "789"];
+
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task InvalidNameofShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal({|IV0018:nameof(DateTime)|})]
+				public required string Id { get; init; }
+			
+				public static List<ValidationError> Validate(Target target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidNameofInheritedClassShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class BaseClass : IValidationTarget<BaseClass>
+			{
+				public required int ValueA { get; init; }
+
+				public static List<ValidationError> Validate(BaseClass target) => [];
+			}
+
+			[Validate]
+			public partial class SubClass : BaseClass, IValidationTarget<SubClass>
+			{
+				[Equal(nameof(ValueA))]
+				public required int ValueB { get; init; }
+		
+				public static List<ValidationError> Validate(SubClass target) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidNameofInheritedInterfaceShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial interface IBaseInterface : IValidationTarget<IBaseInterface>
+			{
+				int ValueA { get; }
+
+				static List<ValidationError> IValidationTarget<IBaseInterface>.Validate(IBaseInterface target) => [];
+				public static List<ValidationError> Validate(IBaseInterface target) => [];
+			}
+
+			[Validate]
+			public partial interface IInterface : IBaseInterface, IValidationTarget<IInterface>
+			{
+				[Equal(nameof(ValueA))]
+				int ValueB { get; }
+
+				static List<ValidationError> IValidationTarget<IInterface>.Validate(IInterface target) => [];
+				public static List<ValidationError> Validate(IInterface target) => [];
 			}
 			"""
 		).RunAsync();

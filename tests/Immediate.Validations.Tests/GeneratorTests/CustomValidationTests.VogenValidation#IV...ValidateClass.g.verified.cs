@@ -28,7 +28,7 @@ partial class ValidateClass
 		var errors = new List<ValidationError>();
 
 
-		__ValidateStringProperty(errors, t, t.StringProperty);
+		__ValidateUserId(errors, t, t.UserId);
 
 
 		return errors;
@@ -36,39 +36,26 @@ partial class ValidateClass
 
 
 
-	private static void __ValidateStringProperty(
-		List<ValidationError> errors, ValidateClass instance, string target
+	private static void __ValidateUserId(
+		List<ValidationError> errors, ValidateClass instance, global::UserId target
 	)
 	{
 
-		if (target is not { } t)
-		{
-			errors.Add(new()
-			{
-				PropertyName = $"StringProperty",
-				ErrorMessage = "Property must not be `null`.",
-			});
-
-			return;
-		}
-
-
+		var t = target;
 
 		{
-			if (
-				global::Immediate.Validations.Shared.MaxLengthAttribute.ValidateProperty(
-					t
-					, length: 0
-				) is (true, { } message)
-			)
+			var validation = global::UserId.Validate(t.Value);
+			if (!string.IsNullOrWhiteSpace(validation.ErrorMessage))
 			{
 				errors.Add(new()
 				{
-					PropertyName = $"StringProperty", 
-					ErrorMessage = "Must be MaxLength to zero.",
+					PropertyName = $"UserId",
+					ErrorMessage = validation.ErrorMessage,
 				});
 			}
 		}
+
+
 	}
 
 }

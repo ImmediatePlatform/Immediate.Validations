@@ -47,7 +47,7 @@ partial {{ class.type }} {{ class.name }}
 		{{~ end ~}}
 
 		{{~ if has_additional_validations_method ~}}
-		errors.AddRange(AdditionalValidations(t));
+		AdditionalValidations(errors, t);
 		{{~ end ~}}
 
 		return errors;
@@ -56,23 +56,16 @@ partial {{ class.type }} {{ class.name }}
 		{{~
 			func validate(p, target, property_name)
 		~}}
-		{
-			if (
-				{{ p.validator_name }}.ValidateProperty(
-					{{ target }}
-					{{~ for param in p.parameters ~}}
-					, {{ param }}
-					{{~ end ~}}
-				) is (true, { } message)
-			)
-			{
-				errors.Add(new()
-				{
-					PropertyName = {{ property_name }}, 
-					ErrorMessage = {{ if string.empty p.message; "message"; else; p.message; end }},
-				});
-			}
-		}
+		errors.Add(
+			{{ p.validator_name }}.ValidateProperty(
+				{{ target }}
+				{{~ for param in p.parameters ~}}
+				, {{ param }}
+				{{~ end ~}}
+			),
+			{{ property_name }},
+			{{ if string.empty p.message; "null"; else; p.message; end }}
+		);
 		{{~ end ~}}
 
 	{{~
@@ -94,7 +87,7 @@ partial {{ class.type }} {{ class.name }}
 	{
 		{{~ 
 			for v in p.null_validations
-				validate(v, "target", $"$\"{get_prop_name(p.property_name, depth)}\"")
+				validate(v, "target", $"$\"{get_prop_name(p.name, depth)}\"")
 			end
 		~}}
 
@@ -104,7 +97,7 @@ partial {{ class.type }} {{ class.name }}
 			{{~ if !p.is_nullable ~}}
 			errors.Add(new()
 			{
-				PropertyName = $"{{ get_prop_name(p.property_name, depth) }}",
+				PropertyName = $"{{ get_prop_name(p.name, depth) }}",
 				ErrorMessage = "Property must not be `null`.",
 			});
 			{{~ end ~}}
@@ -120,8 +113,20 @@ partial {{ class.type }} {{ class.name }}
 		{
 			errors.Add(error with 
 			{
-				PropertyName = $"{{ get_prop_name(p.property_name, depth) }}.{error.PropertyName}",
+				PropertyName = $"{{ get_prop_name(p.name, depth) }}.{error.PropertyName}",
 			});
+		}
+		{{~ else if p.is_vogen_property ~}}
+		{
+			var validation = {{ p.validation_type_full_name }}.Validate(t.Value);
+			if (!string.IsNullOrWhiteSpace(validation.ErrorMessage))
+			{
+				errors.Add(new()
+				{
+					PropertyName = $"{{ get_prop_name(p.name, depth) }}",
+					ErrorMessage = validation.ErrorMessage,
+				});
+			}
 		}
 		{{~ end ~}}
 
@@ -138,7 +143,7 @@ partial {{ class.type }} {{ class.name }}
 
 		{{~ 
 			for v in p.validations
-				validate(v, "t", $"$\"{get_prop_name(p.property_name, depth)}\"")
+				validate(v, "t", $"$\"{get_prop_name(p.name, depth)}\"")
 			end
 		~}}
 	}

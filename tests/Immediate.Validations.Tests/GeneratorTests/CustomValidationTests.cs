@@ -257,158 +257,6 @@ public sealed class CustomValidationTests
 	}
 
 	[Fact]
-	public async Task EqualValidatorSimple()
-	{
-		var driver = GeneratorTestHelper.GetDriver(
-			"""
-			#nullable enable
-
-			using Immediate.Validations.Shared;
-
-			[Validate]
-			public partial class ValidateClass
-			{
-				[Equal(0)]
-				public int IntProperty { get; init; }
-			}
-			""");
-
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
-
-		_ = await Verify(result);
-	}
-
-	[Fact]
-	public async Task EqualValidatorMessage()
-	{
-		var driver = GeneratorTestHelper.GetDriver(
-			"""
-			#nullable enable
-
-			using Immediate.Validations.Shared;
-
-			[Validate]
-			public partial class ValidateClass
-			{
-				[Equal(0, Message = "Must be equal to zero.")]
-				public int IntProperty { get; init; }
-			}
-			""");
-
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
-
-		_ = await Verify(result);
-	}
-
-	[Fact]
-	public async Task EqualValidatorNameof()
-	{
-		var driver = GeneratorTestHelper.GetDriver(
-			"""
-			#nullable enable
-
-			using Immediate.Validations.Shared;
-
-			[Validate]
-			public partial class ValidateClass
-			{
-				[Equal(nameof(KeyValue))]
-				public int IntProperty { get; init; }
-				public int KeyValue { get; init; }
-			}
-			""");
-
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
-
-		_ = await Verify(result);
-	}
-
-	[Fact]
-	public async Task MaxLengthValidatorSimple()
-	{
-		var driver = GeneratorTestHelper.GetDriver(
-			"""
-			#nullable enable
-
-			using Immediate.Validations.Shared;
-
-			[Validate]
-			public partial class ValidateClass
-			{
-				[MaxLength(0)]
-				public string StringProperty { get; init; }
-			}
-			""");
-
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
-
-		_ = await Verify(result);
-	}
-
-	[Fact]
-	public async Task MaxLengthValidatorMessage()
-	{
-		var driver = GeneratorTestHelper.GetDriver(
-			"""
-			#nullable enable
-
-			using Immediate.Validations.Shared;
-
-			[Validate]
-			public partial class ValidateClass
-			{
-				[MaxLength(0, Message = "Must be MaxLength to zero.")]
-				public string StringProperty { get; init; }
-			}
-			""");
-
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
-
-		_ = await Verify(result);
-	}
-
-	[Fact]
-	public async Task MaxLengthValidatorNameof()
-	{
-		var driver = GeneratorTestHelper.GetDriver(
-			"""
-			#nullable enable
-
-			using Immediate.Validations.Shared;
-
-			[Validate]
-			public partial class ValidateClass
-			{
-				[MaxLength(nameof(KeyValue))]
-				public string StringProperty { get; init; }
-				public int KeyValue { get; init; }
-			}
-			""");
-
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
-
-		_ = await Verify(result);
-	}
-
-	[Fact]
 	public async Task ComplexValidator()
 	{
 		var driver = GeneratorTestHelper.GetDriver(
@@ -525,7 +373,7 @@ public sealed class CustomValidationTests
 			[Validate]
 			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
-				private static IEnumerable<ValidationError> AdditionalValidations(ValidateClass target) => [];
+				private static void AdditionalValidations(List<ValidationError> errors, ValidateClass target) { }
 			}
 			""");
 
@@ -550,7 +398,7 @@ public sealed class CustomValidationTests
 			[Validate]
 			public partial class BaseClass : IValidationTarget<BaseClass>
 			{
-				private static IEnumerable<ValidationError> AdditionalValidations(BaseClass target) => [];
+				private static void AdditionalValidations(List<ValidationError> errors, BaseClass target) { }
 			}
 			
 			[Validate]
@@ -561,6 +409,39 @@ public sealed class CustomValidationTests
 
 		Assert.Empty(result.Diagnostics);
 		Assert.Equal(2, result.GeneratedTrees.Length);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task VogenValidation()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			using Vogen;
+
+			[ValueObject]
+			public readonly partial struct UserId
+			{
+				public static Validation Validate(int value) =>
+					value > 0 ? Validation.Ok : Validation.Invalid("Must be greater than zero.");
+			}
+			
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				public required UserId UserId { get; init; }
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
 
 		_ = await Verify(result);
 	}

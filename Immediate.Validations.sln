@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -10,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{AF02160B
 		.github\dependabot.yml = .github\dependabot.yml
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
+		global.json = global.json
+		nuget.config = nuget.config
 		readme.md = readme.md
 	EndProjectSection
 EndProject

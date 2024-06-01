@@ -12,11 +12,6 @@ public sealed class NotEqualAttribute(
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///		The value that the applied property should be different than.
-	/// </summary>
-	public object Operand { get; } = operand;
-
-	/// <summary>
 	///	    Validates that the value of the applied property is not equal to <paramref name="operand"/>.
 	/// </summary>
 	/// <param name="target">

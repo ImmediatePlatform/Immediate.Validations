@@ -76,34 +76,53 @@ file static class Extensions
 				{
 					Name: "AdditionalValidations",
 					IsStatic: true,
-					ReturnType: INamedTypeSymbol
+					ReturnsVoid: true,
+					Parameters:
+					[
 					{
-						ConstructedFrom: INamedTypeSymbol
+						Type: INamedTypeSymbol
 						{
-							SpecialType: SpecialType.System_Collections_Generic_IEnumerable_T,
-						},
-						TypeArguments:
-						[
-							INamedTypeSymbol
-						{
-							Name: "ValidationError",
-							ContainingNamespace:
+							ConstructedFrom: INamedTypeSymbol
 							{
-								Name: "Shared",
+								MetadataName: "List`1",
 								ContainingNamespace:
 								{
-									Name: "Validations",
+									Name: "Generic",
 									ContainingNamespace:
 									{
-										Name: "Immediate",
-										ContainingNamespace.IsGlobalNamespace: true,
+										Name: "Collections",
+										ContainingNamespace:
+										{
+											Name: "System",
+											ContainingNamespace.IsGlobalNamespace: true,
+										},
 									},
 								},
 							},
-						}
-						],
+							TypeArguments:
+							[
+								INamedTypeSymbol
+							{
+								Name: "ValidationError",
+								ContainingNamespace:
+								{
+									Name: "Shared",
+									ContainingNamespace:
+									{
+										Name: "Validations",
+										ContainingNamespace:
+										{
+											Name: "Immediate",
+											ContainingNamespace.IsGlobalNamespace: true,
+										},
+									},
+								},
+							},
+							],
+						},
 					},
-					Parameters: [{ Type: INamedTypeSymbol parameterType }],
+					{ Type: INamedTypeSymbol parameterType },
+					],
 				}
 				&& SymbolEqualityComparer.Default.Equals(parameterType, typeSymbol)
 			);

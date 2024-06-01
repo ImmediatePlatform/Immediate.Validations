@@ -65,6 +65,17 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			description: "Incompatible types will lead to incorrect validation code."
 		);
 
+	public static readonly DiagnosticDescriptor ValidateParameterNameofInvalid =
+		new(
+			id: DiagnosticIds.IV0018ValidateParameterNameofInvalid,
+			title: "nameof() target is invalid",
+			messageFormat: "nameof({0}) must refer to a property or method on the class `{1}`",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Error,
+			isEnabledByDefault: true,
+			description: "Invalid nameof will generate incorrect code."
+		);
+
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create(
 		[
@@ -73,6 +84,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			ValidatePropertyIncompatibleType,
 			ValidateParameterIncompatibleType,
 			ValidateParameterPropertyIncompatibleType,
+			ValidateParameterNameofInvalid,
 		]);
 
 	public override void Initialize(AnalysisContext context)
@@ -135,13 +147,23 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			);
 		}
 
-		var properties = symbol
-			.GetMembers()
-			.OfType<IPropertySymbol>()
+		var members = symbol
+			.GetAllMembers()
+			.Where(m =>
+				m is IPropertySymbol or IFieldSymbol
+					or IMethodSymbol
+				{
+					Parameters: [],
+					MethodKind: MethodKind.Ordinary,
+				}
+			)
 			.ToList();
 
-		foreach (var property in properties)
+		foreach (var property in symbol.GetMembers().OfType<IPropertySymbol>())
 		{
+			if (property is { IsStatic: true } or { DeclaredAccessibility: not Accessibility.Public })
+				continue;
+
 			foreach (var attribute in property.GetAttributes())
 			{
 				var status = ValidateAttribute(context.Compilation, property.Type, attribute.AttributeClass!, token);
@@ -161,7 +183,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				{
 					ValidateArguments(
 						context,
-						properties,
+						members,
 						attribute,
 						status.ValidateParameterSymbols,
 						property.Type
@@ -288,7 +310,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 	private static void ValidateArguments(
 		SyntaxNodeAnalysisContext context,
-		List<IPropertySymbol> properties,
+		List<ISymbol> members,
 		AttributeData attribute,
 		ImmutableArray<IParameterSymbol> validateParameterSymbols,
 		ITypeSymbol typeArgumentType
@@ -325,7 +347,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 						property,
 						validateParameterSymbols,
 						typeArgumentType,
-						properties
+						members
 					);
 
 					break;
@@ -343,7 +365,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 								attributeParameters[j],
 								validateParameterSymbols,
 								typeArgumentType,
-								properties
+								members
 							);
 
 							break;
@@ -363,7 +385,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 						attributeParameter,
 						validateParameterSymbols,
 						typeArgumentType,
-						properties
+						members
 					);
 
 					if (!attributeParameter.IsParams)
@@ -381,37 +403,49 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		ISymbol parameter,
 		ImmutableArray<IParameterSymbol> validateParameterSymbols,
 		ITypeSymbol typeArgumentType,
-		List<IPropertySymbol> properties
+		List<ISymbol> members
 	)
 	{
 		if (!parameter.IsTargetTypeSymbol())
 			return;
 
 		var validateParameter = validateParameterSymbols.First(p => p.Name == parameter.Name);
-		var targetType = validateParameter.Type;
-
-		if (validateParameter.IsParams && targetType is IArrayTypeSymbol { ElementType: { } et })
-			targetType = et;
-
-		if (targetType is ITypeParameterSymbol)
-			targetType = typeArgumentType;
 
 		if (syntax.Expression.IsNameOfExpression(out var propertyName))
 		{
-			var property = properties
+			var member = members
 				.FirstOrDefault(p => p.Name == propertyName);
 
-			if (property is null)
-				return;
+			if (member is null)
+			{
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateParameterNameofInvalid,
+						syntax.GetLocation(),
+						propertyName,
+						context.ContainingSymbol!.Name
+					)
+				);
 
-			if (!context.Compilation.ClassifyConversion(property.Type, targetType).IsValidConversion())
+				return;
+			}
+
+			var memberType = member switch
+			{
+				IMethodSymbol { ReturnType: { } t } => t,
+				IPropertySymbol { Type: { } t } => t,
+				IFieldSymbol { Type: { } t } => t,
+				_ => throw new InvalidOperationException(),
+			};
+
+			if (!ValidateArgumentType(context.Compilation, validateParameter, memberType, typeArgumentType, out var targetType))
 			{
 				context.ReportDiagnostic(
 					Diagnostic.Create(
 						ValidateParameterPropertyIncompatibleType,
 						syntax.GetLocation(),
 						parameter.Name,
-						property.Name,
+						member.Name,
 						targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
 					)
 				);
@@ -422,7 +456,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			if (context.SemanticModel.GetOperation(syntax.Expression)?.Type is not ITypeSymbol argumentType)
 				return;
 
-			if (!context.Compilation.ClassifyConversion(argumentType, targetType).IsValidConversion())
+			if (!ValidateArgumentType(context.Compilation, validateParameter, argumentType, typeArgumentType, out var targetType))
 			{
 				context.ReportDiagnostic(
 					Diagnostic.Create(
@@ -434,6 +468,41 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				);
 			}
 		}
+	}
+
+	private static bool ValidateArgumentType(
+		Compilation compilation,
+		IParameterSymbol parameter,
+		ITypeSymbol argumentType,
+		ITypeSymbol typeArgumentType,
+		out ITypeSymbol targetType
+	)
+	{
+		targetType = parameter.Type;
+		var buildArrayTypeSymbol = false;
+
+		if (parameter.IsParams
+			&& targetType is IArrayTypeSymbol { ElementType: { } paramElementType })
+		{
+			targetType = paramElementType;
+
+			if (argumentType is IArrayTypeSymbol { ElementType: { } argumentElementType })
+			{
+				argumentType = argumentElementType;
+				buildArrayTypeSymbol = true;
+			}
+		}
+
+		if (targetType is ITypeParameterSymbol)
+			targetType = typeArgumentType;
+
+		if (compilation.ClassifyConversion(argumentType, targetType).IsValidConversion())
+			return true;
+
+		if (buildArrayTypeSymbol)
+			targetType = compilation.CreateArrayTypeSymbol(targetType);
+
+		return false;
 	}
 }
 

@@ -43,6 +43,32 @@ internal static class ITypeSymbolExtensions
 			},
 		};
 
+	public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol? type)
+	{
+		var current = type;
+		while (current != null)
+		{
+			yield return current;
+			current = current.BaseType;
+		}
+	}
+
+	public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol type)
+	{
+		if (type is { TypeKind: TypeKind.Interface })
+		{
+			return type.AllInterfaces
+				.SelectMany(i => i.GetMembers())
+				.Concat(type.GetMembers());
+		}
+		else
+		{
+			return type
+				.GetBaseTypesAndThis()
+				.SelectMany(t => t.GetMembers());
+		}
+	}
+
 	public static bool IsValidateAttribute(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
@@ -61,6 +87,26 @@ internal static class ITypeSymbolExtensions
 				},
 			},
 		};
+
+	public static bool IsVogenAttribute(this INamedTypeSymbol? typeSymbol) =>
+		typeSymbol is
+	{
+		Name: "ValueObjectAttribute",
+		ContainingNamespace:
+		{
+			Name: "Vogen",
+			ContainingNamespace.IsGlobalNamespace: true,
+		},
+	}
+	or
+	{
+		MetadataName: "ValueObjectAttribute`1",
+		ContainingNamespace:
+		{
+			Name: "Vogen",
+			ContainingNamespace.IsGlobalNamespace: true,
+		},
+	};
 
 	public static bool IsValidatorAttribute(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
@@ -130,4 +176,19 @@ internal static class ITypeSymbolExtensions
 				i.IsIValidationTarget()
 				&& SymbolEqualityComparer.Default.Equals(typeSymbol, i.TypeArguments[0])
 			);
+
+	public static bool IsDescriptionAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
+		typeSymbol is
+		{
+			Name: "DescriptionAttribute",
+			ContainingNamespace:
+			{
+				Name: "ComponentModel",
+				ContainingNamespace:
+				{
+					Name: "System",
+					ContainingNamespace.IsGlobalNamespace: true,
+				},
+			},
+		};
 }

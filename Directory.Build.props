@@ -3,7 +3,9 @@
 	<LangVersion>latest</LangVersion>
 
 	<Nullable>enable</Nullable>
+	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	<WarningsAsErrors>$(WarningsAsErrors);nullable;</WarningsAsErrors>
+	<NoWarn>$(NoWarn);NU1507</NoWarn>
 
 	<ImplicitUsings>enable</ImplicitUsings>
 
@@ -11,7 +13,6 @@
 	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
 	<IsPackable>false</IsPackable>
   </PropertyGroup>

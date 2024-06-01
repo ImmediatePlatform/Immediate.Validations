@@ -55,27 +55,20 @@ partial record Target
 
 
 
-		{
-			if (
-				global::DummyAttribute.ValidateProperty(
-					t
-					, first: instance.FirstValue
-					, second: "Hello World"
-					, fourth: "Abcd"
-					, fifth: "The end?"
-					, "Test1"
-					, nameof(FirstValue)
-					, "Test3"
-				) is (true, { } message)
-			)
-			{
-				errors.Add(new()
-				{
-					PropertyName = $"Id", 
-					ErrorMessage = "What's going on?",
-				});
-			}
-		}
+		errors.Add(
+			global::DummyAttribute.ValidateProperty(
+				t
+				, first: instance.FirstValue
+				, second: @"Hello World"
+				, fourth: @"Abcd"
+				, fifth: @"The end?"
+				, @"Test1"
+				, @"FirstValue"
+				, @"Test3"
+			),
+			$"Id",
+			"What's going on?"
+		);
 	}
 
 	private static void __ValidateFirstValue(

@@ -49,20 +49,13 @@ partial class ValidateClass
 
 
 
-		{
-			if (
-				global::Immediate.Validations.Shared.NotNullAttribute.ValidateProperty(
-					t
-				) is (true, { } message)
-			)
-			{
-				errors.Add(new()
-				{
-					PropertyName = $"StringProperty", 
-					ErrorMessage = message,
-				});
-			}
-		}
+		errors.Add(
+			global::Immediate.Validations.Shared.NotNullAttribute.ValidateProperty(
+				t
+			),
+			$"StringProperty",
+			null
+		);
 	}
 
 }

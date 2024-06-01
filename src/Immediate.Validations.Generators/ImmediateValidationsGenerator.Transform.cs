@@ -26,7 +26,7 @@ public sealed partial class ImmediateValidationsGenerator
 		var @namespace = symbol.ContainingNamespace.ToString().NullIf("<global namespace>");
 		var outerClasses = GetOuterClasses(symbol);
 		var baseValidatorTypes = GetBaseValidatorTypes(symbol);
-		var properties = GetProperties(context.SemanticModel.Compilation, symbol, token);
+		var properties = GetProperties(context.SemanticModel, symbol, token);
 
 		return new()
 		{
@@ -92,18 +92,31 @@ public sealed partial class ImmediateValidationsGenerator
 	}
 
 	private static EquatableReadOnlyList<ValidationTargetProperty> GetProperties(
-		Compilation compilation,
+		SemanticModel semanticModel,
 		INamedTypeSymbol symbol,
 		CancellationToken token
 	)
 	{
 		token.ThrowIfCancellationRequested();
 
+		var members = symbol
+			.GetAllMembers()
+			.Where(m =>
+				m is IPropertySymbol or IFieldSymbol
+					or IMethodSymbol
+				{
+					Parameters: [],
+					MethodKind: MethodKind.Ordinary,
+				}
+			)
+			.ToList();
+
 		var properties = new List<ValidationTargetProperty>();
 		foreach (var member in symbol.GetMembers())
 		{
 			if (member is not IPropertySymbol
 				{
+					DeclaredAccessibility: Accessibility.Public,
 					IsStatic: false,
 					// ignore record `EqualityContract`
 					Name: not "EqualityContract",
@@ -116,7 +129,8 @@ public sealed partial class ImmediateValidationsGenerator
 			token.ThrowIfCancellationRequested();
 
 			if (GetPropertyValidations(
-					compilation,
+					semanticModel,
+					members,
 					property.Name,
 					property.Type,
 					property.NullableAnnotation,
@@ -132,7 +146,8 @@ public sealed partial class ImmediateValidationsGenerator
 	}
 
 	private static ValidationTargetProperty? GetPropertyValidations(
-		Compilation compilation,
+		SemanticModel semanticModel,
+		List<ISymbol> members,
 		string propertyName,
 		ITypeSymbol propertyType,
 		NullableAnnotation nullableAnnotation,
@@ -142,6 +157,7 @@ public sealed partial class ImmediateValidationsGenerator
 	{
 		token.ThrowIfCancellationRequested();
 
+		var name = propertyName;
 		var isReferenceType = propertyType.IsReferenceType;
 		var isNullable = isReferenceType
 			? nullableAnnotation is NullableAnnotation.Annotated
@@ -153,8 +169,22 @@ public sealed partial class ImmediateValidationsGenerator
 
 		token.ThrowIfCancellationRequested();
 
-		var isValidationProperty = propertyType.GetAttributes()
-			.Any(v => v.AttributeClass.IsValidateAttribute());
+		var isValidationProperty =
+			propertyType
+				.GetAttributes()
+				.Any(v => v.AttributeClass.IsValidateAttribute());
+
+		var isVogenProperty =
+			propertyType
+				.GetAttributes()
+				.Any(v => v.AttributeClass.IsVogenAttribute())
+			&& propertyType
+				.GetMembers()
+				.Any(m => m is
+				{
+					Name: "Validate",
+					IsStatic: true,
+				});
 
 		token.ThrowIfCancellationRequested();
 
@@ -181,6 +211,14 @@ public sealed partial class ImmediateValidationsGenerator
 			token.ThrowIfCancellationRequested();
 
 			var @class = attribute.AttributeClass?.OriginalDefinition;
+			if (@class.IsDescriptionAttribute())
+			{
+				if (attribute.ConstructorArguments is [{ Value: string v }] && !string.IsNullOrWhiteSpace(v))
+					name = v;
+
+				continue;
+			}
+
 			if (!@class.ImplementsValidatorAttribute())
 				continue;
 
@@ -222,12 +260,14 @@ public sealed partial class ImmediateValidationsGenerator
 
 			if (targetParameterType is ITypeParameterSymbol tps)
 			{
-				if (!Utility.SatisfiesConstraints(tps, propertyType, compilation))
+				if (!Utility.SatisfiesConstraints(tps, propertyType, semanticModel.Compilation))
 					continue;
 			}
 			else
 			{
-				var conversion = compilation.ClassifyConversion(baseType, targetParameterType);
+				var conversion = semanticModel.Compilation
+					.ClassifyConversion(baseType, targetParameterType);
+
 				if (conversion is not { IsIdentity: true }
 						or { IsImplicit: true, IsReference: true }
 						or { IsImplicit: true, IsNullable: true }
@@ -240,7 +280,12 @@ public sealed partial class ImmediateValidationsGenerator
 
 			token.ThrowIfCancellationRequested();
 
-			var parameters = BuildParameterValues(attribute, validateMethod.Parameters);
+			var parameters = BuildParameterValues(
+				semanticModel,
+				members,
+				attribute,
+				validateMethod.Parameters
+			);
 
 			token.ThrowIfCancellationRequested();
 
@@ -261,7 +306,8 @@ public sealed partial class ImmediateValidationsGenerator
 		{
 			IArrayTypeSymbol ats =>
 				GetPropertyValidations(
-					compilation,
+					semanticModel,
+					members,
 					propertyName,
 					ats.ElementType,
 					ats.ElementNullableAnnotation,
@@ -276,7 +322,8 @@ public sealed partial class ImmediateValidationsGenerator
 				TypeArgumentNullableAnnotations: [{ } annotation],
 			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
 				GetPropertyValidations(
-					compilation,
+					semanticModel,
+					members,
 					propertyName,
 					type,
 					annotation,
@@ -290,6 +337,7 @@ public sealed partial class ImmediateValidationsGenerator
 		if (
 			(isNullable || !isReferenceType)
 			&& !isValidationProperty
+			&& !isVogenProperty
 			&& collectionPropertyDetails is null
 			&& validations is []
 		)
@@ -299,15 +347,18 @@ public sealed partial class ImmediateValidationsGenerator
 
 		return new()
 		{
+			Name = name,
 			PropertyName = propertyName,
 			TypeFullName = propertyType.ToDisplayString(s_fullyQualifiedPlusNullable),
 			IsReferenceType = isReferenceType,
 			IsNullable = isNullable,
 
 			IsValidationProperty = isValidationProperty,
-			ValidationTypeFullName = isValidationProperty
-				? baseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-				: null,
+			IsVogenProperty = isVogenProperty,
+			ValidationTypeFullName =
+				(isValidationProperty || isVogenProperty)
+					? baseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+					: null,
 
 			CollectionPropertyDetails = collectionPropertyDetails,
 
@@ -331,7 +382,12 @@ public sealed partial class ImmediateValidationsGenerator
 		return null;
 	}
 
-	private static string[]? BuildParameterValues(AttributeData attribute, ImmutableArray<IParameterSymbol> parameters)
+	private static string[]? BuildParameterValues(
+		SemanticModel semanticModel,
+		List<ISymbol> members,
+		AttributeData attribute,
+		ImmutableArray<IParameterSymbol> parameters
+	)
 	{
 		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
 		var argumentListSyntax = attributeSyntax.ArgumentList?.Arguments ?? [];
@@ -379,6 +435,8 @@ public sealed partial class ImmediateValidationsGenerator
 					var property = attributeProperties.First(a => a.Name == name);
 
 					var parameterValue = BuildParameterValue(
+						semanticModel,
+						members,
 						argumentListSyntax[i],
 						property,
 						parameters
@@ -395,6 +453,8 @@ public sealed partial class ImmediateValidationsGenerator
 						if (attributeParameters[j].Name == name)
 						{
 							var parameterValue = BuildParameterValue(
+								semanticModel,
+								members,
 								argumentListSyntax[i],
 								attributeParameters[j],
 								parameters
@@ -415,6 +475,8 @@ public sealed partial class ImmediateValidationsGenerator
 					if (!attributeParameter.IsParams)
 					{
 						var parameterValue = BuildParameterValue(
+							semanticModel,
+							members,
 							argumentListSyntax[i],
 							attributeParameter,
 							parameters
@@ -424,7 +486,13 @@ public sealed partial class ImmediateValidationsGenerator
 					}
 					else
 					{
-						var parameterValue = GetParameterValue(attributeParameter, argumentListSyntax[i]);
+						var parameterValue = GetParameterValue(
+							semanticModel,
+							members,
+							attributeParameter,
+							argumentListSyntax[i]
+						);
+
 						parameterValues[propertyValuesIndex++] = parameterValue;
 						propertyParameterCount++;
 					}
@@ -446,13 +514,15 @@ public sealed partial class ImmediateValidationsGenerator
 	}
 
 	private static string BuildParameterValue(
+		SemanticModel semanticModel,
+		List<ISymbol> members,
 		AttributeArgumentSyntax attributeArgumentSyntax,
 		ISymbol parameterSymbol,
 		ImmutableArray<IParameterSymbol> parameters
 	)
 	{
 		var parameterName = GetParameterName(parameterSymbol.Name, parameters);
-		var parameterValue = GetParameterValue(parameterSymbol, attributeArgumentSyntax);
+		var parameterValue = GetParameterValue(semanticModel, members, parameterSymbol, attributeArgumentSyntax);
 
 		return $"{parameterName}: {parameterValue}";
 	}
@@ -468,15 +538,36 @@ public sealed partial class ImmediateValidationsGenerator
 		return name;
 	}
 
-	private static string GetParameterValue(ISymbol parameterSymbol, AttributeArgumentSyntax attributeArgumentSyntax)
+	private static string GetParameterValue(
+		SemanticModel semanticModel,
+		List<ISymbol> members,
+		ISymbol parameterSymbol,
+		AttributeArgumentSyntax attributeArgumentSyntax
+	)
 	{
 		if (parameterSymbol.IsTargetTypeSymbol()
 			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var name))
 		{
-			return $"instance.{name}";
+			var member = members.FirstOrDefault(m => m.Name.Equals(name, StringComparison.Ordinal));
+
+			return member switch
+			{
+				IMethodSymbol { IsStatic: true } => $"{name}()",
+				IMethodSymbol => $"instance.{name}()",
+				{ IsStatic: true } => $"{name}",
+				_ => $"instance.{name}",
+			};
 		}
 
-		return attributeArgumentSyntax.Expression.ToString();
+		var operation = semanticModel
+			.GetOperation(attributeArgumentSyntax.Expression);
+
+		return operation?.ConstantValue switch
+		{
+			{ HasValue: true, Value: string s } => $"@\"{s}\"",
+			{ HasValue: true, Value: { } o } => o.ToString(),
+			_ => "",
+		};
 	}
 }
 
@@ -514,34 +605,53 @@ file static class Extensions
 				{
 					Name: "AdditionalValidations",
 					IsStatic: true,
-					ReturnType: INamedTypeSymbol
+					ReturnsVoid: true,
+					Parameters:
+					[
 					{
-						ConstructedFrom: INamedTypeSymbol
+						Type: INamedTypeSymbol
 						{
-							SpecialType: SpecialType.System_Collections_Generic_IEnumerable_T,
-						},
-						TypeArguments:
-						[
-							INamedTypeSymbol
-						{
-							Name: "ValidationError",
-							ContainingNamespace:
+							ConstructedFrom: INamedTypeSymbol
 							{
-								Name: "Shared",
+								MetadataName: "List`1",
 								ContainingNamespace:
 								{
-									Name: "Validations",
+									Name: "Generic",
 									ContainingNamespace:
 									{
-										Name: "Immediate",
-										ContainingNamespace.IsGlobalNamespace: true,
+										Name: "Collections",
+										ContainingNamespace:
+										{
+											Name: "System",
+											ContainingNamespace.IsGlobalNamespace: true,
+										},
 									},
 								},
 							},
-						}
-						],
+							TypeArguments:
+							[
+								INamedTypeSymbol
+							{
+								Name: "ValidationError",
+								ContainingNamespace:
+								{
+									Name: "Shared",
+									ContainingNamespace:
+									{
+										Name: "Validations",
+										ContainingNamespace:
+										{
+											Name: "Immediate",
+											ContainingNamespace.IsGlobalNamespace: true,
+										},
+									},
+								},
+							},
+							],
+						},
 					},
-					Parameters: [{ Type: INamedTypeSymbol parameterType }],
+					{ Type: INamedTypeSymbol parameterType },
+					],
 				}
 				&& SymbolEqualityComparer.Default.Equals(parameterType, typeSymbol)
 			);

@@ -10,15 +10,16 @@ public sealed partial class AdditionalValidationsTests
 	{
 		public required int Id { get; init; }
 
-		private static IEnumerable<ValidationError> AdditionalValidations(ValidateRecord target)
+		private static void AdditionalValidations(List<ValidationError> errors, ValidateRecord target)
 		{
+			errors.Add(NotEmptyAttribute.ValidateProperty(target.Id), nameof(Id));
 			if (target.Id % 2 == 1)
 			{
-				yield return new()
+				errors.Add(new()
 				{
 					PropertyName = "Id",
 					ErrorMessage = "Value is not even.",
-				};
+				});
 			}
 		}
 	}
@@ -26,7 +27,7 @@ public sealed partial class AdditionalValidationsTests
 	[Fact]
 	public void EvenIdNoErrors()
 	{
-		var record = new ValidateRecord { Id = 0 };
+		var record = new ValidateRecord { Id = 2 };
 
 		var errors = ValidateRecord.Validate(record);
 
@@ -46,6 +47,25 @@ public sealed partial class AdditionalValidationsTests
 				{
 					PropertyName = "Id",
 					ErrorMessage = "Value is not even.",
+				},
+			],
+			errors
+		);
+	}
+
+	[Fact]
+	public void ZeroWithErrors()
+	{
+		var record = new ValidateRecord { Id = 0 };
+
+		var errors = ValidateRecord.Validate(record);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = "Id",
+					ErrorMessage = "Property must not be empty.",
 				},
 			],
 			errors

@@ -160,7 +160,7 @@ public sealed class FullHandlerTests
 			[
 				new()
 				{
-					PropertyName = "Status",
+					PropertyName = "test",
 					ErrorMessage = "The value `10` is not defined in the enum type `Status`.",
 				},
 			],

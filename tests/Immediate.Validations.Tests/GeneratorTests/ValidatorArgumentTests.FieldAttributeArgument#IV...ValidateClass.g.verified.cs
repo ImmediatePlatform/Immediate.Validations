@@ -54,6 +54,14 @@ partial class ValidateClass
 
 
 
+		errors.Add(
+			global::Immediate.Validations.Shared.NotEqualAttribute.ValidateProperty(
+				t
+				, operand: instance._argumentValue
+			),
+			$"StringProperty",
+			null
+		);
 	}
 
 }

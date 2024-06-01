@@ -15,18 +15,13 @@ public sealed class MaxLengthAttribute(
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///		The maximum length of the <see cref="string"/>.
-	/// </summary>
-	public object Length { get; } = length;
-
-	/// <summary>
-	///	    Validates that the <see cref="string"/> is less than <see cref="Length"/>
+	///	    Validates that the value should have a length at most <paramref name="length"/>.
 	/// </summary>
 	/// <param name="target">
 	///	    The value to validate.
 	/// </param>
 	/// <param name="length">
-	///		The maximum valid length for the string <paramref name="target"/>.
+	///	    The maximum valid length for the string <paramref name="target"/>.
 	/// </param>
 	/// <returns>
 	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error

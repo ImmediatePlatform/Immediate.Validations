@@ -17,46 +17,46 @@ public sealed record ValidationError
 }
 
 /// <summary>
-///	    Extension methods to facilitate the throwing of <see cref="ValidationException"/> when there is an error.
+///		Extension method for List&lt;ValidationError&gt;.
 /// </summary>
 public static class ValidationErrorExtensions
 {
 	/// <summary>
-	///	    Throws a <see cref="ValidationException"/> if there are any errors.
+	///		Conditionally adds a validation message if the validation failed.
 	/// </summary>
-	/// <param name="errors">
-	///	    A list of errors generated when validating an object.
+	/// <param name="list">
+	///		A list of validation messages, to which to add the message.
 	/// </param>
-	/// <exception cref="ValidationException">
-	///		Thrown if there are any errors.
-	/// </exception>
-	public static void ValidateAndThrow(this List<ValidationError> errors)
+	/// <param name="validation">
+	///		The results of a <see cref="ValidatorAttribute"/> validation.
+	/// </param>
+	/// <param name="propertyName">
+	///		The name of the property that was validated.
+	/// </param>
+	/// <param name="overrideMessage">
+	///		A specific message to override the message provided by the validator.
+	/// </param>
+	public static void Add(
+		this List<ValidationError> list,
+		(bool Invalid, string? DefaultMessage) validation,
+		string propertyName,
+		string? overrideMessage = null
+	)
 	{
-		if (errors is { Count: > 0 })
-			ThrowValidationException(errors);
+		ArgumentNullException.ThrowIfNull(list);
+		ArgumentNullException.ThrowIfNull(propertyName);
+
+		if (validation.Invalid)
+		{
+			var message = string.IsNullOrWhiteSpace(overrideMessage)
+				? validation.DefaultMessage!
+				: overrideMessage;
+
+			list.Add(new()
+			{
+				PropertyName = propertyName,
+				ErrorMessage = message,
+			});
+		}
 	}
-
-	/// <summary>
-	///	    Throws a <see cref="ValidationException"/> if there are any errors.
-	/// </summary>
-	/// <param name="errors">
-	///	    A list of errors generated when validating an object.
-	/// </param>
-	/// <param name="message">
-	///		The base message for the exception.
-	/// </param>
-	/// <exception cref="ValidationException">
-	///		Thrown if there are any errors.
-	/// </exception>
-	public static void ValidateAndThrow(this List<ValidationError> errors, string message)
-	{
-		if (errors is { Count: > 0 })
-			ThrowValidationException(errors, message);
-	}
-
-	private static void ThrowValidationException(this List<ValidationError> errors) =>
-		throw new ValidationException(errors);
-
-	private static void ThrowValidationException(List<ValidationError> errors, string message) =>
-		throw new ValidationException(message, errors);
 }

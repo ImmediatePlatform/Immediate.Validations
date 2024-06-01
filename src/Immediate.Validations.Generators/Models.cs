@@ -19,11 +19,13 @@ public sealed record Class
 
 public sealed record ValidationTargetProperty
 {
+	public required string Name { get; init; }
 	public required string PropertyName { get; init; }
 	public required string TypeFullName { get; init; }
 	public required bool IsReferenceType { get; init; }
 	public required bool IsNullable { get; init; }
 	public required bool IsValidationProperty { get; init; }
+	public required bool IsVogenProperty { get; init; }
 	public required string? ValidationTypeFullName { get; init; }
 	public required ValidationTargetProperty? CollectionPropertyDetails { get; init; }
 	public required EquatableReadOnlyList<PropertyValidation> Validations { get; init; }

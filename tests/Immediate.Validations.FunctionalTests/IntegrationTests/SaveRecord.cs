@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Immediate.Handlers.Shared;
 using Immediate.Validations.Shared;
 
@@ -28,12 +29,16 @@ public static partial class SaveRecord
 	public sealed partial record Command : IValidationTarget<Command>
 	{
 		[NotEmpty(Message = "Name must be provided.")]
-		[MaxLength(250)]
+		[MaxLength(MaxLength)]
 		public required string Name { get; init; }
+
+		[Description("test")]
 		public required Status Status { get; init; }
 
 		[GreaterThan(Operand = 0)]
 		public required int Value { get; init; }
+
+		public const int MaxLength = 250;
 	}
 
 	private static ValueTask HandleAsync(
