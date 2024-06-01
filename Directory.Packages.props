@@ -2,7 +2,7 @@
   <PropertyGroup>
 	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-  
+
   <ItemGroup>
 	<PackageVersion Include="Basic.Reference.Assemblies.Net80" Version="1.6.0" />
 	<PackageVersion Include="BenchmarkDotNet" Version="0.13.12" />
@@ -28,6 +28,7 @@
 	<PackageVersion Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
 	<PackageVersion Include="Verify.SourceGenerators" Version="2.2.0" />
 	<PackageVersion Include="Verify.Xunit" Version="24.2.0" />
+	<PackageVersion Include="Vogen" Version="4.0.8" />
 	<PackageVersion Include="xunit" Version="2.8.1" />
 	<PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
   </ItemGroup>
