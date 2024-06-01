@@ -88,6 +88,26 @@ internal static class ITypeSymbolExtensions
 			},
 		};
 
+	public static bool IsVogenAttribute(this INamedTypeSymbol? typeSymbol) =>
+		typeSymbol is
+	{
+		Name: "ValueObjectAttribute",
+		ContainingNamespace:
+		{
+			Name: "Vogen",
+			ContainingNamespace.IsGlobalNamespace: true,
+		},
+	}
+	or
+	{
+		MetadataName: "ValueObjectAttribute`1",
+		ContainingNamespace:
+		{
+			Name: "Vogen",
+			ContainingNamespace.IsGlobalNamespace: true,
+		},
+	};
+
 	public static bool IsValidatorAttribute(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{

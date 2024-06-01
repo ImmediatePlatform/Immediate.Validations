@@ -169,8 +169,22 @@ public sealed partial class ImmediateValidationsGenerator
 
 		token.ThrowIfCancellationRequested();
 
-		var isValidationProperty = propertyType.GetAttributes()
-			.Any(v => v.AttributeClass.IsValidateAttribute());
+		var isValidationProperty =
+			propertyType
+				.GetAttributes()
+				.Any(v => v.AttributeClass.IsValidateAttribute());
+
+		var isVogenProperty =
+			propertyType
+				.GetAttributes()
+				.Any(v => v.AttributeClass.IsVogenAttribute())
+			&& propertyType
+				.GetMembers()
+				.Any(m => m is
+				{
+					Name: "Validate",
+					IsStatic: true,
+				});
 
 		token.ThrowIfCancellationRequested();
 
@@ -323,6 +337,7 @@ public sealed partial class ImmediateValidationsGenerator
 		if (
 			(isNullable || !isReferenceType)
 			&& !isValidationProperty
+			&& !isVogenProperty
 			&& collectionPropertyDetails is null
 			&& validations is []
 		)
@@ -339,9 +354,11 @@ public sealed partial class ImmediateValidationsGenerator
 			IsNullable = isNullable,
 
 			IsValidationProperty = isValidationProperty,
-			ValidationTypeFullName = isValidationProperty
-				? baseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-				: null,
+			IsVogenProperty = isVogenProperty,
+			ValidationTypeFullName =
+				(isValidationProperty || isVogenProperty)
+					? baseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+					: null,
 
 			CollectionPropertyDetails = collectionPropertyDetails,
 
