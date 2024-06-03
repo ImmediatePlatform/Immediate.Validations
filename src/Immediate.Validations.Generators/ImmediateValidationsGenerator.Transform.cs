@@ -120,6 +120,7 @@ public sealed partial class ImmediateValidationsGenerator
 					IsStatic: false,
 					// ignore record `EqualityContract`
 					Name: not "EqualityContract",
+					SetMethod: { }
 				} property
 			)
 			{
