@@ -120,12 +120,14 @@ public sealed partial class ImmediateValidationsGenerator
 					IsStatic: false,
 					// ignore record `EqualityContract`
 					Name: not "EqualityContract",
-					SetMethod: { }
 				} property
 			)
 			{
 				continue;
 			}
+
+			if (symbol.TypeKind is not TypeKind.Interface && property.SetMethod is null)
+				continue;
 
 			token.ThrowIfCancellationRequested();
 
