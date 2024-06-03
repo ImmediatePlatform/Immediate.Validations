@@ -126,6 +126,9 @@ public sealed partial class ImmediateValidationsGenerator
 				continue;
 			}
 
+			if (symbol.TypeKind is not TypeKind.Interface && property.SetMethod is null)
+				continue;
+
 			token.ThrowIfCancellationRequested();
 
 			if (GetPropertyValidations(
