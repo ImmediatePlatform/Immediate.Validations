@@ -56,7 +56,9 @@ partial class ValidateClass
 		{
 			errors.Add(error with 
 			{
-				PropertyName = $"ValidationTargets[{counter0}][{counter1}].{error.PropertyName}",
+				PropertyName = string.IsNullOrWhiteSpace(error.PropertyName)
+					? $"ValidationTargets[{counter0}][{counter1}]"
+					: $"ValidationTargets[{counter0}][{counter1}].{error.PropertyName}",
 			});
 		}
 
