@@ -116,18 +116,6 @@ partial {{ class.type }} {{ class.name }}
 				PropertyName = $"{{ get_prop_name(p.name, depth) }}.{error.PropertyName}",
 			});
 		}
-		{{~ else if p.is_vogen_property ~}}
-		{
-			var validation = {{ p.validation_type_full_name }}.Validate(t.Value);
-			if (!string.IsNullOrWhiteSpace(validation.ErrorMessage))
-			{
-				errors.Add(new()
-				{
-					PropertyName = $"{{ get_prop_name(p.name, depth) }}",
-					ErrorMessage = validation.ErrorMessage,
-				});
-			}
-		}
 		{{~ end ~}}
 
 		{{~ if p.collection_property_details ~}}

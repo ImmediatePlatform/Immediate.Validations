@@ -412,37 +412,4 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
-
-	[Fact]
-	public async Task VogenValidation()
-	{
-		var driver = GeneratorTestHelper.GetDriver(
-			"""
-			#nullable enable
-
-			using System.Collections.Generic;
-			using Immediate.Validations.Shared;
-			using Vogen;
-
-			[ValueObject]
-			public readonly partial struct UserId
-			{
-				public static Validation Validate(int value) =>
-					value > 0 ? Validation.Ok : Validation.Invalid("Must be greater than zero.");
-			}
-			
-			[Validate]
-			public partial class ValidateClass : IValidationTarget<ValidateClass>
-			{
-				public required UserId UserId { get; init; }
-			}
-			""");
-
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
-
-		_ = await Verify(result);
-	}
 }
