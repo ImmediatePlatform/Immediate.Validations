@@ -113,7 +113,9 @@ partial {{ class.type }} {{ class.name }}
 		{
 			errors.Add(error with 
 			{
-				PropertyName = $"{{ get_prop_name(p.name, depth) }}.{error.PropertyName}",
+				PropertyName = string.IsNullOrWhiteSpace(error.PropertyName)
+					? $"{{ get_prop_name(p.name, depth) }}"
+					: $"{{ get_prop_name(p.name, depth) }}.{error.PropertyName}",
 			});
 		}
 		{{~ end ~}}
