@@ -8,6 +8,5 @@ internal static class Utility
 	[
 		MetadataReference.CreateFromFile("./Immediate.Handlers.Shared.dll"),
 		MetadataReference.CreateFromFile("./Immediate.Validations.Shared.dll"),
-		MetadataReference.CreateFromFile("./Vogen.SharedTypes.dll"),
 	];
 }
