@@ -12,6 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+	<PackageReference Include="coverlet.collector" PrivateAssets="All" />
+	<PackageReference Include="coverlet.msbuild" PrivateAssets="All" />
 	<PackageReference Include="GitHubActionsTestLogger" PrivateAssets="All" />
 	<PackageReference Include="Immediate.Handlers" />
 	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
