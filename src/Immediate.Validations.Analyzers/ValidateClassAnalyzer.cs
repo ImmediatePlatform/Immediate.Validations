@@ -249,7 +249,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 		if (targetParameterType is ITypeParameterSymbol tps)
 		{
-			if (Utility.SatisfiesConstraints(tps, propertyType, compilation))
+			if (tps.SatisfiesConstraints(propertyType, compilation))
 			{
 				return new()
 				{

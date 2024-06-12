@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 
-namespace Immediate.Validations.Generators;
+namespace Immediate.Validations;
 
 internal static class ITypeSymbolExtensions
 {
@@ -69,7 +69,7 @@ internal static class ITypeSymbolExtensions
 		}
 	}
 
-	public static bool IsValidateAttribute(this INamedTypeSymbol? typeSymbol) =>
+	public static bool IsValidateAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
 			Name: "ValidateAttribute",
@@ -88,7 +88,7 @@ internal static class ITypeSymbolExtensions
 			},
 		};
 
-	public static bool IsValidatorAttribute(this INamedTypeSymbol? typeSymbol) =>
+	public static bool IsValidatorAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
 			Name: "ValidatorAttribute",
@@ -157,6 +157,22 @@ internal static class ITypeSymbolExtensions
 				&& SymbolEqualityComparer.Default.Equals(typeSymbol, i.TypeArguments[0])
 			);
 
+	public static bool IsValidValidatorReturn(this ITypeSymbol? typeSymbol) =>
+		typeSymbol is INamedTypeSymbol
+		{
+			MetadataName: "ValueTuple`2",
+			ContainingNamespace:
+			{
+				Name: "System",
+				ContainingNamespace.IsGlobalNamespace: true,
+			},
+			TypeArguments:
+			[
+			{ SpecialType: SpecialType.System_Boolean },
+			{ SpecialType: SpecialType.System_String, NullableAnnotation: NullableAnnotation.Annotated or NullableAnnotation.None },
+			]
+		};
+
 	public static bool IsDescriptionAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
@@ -168,6 +184,44 @@ internal static class ITypeSymbolExtensions
 				{
 					Name: "System",
 					ContainingNamespace.IsGlobalNamespace: true,
+				},
+			},
+		};
+
+	public static bool IsValidationBehavior([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
+		typeSymbol is
+		{
+			MetadataName: "ValidationBehavior`2",
+			ContainingNamespace:
+			{
+				Name: "Shared",
+				ContainingNamespace:
+				{
+					Name: "Validations",
+					ContainingNamespace:
+					{
+						Name: "Immediate",
+						ContainingNamespace.IsGlobalNamespace: true,
+					},
+				},
+			},
+		};
+
+	public static bool IsBehaviorsAttribute(this ITypeSymbol? typeSymbol) =>
+		typeSymbol is
+		{
+			Name: "BehaviorsAttribute",
+			ContainingNamespace:
+			{
+				Name: "Shared",
+				ContainingNamespace:
+				{
+					Name: "Handlers",
+					ContainingNamespace:
+					{
+						Name: "Immediate",
+						ContainingNamespace.IsGlobalNamespace: true,
+					},
 				},
 			},
 		};

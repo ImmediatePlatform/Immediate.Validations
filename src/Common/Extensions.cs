@@ -2,11 +2,14 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Immediate.Validations.Analyzers;
+namespace Immediate.Validations;
 
 [ExcludeFromCodeCoverage]
-internal static class Utility
+internal static class Extensions
 {
+	public static string? NullIf(this string value, string check) =>
+		value.Equals(check, StringComparison.Ordinal) ? null : value;
+
 	public static T? SingleValue<T>(this IEnumerable<T> source)
 	{
 		using var enumerator = source.GetEnumerator();
@@ -26,7 +29,7 @@ internal static class Utility
 			or { IsImplicit: true, IsNullable: true }
 			or { IsBoxing: true };
 
-	public static bool SatisfiesConstraints(ITypeParameterSymbol typeParameter, ITypeSymbol typeArgument, Compilation compilation)
+	public static bool SatisfiesConstraints(this ITypeParameterSymbol typeParameter, ITypeSymbol typeArgument, Compilation compilation)
 	{
 		if (typeArgument.IsPointerOrFunctionPointer() || typeArgument.IsRefLikeType)
 			return false;

@@ -249,7 +249,7 @@ public sealed partial class ImmediateValidationsGenerator
 
 			if (targetParameterType is ITypeParameterSymbol tps)
 			{
-				if (!Utility.SatisfiesConstraints(tps, propertyType, semanticModel.Compilation))
+				if (!tps.SatisfiesConstraints(propertyType, semanticModel.Compilation))
 					continue;
 			}
 			else
@@ -257,14 +257,8 @@ public sealed partial class ImmediateValidationsGenerator
 				var conversion = semanticModel.Compilation
 					.ClassifyConversion(baseType, targetParameterType);
 
-				if (conversion is not { IsIdentity: true }
-						or { IsImplicit: true, IsReference: true }
-						or { IsImplicit: true, IsNullable: true }
-						or { IsBoxing: true }
-				)
-				{
+				if (!conversion.IsValidConversion())
 					continue;
-				}
 			}
 
 			token.ThrowIfCancellationRequested();
