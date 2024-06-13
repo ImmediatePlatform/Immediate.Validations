@@ -530,13 +530,12 @@ public sealed partial class ImmediateValidationsGenerator
 file static class Extensions
 {
 	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
-		symbol is IParameterSymbol { Type.SpecialType: SpecialType.System_Object }
-			or IPropertySymbol { Type.SpecialType: SpecialType.System_Object }
+		symbol is IParameterSymbol { Type.SpecialType: SpecialType.System_Object or SpecialType.System_String }
+			or IPropertySymbol { Type.SpecialType: SpecialType.System_Object or SpecialType.System_String }
 		&& symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
 
 	public static bool IsNameOfExpression(this ExpressionSyntax syntax, out string? name)
 	{
-		name = null;
 		if (syntax is InvocationExpressionSyntax
 			{
 				Expression: SimpleNameSyntax { Identifier.ValueText: "nameof" },
@@ -549,6 +548,7 @@ file static class Extensions
 		}
 		else
 		{
+			name = null;
 			return false;
 		}
 	}

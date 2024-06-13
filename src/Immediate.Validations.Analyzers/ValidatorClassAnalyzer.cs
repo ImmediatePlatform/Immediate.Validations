@@ -321,7 +321,7 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		}
 
 		if (
-			propertyType is { SpecialType: SpecialType.System_Object }
+			propertyType is { SpecialType: SpecialType.System_Object or SpecialType.System_String }
 			&& property.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute())
 		)
 		{
