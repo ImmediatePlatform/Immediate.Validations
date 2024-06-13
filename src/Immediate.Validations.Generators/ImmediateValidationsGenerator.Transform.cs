@@ -25,7 +25,7 @@ public sealed partial class ImmediateValidationsGenerator
 		var symbol = (INamedTypeSymbol)context.TargetSymbol;
 		var @namespace = symbol.ContainingNamespace.ToString().NullIf("<global namespace>");
 		var outerClasses = GetOuterClasses(symbol);
-		var baseValidatorTypes = GetBaseValidatorTypes(symbol);
+		var baseValidationTargets = GetBaseValidationTargets(symbol);
 		var properties = GetProperties(context.SemanticModel, symbol, token);
 
 		return new()
@@ -35,7 +35,7 @@ public sealed partial class ImmediateValidationsGenerator
 			Class = GetClass(symbol),
 			HasAdditionalValidationsMethod = symbol.HasAdditionalValidationsMethod(),
 			IsReferenceType = symbol.IsReferenceType,
-			BaseValidatorTypes = baseValidatorTypes,
+			BaseValidationTargets = baseValidationTargets,
 			Properties = properties,
 		};
 	}
@@ -72,23 +72,23 @@ public sealed partial class ImmediateValidationsGenerator
 		return outerClasses.ToEquatableReadOnlyList();
 	}
 
-	private static EquatableReadOnlyList<string> GetBaseValidatorTypes(INamedTypeSymbol symbol)
+	private static EquatableReadOnlyList<string> GetBaseValidationTargets(INamedTypeSymbol symbol)
 	{
-		List<string>? baseValidatorTypes = null;
+		List<string>? baseValidationTargets = null;
 
 		if (symbol.BaseType.IsValidationTarget())
-			(baseValidatorTypes = []).Add(symbol.BaseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+			(baseValidationTargets = []).Add(symbol.BaseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
 
 		foreach (var i in symbol.Interfaces)
 		{
 			if (i.IsValidationTarget())
-				(baseValidatorTypes ??= []).Add(i.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+				(baseValidationTargets ??= []).Add(i.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
 		}
 
-		if (baseValidatorTypes is null)
+		if (baseValidationTargets is null)
 			return default;
 
-		return baseValidatorTypes.ToEquatableReadOnlyList();
+		return baseValidationTargets.ToEquatableReadOnlyList();
 	}
 
 	private static EquatableReadOnlyList<ValidationTargetProperty> GetProperties(
