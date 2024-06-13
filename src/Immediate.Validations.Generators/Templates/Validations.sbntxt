@@ -38,7 +38,7 @@ partial {{ class.type }} {{ class.name }}
 		
 		var errors = new List<ValidationError>();
 
-		{{~ for bc in base_validator_types ~}}
+		{{~ for bc in base_validation_targets ~}}
 		errors.AddRange({{ bc }}.Validate(t));
 		{{~ end ~}}
 
