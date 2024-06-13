@@ -134,7 +134,7 @@ public sealed partial class ImmediateValidationsGenerator
 			if (GetPropertyValidations(
 					semanticModel,
 					members,
-					property.Name,
+					property.GetDescription(),
 					property.Type,
 					property.NullableAnnotation,
 					property.GetAttributes(),
@@ -199,14 +199,9 @@ public sealed partial class ImmediateValidationsGenerator
 		{
 			token.ThrowIfCancellationRequested();
 
-			var @class = attribute.AttributeClass?.OriginalDefinition;
+			var @class = attribute.AttributeClass;
 			if (@class.IsDescriptionAttribute())
-			{
-				if (attribute.ConstructorArguments is [{ Value: string v }] && !string.IsNullOrWhiteSpace(v))
-					name = v;
-
 				continue;
-			}
 
 			if (!@class.ImplementsValidatorAttribute())
 				continue;
@@ -616,4 +611,25 @@ file static class Extensions
 				}
 				&& SymbolEqualityComparer.Default.Equals(parameterType, typeSymbol)
 			);
+
+	public static string GetDescription(this ISymbol symbol)
+	{
+		if (symbol is IMethodSymbol)
+			return $"{symbol.Name}()";
+
+		if (symbol is not (IFieldSymbol or IPropertySymbol))
+			return symbol.Name;
+
+		foreach (var attribute in symbol.GetAttributes())
+		{
+			if (attribute.AttributeClass.IsDescriptionAttribute()
+				&& attribute.ConstructorArguments is [{ Value: string v }]
+				&& !string.IsNullOrWhiteSpace(v))
+			{
+				return v;
+			}
+		}
+
+		return symbol.Name;
+	}
 }
