@@ -183,6 +183,65 @@ internal static class ITypeSymbolExtensions
 		}
 		&& returnType.IsValidValidatorReturn();
 
+	public static bool HasAdditionalValidationsMethod(this INamedTypeSymbol typeSymbol) =>
+		typeSymbol.GetMembers()
+			.OfType<IMethodSymbol>()
+			.Any(m =>
+				m is
+				{
+					Name: "AdditionalValidations",
+					IsStatic: true,
+					ReturnsVoid: true,
+					Parameters:
+					[
+					{
+						Type: INamedTypeSymbol
+						{
+							ConstructedFrom: INamedTypeSymbol
+							{
+								MetadataName: "List`1",
+								ContainingNamespace:
+								{
+									Name: "Generic",
+									ContainingNamespace:
+									{
+										Name: "Collections",
+										ContainingNamespace:
+										{
+											Name: "System",
+											ContainingNamespace.IsGlobalNamespace: true,
+										},
+									},
+								},
+							},
+							TypeArguments:
+							[
+								INamedTypeSymbol
+							{
+								Name: "ValidationError",
+								ContainingNamespace:
+								{
+									Name: "Shared",
+									ContainingNamespace:
+									{
+										Name: "Validations",
+										ContainingNamespace:
+										{
+											Name: "Immediate",
+											ContainingNamespace.IsGlobalNamespace: true,
+										},
+									},
+								},
+							},
+							],
+						},
+					},
+					{ Type: INamedTypeSymbol parameterType },
+					],
+				}
+				&& SymbolEqualityComparer.Default.Equals(parameterType, typeSymbol)
+			);
+
 	public static bool IsDescriptionAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
