@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Immediate.Validations.Generators;
 
-public sealed partial class ImmediateValidationsGenerator
+public sealed class ValidateTargetTransformer
 {
 	private static readonly SymbolDisplayFormat s_fullyQualifiedPlusNullable =
 		SymbolDisplayFormat.FullyQualifiedFormat
@@ -15,26 +15,56 @@ public sealed partial class ImmediateValidationsGenerator
 				| SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier
 			);
 
-	private static ValidationTarget? TransformMethod(
+	private readonly GeneratorAttributeSyntaxContext _context;
+	private readonly CancellationToken _token;
+	private readonly SemanticModel _semanticModel;
+	private readonly INamedTypeSymbol _symbol;
+	private readonly List<ISymbol> _members;
+
+	public ValidateTargetTransformer(
 		GeneratorAttributeSyntaxContext context,
 		CancellationToken token
 	)
 	{
-		token.ThrowIfCancellationRequested();
+		_context = context;
+		_token = token;
+		_semanticModel = _context.SemanticModel;
+		_symbol = (INamedTypeSymbol)context.TargetSymbol;
 
-		var symbol = (INamedTypeSymbol)context.TargetSymbol;
-		var @namespace = symbol.ContainingNamespace.ToString().NullIf("<global namespace>");
-		var outerClasses = GetOuterClasses(symbol);
-		var baseValidationTargets = GetBaseValidationTargets(symbol);
-		var properties = GetProperties(context.SemanticModel, symbol, token);
+		_token.ThrowIfCancellationRequested();
+		_members = ((INamedTypeSymbol)context.TargetSymbol)
+			.GetAllMembers()
+			.Where(m =>
+				m is IPropertySymbol or IFieldSymbol
+					or IMethodSymbol
+				{
+					Parameters: [],
+					MethodKind: MethodKind.Ordinary,
+				}
+			)
+			.ToList();
+
+		_token.ThrowIfCancellationRequested();
+	}
+
+	public ValidationTarget? Transform()
+	{
+		_token.ThrowIfCancellationRequested();
+
+		var @namespace = _symbol.ContainingNamespace.ToString().NullIf("<global namespace>");
+		var outerClasses = GetOuterClasses();
+		var @class = GetClass(_symbol);
+		var hasAdditionalValidationsMethod = _symbol.HasAdditionalValidationsMethod();
+		var baseValidationTargets = GetBaseValidationTargets();
+		var properties = GetProperties();
 
 		return new()
 		{
 			Namespace = @namespace,
 			OuterClasses = outerClasses,
-			Class = GetClass(symbol),
-			HasAdditionalValidationsMethod = symbol.HasAdditionalValidationsMethod(),
-			IsReferenceType = symbol.IsReferenceType,
+			Class = @class,
+			HasAdditionalValidationsMethod = hasAdditionalValidationsMethod,
+			IsReferenceType = _symbol.IsReferenceType,
 			BaseValidationTargets = baseValidationTargets,
 			Properties = properties,
 		};
@@ -54,10 +84,10 @@ public sealed partial class ImmediateValidationsGenerator
 			},
 		};
 
-	private static EquatableReadOnlyList<Class> GetOuterClasses(INamedTypeSymbol symbol)
+	private EquatableReadOnlyList<Class> GetOuterClasses()
 	{
 		List<Class>? outerClasses = null;
-		var outerSymbol = symbol.ContainingType;
+		var outerSymbol = _symbol.ContainingType;
 		while (outerSymbol is not null)
 		{
 			(outerClasses ??= []).Add(GetClass(outerSymbol));
@@ -72,14 +102,14 @@ public sealed partial class ImmediateValidationsGenerator
 		return outerClasses.ToEquatableReadOnlyList();
 	}
 
-	private static EquatableReadOnlyList<string> GetBaseValidationTargets(INamedTypeSymbol symbol)
+	private EquatableReadOnlyList<string> GetBaseValidationTargets()
 	{
 		List<string>? baseValidationTargets = null;
 
-		if (symbol.BaseType.IsValidationTarget())
-			(baseValidationTargets = []).Add(symbol.BaseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+		if (_symbol.BaseType.IsValidationTarget())
+			(baseValidationTargets = []).Add(_symbol.BaseType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
 
-		foreach (var i in symbol.Interfaces)
+		foreach (var i in _symbol.Interfaces)
 		{
 			if (i.IsValidationTarget())
 				(baseValidationTargets ??= []).Add(i.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
@@ -91,28 +121,12 @@ public sealed partial class ImmediateValidationsGenerator
 		return baseValidationTargets.ToEquatableReadOnlyList();
 	}
 
-	private static EquatableReadOnlyList<ValidationTargetProperty> GetProperties(
-		SemanticModel semanticModel,
-		INamedTypeSymbol symbol,
-		CancellationToken token
-	)
+	private EquatableReadOnlyList<ValidationTargetProperty> GetProperties()
 	{
-		token.ThrowIfCancellationRequested();
-
-		var members = symbol
-			.GetAllMembers()
-			.Where(m =>
-				m is IPropertySymbol or IFieldSymbol
-					or IMethodSymbol
-				{
-					Parameters: [],
-					MethodKind: MethodKind.Ordinary,
-				}
-			)
-			.ToList();
+		_token.ThrowIfCancellationRequested();
 
 		var properties = new List<ValidationTargetProperty>();
-		foreach (var member in symbol.GetMembers())
+		foreach (var member in _symbol.GetMembers())
 		{
 			if (member is not IPropertySymbol
 				{
@@ -126,19 +140,17 @@ public sealed partial class ImmediateValidationsGenerator
 				continue;
 			}
 
-			if (symbol.TypeKind is not TypeKind.Interface && property.SetMethod is null)
+			if (_symbol.TypeKind is not TypeKind.Interface && property.SetMethod is null)
 				continue;
 
-			token.ThrowIfCancellationRequested();
+			_token.ThrowIfCancellationRequested();
 
 			if (GetPropertyValidations(
-					semanticModel,
-					members,
 					property.GetDescription(),
+					property.Name,
 					property.Type,
 					property.NullableAnnotation,
-					property.GetAttributes(),
-					token
+					property.GetAttributes()
 				) is { } prop)
 			{
 				properties.Add(prop);
@@ -148,19 +160,16 @@ public sealed partial class ImmediateValidationsGenerator
 		return properties.ToEquatableReadOnlyList();
 	}
 
-	private static ValidationTargetProperty? GetPropertyValidations(
-		SemanticModel semanticModel,
-		List<ISymbol> members,
+	private ValidationTargetProperty? GetPropertyValidations(
+		string name,
 		string propertyName,
 		ITypeSymbol propertyType,
 		NullableAnnotation nullableAnnotation,
-		ImmutableArray<AttributeData> attributes,
-		CancellationToken token
+		ImmutableArray<AttributeData> attributes
 	)
 	{
-		token.ThrowIfCancellationRequested();
+		_token.ThrowIfCancellationRequested();
 
-		var name = propertyName;
 		var isReferenceType = propertyType.IsReferenceType;
 		var isNullable = isReferenceType
 			? nullableAnnotation is NullableAnnotation.Annotated
@@ -170,12 +179,12 @@ public sealed partial class ImmediateValidationsGenerator
 			? ((INamedTypeSymbol)propertyType).TypeArguments[0]
 			: propertyType;
 
-		token.ThrowIfCancellationRequested();
+		_token.ThrowIfCancellationRequested();
 
 		var isValidationProperty = propertyType.GetAttributes()
 			.Any(v => v.AttributeClass.IsValidateAttribute());
 
-		token.ThrowIfCancellationRequested();
+		_token.ThrowIfCancellationRequested();
 
 		var validations = new List<PropertyValidation>();
 
@@ -193,17 +202,14 @@ public sealed partial class ImmediateValidationsGenerator
 			);
 		}
 
-		token.ThrowIfCancellationRequested();
+		_token.ThrowIfCancellationRequested();
 
 		foreach (var attribute in attributes)
 		{
 			if (ProcessAttribute(
-					semanticModel,
-					members,
 					propertyType,
 					baseType,
-					attribute,
-					token
+					attribute
 				) is { } validation
 			)
 			{
@@ -215,13 +221,11 @@ public sealed partial class ImmediateValidationsGenerator
 		{
 			IArrayTypeSymbol ats =>
 				GetPropertyValidations(
-					semanticModel,
-					members,
+					name,
 					propertyName,
 					ats.ElementType,
 					ats.ElementNullableAnnotation,
-					attributes,
-					token
+					attributes
 				),
 
 			INamedTypeSymbol
@@ -231,13 +235,11 @@ public sealed partial class ImmediateValidationsGenerator
 				TypeArgumentNullableAnnotations: [{ } annotation],
 			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
 				GetPropertyValidations(
-					semanticModel,
-					members,
+					name,
 					propertyName,
 					type,
 					annotation,
-					attributes,
-					token
+					attributes
 				),
 
 			_ => null,
@@ -277,25 +279,19 @@ public sealed partial class ImmediateValidationsGenerator
 		};
 	}
 
-	private static PropertyValidation? ProcessAttribute(
-		SemanticModel semanticModel,
-		List<ISymbol> members,
+	private PropertyValidation? ProcessAttribute(
 		ITypeSymbol propertyType,
 		ITypeSymbol baseType,
-		AttributeData attribute,
-		CancellationToken token
+		AttributeData attribute
 	)
 	{
-		token.ThrowIfCancellationRequested();
+		_token.ThrowIfCancellationRequested();
 
 		var @class = attribute.AttributeClass;
-		if (@class.IsDescriptionAttribute())
-			return null;
-
 		if (!@class.ImplementsValidatorAttribute())
 			return null;
 
-		token.ThrowIfCancellationRequested();
+		_token.ThrowIfCancellationRequested();
 
 		if (@class
 				.GetMembers()
@@ -310,32 +306,30 @@ public sealed partial class ImmediateValidationsGenerator
 			return null;
 		}
 
-		token.ThrowIfCancellationRequested();
+		_token.ThrowIfCancellationRequested();
 
 		if (targetParameterType is ITypeParameterSymbol tps)
 		{
-			if (!tps.SatisfiesConstraints(propertyType, semanticModel.Compilation))
+			if (!tps.SatisfiesConstraints(propertyType, _semanticModel.Compilation))
 				return null;
 		}
 		else
 		{
-			var conversion = semanticModel.Compilation
+			var conversion = _semanticModel.Compilation
 				.ClassifyConversion(baseType, targetParameterType);
 
 			if (!conversion.IsValidConversion())
 				return null;
 		}
 
-		token.ThrowIfCancellationRequested();
+		_token.ThrowIfCancellationRequested();
 
 		var parameters = BuildParameterValues(
-			semanticModel,
-			members,
 			attribute,
 			validateMethod.Parameters
 		);
 
-		token.ThrowIfCancellationRequested();
+		_token.ThrowIfCancellationRequested();
 
 		return new()
 		{
@@ -359,9 +353,7 @@ public sealed partial class ImmediateValidationsGenerator
 		return null;
 	}
 
-	private static string[]? BuildParameterValues(
-		SemanticModel semanticModel,
-		List<ISymbol> members,
+	private string[]? BuildParameterValues(
 		AttributeData attribute,
 		ImmutableArray<IParameterSymbol> parameters
 	)
@@ -384,6 +376,8 @@ public sealed partial class ImmediateValidationsGenerator
 
 		for (var i = 0; i < argumentListSyntax.Count; i++)
 		{
+			_token.ThrowIfCancellationRequested();
+
 			switch (argumentListSyntax[i])
 			{
 				// Message = "Value"
@@ -413,8 +407,6 @@ public sealed partial class ImmediateValidationsGenerator
 					var property = attributeProperties.First(a => a.Name == name);
 
 					var parameterValue = BuildParameterValue(
-						semanticModel,
-						members,
 						argumentListSyntax[i],
 						property,
 						parameters
@@ -432,8 +424,6 @@ public sealed partial class ImmediateValidationsGenerator
 						if (attributeParameters[j].Name == name)
 						{
 							var parameterValue = BuildParameterValue(
-								semanticModel,
-								members,
 								argumentListSyntax[i],
 								attributeParameters[j],
 								parameters
@@ -455,8 +445,6 @@ public sealed partial class ImmediateValidationsGenerator
 					if (!attributeParameter.IsParams)
 					{
 						var parameterValue = BuildParameterValue(
-							semanticModel,
-							members,
 							argumentListSyntax[i],
 							attributeParameter,
 							parameters
@@ -467,8 +455,6 @@ public sealed partial class ImmediateValidationsGenerator
 					else
 					{
 						var parameterValue = GetParameterValue(
-							semanticModel,
-							members,
 							attributeParameter,
 							argumentListSyntax[i]
 						);
@@ -493,16 +479,14 @@ public sealed partial class ImmediateValidationsGenerator
 		return count;
 	}
 
-	private static string BuildParameterValue(
-		SemanticModel semanticModel,
-		List<ISymbol> members,
+	private string BuildParameterValue(
 		AttributeArgumentSyntax attributeArgumentSyntax,
 		ISymbol parameterSymbol,
 		ImmutableArray<IParameterSymbol> parameters
 	)
 	{
 		var parameterName = GetParameterName(parameterSymbol.Name, parameters);
-		var parameterValue = GetParameterValue(semanticModel, members, parameterSymbol, attributeArgumentSyntax);
+		var parameterValue = GetParameterValue(parameterSymbol, attributeArgumentSyntax);
 
 		return $"{parameterName}: {parameterValue}";
 	}
@@ -518,9 +502,7 @@ public sealed partial class ImmediateValidationsGenerator
 		return name;
 	}
 
-	private static string GetParameterValue(
-		SemanticModel semanticModel,
-		List<ISymbol> members,
+	private string GetParameterValue(
 		ISymbol parameterSymbol,
 		AttributeArgumentSyntax attributeArgumentSyntax
 	)
@@ -528,7 +510,7 @@ public sealed partial class ImmediateValidationsGenerator
 		if (parameterSymbol.IsTargetTypeSymbol()
 			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var name))
 		{
-			var member = members.FirstOrDefault(m => m.Name.Equals(name, StringComparison.Ordinal));
+			var member = _members.FirstOrDefault(m => m.Name.Equals(name, StringComparison.Ordinal));
 
 			return member switch
 			{
@@ -539,7 +521,7 @@ public sealed partial class ImmediateValidationsGenerator
 			};
 		}
 
-		var operation = semanticModel
+		var operation = _semanticModel
 			.GetOperation(attributeArgumentSyntax.Expression);
 
 		return operation?.ConstantValue switch
