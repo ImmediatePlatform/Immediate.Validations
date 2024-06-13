@@ -216,26 +216,7 @@ public sealed partial class ImmediateValidationsGenerator
 			if (@class
 					.GetMembers()
 					.OfType<IMethodSymbol>()
-					.Where(m => m is
-					{
-						IsStatic: true,
-						Parameters.Length: >= 1,
-						Name: "ValidateProperty",
-						ReturnType: INamedTypeSymbol
-						{
-							MetadataName: "ValueTuple`2",
-							ContainingNamespace:
-							{
-								Name: "System",
-								ContainingNamespace.IsGlobalNamespace: true,
-							},
-							TypeArguments:
-							[
-							{ SpecialType: SpecialType.System_Boolean },
-							{ SpecialType: SpecialType.System_String },
-							]
-						},
-					})
+					.Where(m => m.IsValidValidatePropertyMethod())
 					.SingleValue() is not
 					{
 						Parameters: [{ Type: { } targetParameterType }, ..],

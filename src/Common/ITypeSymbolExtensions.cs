@@ -173,6 +173,16 @@ internal static class ITypeSymbolExtensions
 			]
 		};
 
+	public static bool IsValidValidatePropertyMethod(this IMethodSymbol methodSymbol) =>
+		methodSymbol is
+		{
+			IsStatic: true,
+			Parameters.Length: >= 1,
+			Name: "ValidateProperty",
+			ReturnType: { } returnType,
+		}
+		&& returnType.IsValidValidatorReturn();
+
 	public static bool IsDescriptionAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
