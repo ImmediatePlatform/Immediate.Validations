@@ -197,68 +197,18 @@ public sealed partial class ImmediateValidationsGenerator
 
 		foreach (var attribute in attributes)
 		{
-			token.ThrowIfCancellationRequested();
-
-			var @class = attribute.AttributeClass;
-			if (@class.IsDescriptionAttribute())
-				continue;
-
-			if (!@class.ImplementsValidatorAttribute())
-				continue;
-
-			token.ThrowIfCancellationRequested();
-
-			if (@class
-					.GetMembers()
-					.OfType<IMethodSymbol>()
-					.Where(m => m.IsValidValidatePropertyMethod())
-					.SingleValue() is not
-					{
-						Parameters: [{ Type: { } targetParameterType }, ..],
-					} validateMethod
+			if (ProcessAttribute(
+					semanticModel,
+					members,
+					propertyType,
+					baseType,
+					attribute,
+					token
+				) is { } validation
 			)
 			{
-				continue;
+				validations.Add(validation);
 			}
-
-			token.ThrowIfCancellationRequested();
-
-			if (targetParameterType is ITypeParameterSymbol tps)
-			{
-				if (!tps.SatisfiesConstraints(propertyType, semanticModel.Compilation))
-					continue;
-			}
-			else
-			{
-				var conversion = semanticModel.Compilation
-					.ClassifyConversion(baseType, targetParameterType);
-
-				if (!conversion.IsValidConversion())
-					continue;
-			}
-
-			token.ThrowIfCancellationRequested();
-
-			var parameters = BuildParameterValues(
-				semanticModel,
-				members,
-				attribute,
-				validateMethod.Parameters
-			);
-
-			token.ThrowIfCancellationRequested();
-
-			validations.Add(
-				new()
-				{
-					ValidatorName = @class.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-					IsGenericMethod = validateMethod.IsGenericMethod,
-					IsNullable = targetParameterType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated }
-						or { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T },
-					Parameters = parameters.ToEquatableReadOnlyList()!,
-					Message = GetMessage(attribute),
-				}
-			);
 		}
 
 		var collectionPropertyDetails = propertyType switch
@@ -327,6 +277,77 @@ public sealed partial class ImmediateValidationsGenerator
 		};
 	}
 
+	private static PropertyValidation? ProcessAttribute(
+		SemanticModel semanticModel,
+		List<ISymbol> members,
+		ITypeSymbol propertyType,
+		ITypeSymbol baseType,
+		AttributeData attribute,
+		CancellationToken token
+	)
+	{
+		token.ThrowIfCancellationRequested();
+
+		var @class = attribute.AttributeClass;
+		if (@class.IsDescriptionAttribute())
+			return null;
+
+		if (!@class.ImplementsValidatorAttribute())
+			return null;
+
+		token.ThrowIfCancellationRequested();
+
+		if (@class
+				.GetMembers()
+				.OfType<IMethodSymbol>()
+				.Where(m => m.IsValidValidatePropertyMethod())
+				.SingleValue() is not
+				{
+					Parameters: [{ Type: { } targetParameterType }, ..],
+				} validateMethod
+		)
+		{
+			return null;
+		}
+
+		token.ThrowIfCancellationRequested();
+
+		if (targetParameterType is ITypeParameterSymbol tps)
+		{
+			if (!tps.SatisfiesConstraints(propertyType, semanticModel.Compilation))
+				return null;
+		}
+		else
+		{
+			var conversion = semanticModel.Compilation
+				.ClassifyConversion(baseType, targetParameterType);
+
+			if (!conversion.IsValidConversion())
+				return null;
+		}
+
+		token.ThrowIfCancellationRequested();
+
+		var parameters = BuildParameterValues(
+			semanticModel,
+			members,
+			attribute,
+			validateMethod.Parameters
+		);
+
+		token.ThrowIfCancellationRequested();
+
+		return new()
+		{
+			ValidatorName = @class.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+			IsGenericMethod = validateMethod.IsGenericMethod,
+			IsNullable = targetParameterType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated }
+				or { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T },
+			Parameters = parameters.ToEquatableReadOnlyList()!,
+			Message = GetMessage(attribute),
+		};
+	}
+
 	private static string? GetMessage(AttributeData attribute)
 	{
 		foreach (var p in attribute.NamedArguments)
@@ -365,11 +386,9 @@ public sealed partial class ImmediateValidationsGenerator
 		{
 			switch (argumentListSyntax[i])
 			{
+				// Message = "Value"
 				case { NameEquals.Name.Identifier.ValueText: var name }:
 				{
-					if (name is "Message")
-						break;
-
 					if (propertyParameterCount > 0)
 					{
 						var remaining = count - i;
@@ -384,6 +403,9 @@ public sealed partial class ImmediateValidationsGenerator
 						propertyValuesIndex -= propertyParameterCount;
 						propertyParameterCount = 0;
 					}
+
+					if (name is "Message")
+						break;
 
 					attributeProperties ??= attribute.AttributeClass!.GetMembers()
 						.OfType<IPropertySymbol>()
@@ -402,6 +424,7 @@ public sealed partial class ImmediateValidationsGenerator
 					break;
 				}
 
+				// operand: "Value"
 				case { NameColon.Name.Identifier.ValueText: var name, Expression: { } expr }:
 				{
 					for (var j = 0; j < attributeParameters.Length; j++)
@@ -425,6 +448,7 @@ public sealed partial class ImmediateValidationsGenerator
 					break;
 				}
 
+				// "Value"
 				default:
 				{
 					var attributeParameter = attributeParameters[attributeParameterIndex];
