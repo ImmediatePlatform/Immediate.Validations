@@ -1,23 +1,24 @@
 namespace Immediate.Validations.Shared;
 
 /// <summary>
-///	    Applied to a <see langword="string"/> property to indicate that the value should not be <see langword="null"/>
-///     or whitespace.
+///	    Applied to a property to indicate that it should not be empty.
 /// </summary>
 public sealed class NotEmptyAttribute : ValidatorAttribute
 {
 	/// <summary>
-	///	    Validates that the given <see langword="string"/> <paramref name="value"/> is properly defined.
+	///	    Validates that the given <paramref name="value"/> is not empty.
 	/// </summary>
 	/// <param name="value">
-	///	    The <see langword="string"/> to validate.
+	///	    The value to validate.
 	/// </param>
 	/// <returns>
-	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
-	///     message if the property is not valid.
+	///	    <see langword="true" /> if the property is valid (aka not-empty); <see langword="false" /> otherwise.
 	/// </returns>
-	public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value) =>
-		EmptyAttribute.IsEmpty(value)
-			? (true, "Property must not be empty.")
-			: default;
+	public static bool ValidateProperty<T>(T value) =>
+		!EmptyAttribute.IsEmpty(value);
+
+	/// <summary>
+	///		The default message template when the property is invalid.
+	/// </summary>
+	public const string DefaultMessage = "'{PropertyName}' must not be empty.";
 }

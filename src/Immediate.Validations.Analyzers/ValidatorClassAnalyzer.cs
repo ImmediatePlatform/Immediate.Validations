@@ -45,7 +45,7 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		new(
 			id: DiagnosticIds.IV0004ValidateMethodMustReturnValueTuple,
 			title: "`ValidateProperty` method must have a valid return",
-			messageFormat: "`ValidateProperty` method must return `(bool Invalid, string? DefaultMessage)`",
+			messageFormat: "`ValidateProperty` method must return `bool`",
 			category: "ImmediateValidations",
 			defaultSeverity: DiagnosticSeverity.Error,
 			isEnabledByDefault: true,
@@ -259,6 +259,8 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 					properties[i] = p;
 			}
 		}
+
+		properties.Sort((x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.Name, y.Name));
 
 		foreach (var (parameter, property) in parameters.JoinMerge(properties, x => x.Name, x => x.Name, StringComparer.OrdinalIgnoreCase))
 		{

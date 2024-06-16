@@ -89,7 +89,7 @@ public sealed class FullHandlerTests
 				new()
 				{
 					PropertyName = "Name",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Name' must not be null.",
 				},
 			],
 			ex.Errors
@@ -160,8 +160,8 @@ public sealed class FullHandlerTests
 			[
 				new()
 				{
-					PropertyName = "test",
-					ErrorMessage = "The value `10` is not defined in the enum type `Status`.",
+					PropertyName = "Status",
+					ErrorMessage = "'test' has a range of values which does not include '10'.",
 				},
 			],
 			ex.Errors

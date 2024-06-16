@@ -32,9 +32,9 @@ public sealed class MissingAdditionalValidationsMethodAnalyzerTests
 				[SuppressMessage("", "")]
 				public required int Unrelated { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 
-				private static void AdditionalValidations(List<ValidationError> errors, Target target) { }
+				private static void AdditionalValidations(ValidationResult errors, Target target) { }
 			}
 			"""
 		).RunAsync();
@@ -53,7 +53,7 @@ public sealed class MissingAdditionalValidationsMethodAnalyzerTests
 				[SuppressMessage("", "")]
 				public required int Unrelated { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();

@@ -34,7 +34,7 @@ public sealed partial class MinLengthTests
 				new()
 				{
 					PropertyName = nameof(StringRecord.StringValue),
-					ErrorMessage = "String is of length '12', which is shorter than the minimum allowed length of '30'.",
+					ErrorMessage = "'String Value' must be more than 30 characters.",
 				}
 			],
 			errors

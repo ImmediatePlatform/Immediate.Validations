@@ -29,10 +29,9 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[SuppressMessage("", "")]
 				public required int Unrelated { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -46,7 +45,7 @@ public sealed class ValidateClassAnalyzerTests
 			
 			public sealed partial record {|IV0012:Target|} : IValidationTarget<Target>
 			{
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -61,7 +60,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record {|IV0013:Target|}
 			{
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -79,7 +78,7 @@ public sealed class ValidateClassAnalyzerTests
 				[NotNull]
 				public required string Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -97,7 +96,7 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:NotNull|}]
 				public required int Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -117,7 +116,7 @@ public sealed class ValidateClassAnalyzerTests
 				[EnumValue]
 				public required ExampleEnum Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -135,7 +134,7 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:EnumValue|}]
 				public required int Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -153,7 +152,7 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength(3)]
 				public required string Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -171,7 +170,7 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:MaxLength(3)|}]
 				public required int Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -189,7 +188,7 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength(3)]
 				public required List<string> Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -207,7 +206,7 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:MaxLength(3)|}]
 				public required List<int> Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -227,7 +226,7 @@ public sealed class ValidateClassAnalyzerTests
 				[EnumValue]
 				public required List<ExampleEnum> Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -245,7 +244,7 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:EnumValue|}]
 				public required List<int> Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -263,7 +262,7 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength(3)]
 				public required string[] Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -281,7 +280,7 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:MaxLength(3)|}]
 				public required int[] Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -299,7 +298,7 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal(0)]
 				public required int Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -317,7 +316,7 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal({|IV0015:"test"|})]
 				public required int Id { get; init; }
 			
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -336,7 +335,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required int Id { get; init; }
 				public required int KeyValue { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -355,7 +354,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required int Id { get; init; }
 				public required string KeyValue { get; init; }
 						
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -373,7 +372,7 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength(0)]
 				public required string Id { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -391,7 +390,7 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength({|IV0015:"test"|})]
 				public required string Id { get; init; }
 			
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -410,7 +409,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required int KeyValue { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -429,7 +428,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required string KeyValue { get; init; }
 						
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -448,16 +447,16 @@ public sealed class ValidateClassAnalyzerTests
 			{
 				public required string Third { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target, 
 					string first,
 					string second,
 					string third,
 					string fourth = "fourth"
 				) =>
-					target == $"{first}-{second}-{third}-{fourth}"
-						? default
-						: (true, $"Value '{target}' is not equal to '{first}-{second}-{third}-{fourth}'");
+					target == $"{first}-{second}-{third}-{fourth}";
+
+				public const string DefaultMessage = "";
 			}
 						
 			[Validate]
@@ -467,7 +466,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required string FirstValue { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -486,16 +485,16 @@ public sealed class ValidateClassAnalyzerTests
 			{
 				public required string Third { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target, 
 					string first,
 					string second,
 					string third,
 					string fourth = "fourth"
 				) =>
-					target == $"{first}-{second}-{third}-{fourth}"
-						? default
-						: (true, $"Value '{target}' is not equal to '{first}-{second}-{third}-{fourth}'");
+					target == $"{first}-{second}-{third}-{fourth}";
+
+				public const string DefaultMessage = "";
 			}
 						
 			[Validate]
@@ -511,7 +510,7 @@ public sealed class ValidateClassAnalyzerTests
 
 				public required int FirstValue { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -527,13 +526,13 @@ public sealed class ValidateClassAnalyzerTests
 				[TargetType] params object[] first
 			) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target, 
 					params string[] first
 				) =>
-					target == first[0]
-						? default
-						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+					target == first[0];
+
+				public const string DefaultMessage = "";
 			}
 
 			[Validate]
@@ -543,7 +542,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required string FirstValue { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -559,13 +558,13 @@ public sealed class ValidateClassAnalyzerTests
 				[TargetType] params object[] first
 			) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target, 
 					params string[] first
 				) =>
-					target == first[0]
-						? default
-						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+					target == first[0];
+
+				public const string DefaultMessage = "";
 			}
 
 			[Validate]
@@ -575,7 +574,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required int FirstValue { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -591,13 +590,13 @@ public sealed class ValidateClassAnalyzerTests
 				[TargetType] params object[] first
 			) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? Message) ValidateProperty<T>(
+				public static bool ValidateProperty<T>(
 					T target, 
 					params T[] first
 				) =>
-					EqualityComparer<T>.Default.Equals(target, first[0])
-						? default
-						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+					EqualityComparer<T>.Default.Equals(target, first[0]);
+
+				public const string DefaultMessage = "";
 			}
 
 			[Validate]
@@ -607,7 +606,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required string FirstValue { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -623,13 +622,13 @@ public sealed class ValidateClassAnalyzerTests
 				[TargetType] params object[] first
 			) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? Message) ValidateProperty<T>(
+				public static bool ValidateProperty<T>(
 					T target, 
 					params T[] first
 				) =>
-					EqualityComparer<T>.Default.Equals(target, first[0])
-						? default
-						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+					EqualityComparer<T>.Default.Equals(target, first[0]);
+
+				public const string DefaultMessage = "";
 			}
 
 			[Validate]
@@ -639,7 +638,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required int FirstValue { get; init; }
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -655,13 +654,13 @@ public sealed class ValidateClassAnalyzerTests
 				[TargetType] params object[] first
 			) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target, 
 					params string[] first
 				) =>
-					target == first[0]
-						? default
-						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+					target == first[0];
+
+				public const string DefaultMessage = "";
 			}
 
 			[Validate]
@@ -671,7 +670,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public string FirstValue() => "Hello World!";
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -687,13 +686,13 @@ public sealed class ValidateClassAnalyzerTests
 				[TargetType] params object[] first
 			) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target, 
 					params string[] first
 				) =>
-					target == first[0]
-						? default
-						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+					target == first[0];
+
+				public const string DefaultMessage = "";
 			}
 
 			[Validate]
@@ -703,7 +702,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public int FirstValue() => 123;
 			
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -719,13 +718,13 @@ public sealed class ValidateClassAnalyzerTests
 				[TargetType] params object[] first
 			) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? Message) ValidateProperty<T>(
+				public static bool ValidateProperty<T>(
 					T target, 
 					params T[] first
 				) =>
-					EqualityComparer<T>.Default.Equals(target, first[0])
-						? default
-						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+					EqualityComparer<T>.Default.Equals(target, first[0]);
+
+				public const string DefaultMessage = "";
 			}
 
 			[Validate]
@@ -735,7 +734,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public static string FirstValue() => "Hello World!";
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -751,13 +750,13 @@ public sealed class ValidateClassAnalyzerTests
 				[TargetType] params object[] first
 			) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? Message) ValidateProperty<T>(
+				public static bool ValidateProperty<T>(
 					T target, 
 					params T[] first
 				) =>
-					EqualityComparer<T>.Default.Equals(target, first[0])
-						? default
-						: (true, $"Value '{target}' is not equal to '{first[0]}'");
+					EqualityComparer<T>.Default.Equals(target, first[0]);
+
+				public const string DefaultMessage = "";
 			}
 
 			[Validate]
@@ -767,7 +766,7 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public static int FirstValue() => 123;
 			
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -787,7 +786,7 @@ public sealed class ValidateClassAnalyzerTests
 
 				private static readonly string[] Values = ["123", "456", "789"];
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -807,7 +806,7 @@ public sealed class ValidateClassAnalyzerTests
 
 				private static readonly string[] Values = ["123", "456", "789"];
 
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -826,7 +825,7 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal({|IV0018:nameof(DateTime)|})]
 				public required string Id { get; init; }
 			
-				public static List<ValidationError> Validate(Target target) => [];
+				public static ValidationResult Validate(Target target) => [];
 			}
 			"""
 		).RunAsync();
@@ -844,7 +843,7 @@ public sealed class ValidateClassAnalyzerTests
 			{
 				public required int ValueA { get; init; }
 
-				public static List<ValidationError> Validate(BaseClass target) => [];
+				public static ValidationResult Validate(BaseClass target) => [];
 			}
 
 			[Validate]
@@ -853,7 +852,7 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal(nameof(ValueA))]
 				public required int ValueB { get; init; }
 		
-				public static List<ValidationError> Validate(SubClass target) => [];
+				public static ValidationResult Validate(SubClass target) => [];
 			}
 			"""
 		).RunAsync();
@@ -871,8 +870,8 @@ public sealed class ValidateClassAnalyzerTests
 			{
 				int ValueA { get; }
 
-				static List<ValidationError> IValidationTarget<IBaseInterface>.Validate(IBaseInterface target) => [];
-				public static List<ValidationError> Validate(IBaseInterface target) => [];
+				static ValidationResult IValidationTarget<IBaseInterface>.Validate(IBaseInterface target) => [];
+				public static ValidationResult Validate(IBaseInterface target) => [];
 			}
 
 			[Validate]
@@ -881,8 +880,8 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal(nameof(ValueA))]
 				int ValueB { get; }
 
-				static List<ValidationError> IValidationTarget<IInterface>.Validate(IInterface target) => [];
-				public static List<ValidationError> Validate(IInterface target) => [];
+				static ValidationResult IValidationTarget<IInterface>.Validate(IInterface target) => [];
+				public static ValidationResult Validate(IInterface target) => [];
 			}
 			"""
 		).RunAsync();

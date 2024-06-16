@@ -8,26 +8,23 @@ using Immediate.Validations.Shared;
 
 partial class SubClass
 {
-	static List<ValidationError> IValidationTarget<SubClass>.Validate(SubClass? target) =>
+	static ValidationResult IValidationTarget<SubClass>.Validate(SubClass? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(SubClass? target)
+	public static  ValidationResult Validate(SubClass? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
-		errors.AddRange(global::BaseClass.Validate(t));
+		foreach (var error in global::BaseClass.Validate(t))
+			errors.Add(error);
 
 
 

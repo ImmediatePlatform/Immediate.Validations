@@ -8,26 +8,23 @@ using Immediate.Validations.Shared;
 
 partial interface IInterface
 {
-	static List<ValidationError> IValidationTarget<IInterface>.Validate(IInterface? target) =>
+	static ValidationResult IValidationTarget<IInterface>.Validate(IInterface? target) =>
 		Validate(target);
 
-	public static new List<ValidationError> Validate(IInterface? target)
+	public static new ValidationResult Validate(IInterface? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
-		errors.AddRange(global::IBaseInterface.Validate(t));
+		foreach (var error in global::IBaseInterface.Validate(t))
+			errors.Add(error);
 
 		__ValidateValueB(errors, t, t.ValueB);
 
@@ -38,7 +35,7 @@ partial interface IInterface
 
 
 	private static void __ValidateValueB(
-		List<ValidationError> errors, IInterface instance, int target
+		ValidationResult errors, IInterface instance, int target
 	)
 	{
 
@@ -46,14 +43,26 @@ partial interface IInterface
 
 
 
-		errors.Add(
-			global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
-				t
-				, operand: instance.ValueA
-			),
-			$"ValueB",
-			null
-		);
+		{
+			if (!global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
+					t
+					, comparison: instance.ValueA
+				)
+			)
+			{
+				errors.Add(
+					$"ValueB",
+					global::Immediate.Validations.Shared.EqualAttribute.DefaultMessage,
+					new()
+					{
+						["PropertyName"] = $"Value B",
+						["PropertyValue"] = t,
+						["ComparisonName"] = "Value A",
+						["ComparisonValue"] = instance.ValueA,
+					}
+				);
+			}
+		}
 	}
 
 }

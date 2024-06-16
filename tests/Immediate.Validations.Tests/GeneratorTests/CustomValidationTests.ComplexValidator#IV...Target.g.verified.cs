@@ -8,24 +8,20 @@ using Immediate.Validations.Shared;
 
 partial record Target
 {
-	static List<ValidationError> IValidationTarget<Target>.Validate(Target? target) =>
+	static ValidationResult IValidationTarget<Target>.Validate(Target? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(Target? target)
+	public static  ValidationResult Validate(Target? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 		__ValidateId(errors, t, t.Id);
@@ -38,47 +34,61 @@ partial record Target
 
 
 	private static void __ValidateId(
-		List<ValidationError> errors, Target instance, string target
+		ValidationResult errors, Target instance, string target
 	)
 	{
 
 		if (target is not { } t)
 		{
-			errors.Add(new()
-			{
-				PropertyName = $"Id",
-				ErrorMessage = "Property must not be `null`.",
-			});
+			errors.Add(
+				$"Id",
+				$"'Id' must not be null."
+			);
 
 			return;
 		}
 
 
 
-		errors.Add(
-			global::DummyAttribute.ValidateProperty(
-				t
-				, first: instance.FirstValue
-				, second: @"Hello World"
-				, third: @"Value"
-			),
-			$"Id",
-			"What's going on?"
-		);
+		{
+			if (!global::DummyAttribute.ValidateProperty(
+					t
+					, first: instance.FirstValue
+					, second: @"Hello World"
+					, third: @"Value"
+				)
+			)
+			{
+				errors.Add(
+					$"Id",
+					"What's going on?",
+					new()
+					{
+						["PropertyName"] = $"Id",
+						["PropertyValue"] = t,
+						["FirstName"] = "First Value",
+						["FirstValue"] = instance.FirstValue,
+						["SecondName"] = "",
+						["SecondValue"] = @"Hello World",
+						["ThirdName"] = "",
+						["ThirdValue"] = @"Value",
+					}
+				);
+			}
+		}
 	}
 
 	private static void __ValidateFirstValue(
-		List<ValidationError> errors, Target instance, string target
+		ValidationResult errors, Target instance, string target
 	)
 	{
 
 		if (target is not { } t)
 		{
-			errors.Add(new()
-			{
-				PropertyName = $"FirstValue",
-				ErrorMessage = "Property must not be `null`.",
-			});
+			errors.Add(
+				$"FirstValue",
+				$"'First Value' must not be null."
+			);
 
 			return;
 		}

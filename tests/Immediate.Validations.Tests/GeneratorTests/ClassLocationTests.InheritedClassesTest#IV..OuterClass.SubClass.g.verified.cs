@@ -10,26 +10,23 @@ partial class OuterClass
 
 partial class SubClass
 {
-	static List<ValidationError> IValidationTarget<SubClass>.Validate(SubClass? target) =>
+	static ValidationResult IValidationTarget<SubClass>.Validate(SubClass? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(SubClass? target)
+	public static  ValidationResult Validate(SubClass? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
-		errors.AddRange(global::OuterClass.BaseClass.Validate(t));
+		foreach (var error in global::OuterClass.BaseClass.Validate(t))
+			errors.Add(error);
 
 		__ValidateValueB(errors, t, t.ValueB);
 
@@ -40,7 +37,7 @@ partial class SubClass
 
 
 	private static void __ValidateValueB(
-		List<ValidationError> errors, SubClass instance, int target
+		ValidationResult errors, SubClass instance, int target
 	)
 	{
 
@@ -48,14 +45,26 @@ partial class SubClass
 
 
 
-		errors.Add(
-			global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
-				t
-				, operand: instance.ValueA
-			),
-			$"ValueB",
-			null
-		);
+		{
+			if (!global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
+					t
+					, comparison: instance.ValueA
+				)
+			)
+			{
+				errors.Add(
+					$"ValueB",
+					global::Immediate.Validations.Shared.EqualAttribute.DefaultMessage,
+					new()
+					{
+						["PropertyName"] = $"Value B",
+						["PropertyValue"] = t,
+						["ComparisonName"] = "Value A",
+						["ComparisonValue"] = instance.ValueA,
+					}
+				);
+			}
+		}
 	}
 
 }

@@ -10,24 +10,20 @@ partial class OuterClass
 
 partial class BaseClass
 {
-	static List<ValidationError> IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
+	static ValidationResult IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(BaseClass? target)
+	public static  ValidationResult Validate(BaseClass? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 

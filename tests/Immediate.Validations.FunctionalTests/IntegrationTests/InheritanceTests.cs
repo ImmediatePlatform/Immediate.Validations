@@ -55,7 +55,7 @@ public sealed partial class InheritanceTests
 				new()
 				{
 					PropertyName = "Id",
-					ErrorMessage = "String is of length '3', which is shorter than the minimum allowed length of '4'.",
+					ErrorMessage = "'Id' must be more than 4 characters.",
 				}
 			],
 			errors
@@ -78,7 +78,7 @@ public sealed partial class InheritanceTests
 				new()
 				{
 					PropertyName = "Description",
-					ErrorMessage = "Property must not be empty.",
+					ErrorMessage = "'Description' must not be empty.",
 				}
 			],
 			errors

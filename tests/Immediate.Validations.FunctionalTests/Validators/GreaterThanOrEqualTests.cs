@@ -42,7 +42,7 @@ public sealed partial class GreaterThanOrEqualTests
 				new()
 				{
 					PropertyName = nameof(IntGreaterThanRecord.IntValue),
-					ErrorMessage = "Value '-1' is not greater than or equal to '0'",
+					ErrorMessage = "'Int Value' must be greater than or equal to '0'.",
 				}
 			],
 			errors
@@ -71,7 +71,7 @@ public sealed partial class GreaterThanOrEqualTests
 				new()
 				{
 					PropertyName = nameof(StringGreaterThanRecord.StringValue),
-					ErrorMessage = "Value 'Bar' is not greater than or equal to 'Foo'",
+					ErrorMessage = "'String Value' must be greater than or equal to 'Foo'.",
 				}
 			],
 			errors

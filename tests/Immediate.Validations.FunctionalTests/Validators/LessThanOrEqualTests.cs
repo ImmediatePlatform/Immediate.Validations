@@ -42,7 +42,7 @@ public sealed partial class LessThanOrEqualTests
 				new()
 				{
 					PropertyName = nameof(IntLessThanRecord.IntValue),
-					ErrorMessage = "Value '1' is not less than or equal to '0'",
+					ErrorMessage = "'Int Value' must be less than or equal to '0'.",
 				}
 			],
 			errors
@@ -71,7 +71,7 @@ public sealed partial class LessThanOrEqualTests
 				new()
 				{
 					PropertyName = nameof(StringLessThanRecord.StringValue),
-					ErrorMessage = "Value 'Qaz' is not less than or equal to 'Foo'",
+					ErrorMessage = "'String Value' must be less than or equal to 'Foo'.",
 				}
 			],
 			errors

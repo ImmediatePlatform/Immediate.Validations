@@ -33,10 +33,9 @@ public sealed class MatchAttribute(
 	///		A <see cref="Regex"/> instance for matching property value.
 	/// </param>
 	/// <returns>
-	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
-	///     message if the property is not valid.
+	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
 	/// </returns>
-	public static (bool Invalid, string? DefaultMessage) ValidateProperty(string target, Regex? regex = null, string? expr = null)
+	public static bool ValidateProperty(string target, Regex? regex = null, string? expr = null)
 	{
 		if (regex is null)
 		{
@@ -46,12 +45,15 @@ public sealed class MatchAttribute(
 			regex = new Regex(expr);
 		}
 
-		return regex.IsMatch(target)
-			? default
-			: (true, $"Property did not satisfy regex pattern '{regex}'.");
+		return regex.IsMatch(target);
 	}
 
 	[DoesNotReturn]
 	private static void ThrowInvalidArgumentsException() =>
 		throw new ArgumentException("Both `regex` and `expr` are `null`. At least one must be provided.");
+
+	/// <summary>
+	///		The default message template when the property is invalid.
+	/// </summary>
+	public const string DefaultMessage = "'{PropertyName}' is not in the correct format.";
 }

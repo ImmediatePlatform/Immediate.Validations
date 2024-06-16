@@ -10,9 +10,13 @@ public sealed partial class AdditionalValidationsTests
 	{
 		public required int Id { get; init; }
 
-		private static void AdditionalValidations(List<ValidationError> errors, ValidateRecord target)
+		private static void AdditionalValidations(ValidationResult errors, ValidateRecord target)
 		{
-			errors.Add(NotEmptyAttribute.ValidateProperty(target.Id), nameof(Id));
+			errors.Add(
+				() => NotEmptyAttribute.ValidateProperty(
+					target.Id
+				)
+			);
 			if (target.Id % 2 == 1)
 			{
 				errors.Add(new()

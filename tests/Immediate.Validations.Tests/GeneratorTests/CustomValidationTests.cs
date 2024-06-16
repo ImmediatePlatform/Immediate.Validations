@@ -236,7 +236,7 @@ public sealed class CustomValidationTests
 			{
 				public required int Operand { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(int value, int operand) =>
+				public static bool ValidateProperty(int value, int operand) =>
 					value > operand ? default : (true, $"Value `{value}` is not greater than `{operand}`.");
 			}
 
@@ -271,7 +271,7 @@ public sealed class CustomValidationTests
 			{
 				public required string Third { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target,
 					string first,
 					string second,
@@ -319,7 +319,7 @@ public sealed class CustomValidationTests
 				public required string Fourth { get; init; }
 				public required string Fifth { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target,
 					string first,
 					string second,

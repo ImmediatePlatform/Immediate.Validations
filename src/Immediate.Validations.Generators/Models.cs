@@ -36,7 +36,15 @@ public sealed record PropertyValidation
 	public required string ValidatorName { get; init; }
 	public required bool IsGenericMethod { get; init; }
 	public required bool IsNullable { get; init; }
-	public required EquatableReadOnlyList<string> Parameters { get; init; }
+	public required EquatableReadOnlyList<Argument> Arguments { get; init; }
 	public required string? Message { get; init; }
 }
 
+public sealed record Argument
+{
+	public required string? ParameterName { get; init; }
+	public required string? NamedParameterName { get; init; }
+	public required string Name { get; init; }
+	public required string Value { get; init; }
+	public required string? ArrayType { get; init; }
+}

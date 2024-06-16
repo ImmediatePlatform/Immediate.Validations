@@ -3,34 +3,35 @@ using System.Diagnostics.CodeAnalysis;
 namespace Immediate.Validations.Shared;
 
 /// <summary>
-///	    Applied to a <see cref="string"/> property to indicate that the value should have a length at least <paramref
-///     name="length"/>.
+///	    Applied to a <see cref="string"/> property to indicate that the value should have a minLength at least <paramref
+///     name="minLength"/>.
 /// </summary>
-/// <param name="length">
-///	    The minimum length of the <see cref="string"/>.
+/// <param name="minLength">
+///	    The minimum minLength of the <see cref="string"/>.
 /// </param>
 public sealed class MinLengthAttribute(
 	[TargetType]
-	object length
+	object minLength
 ) : ValidatorAttribute
 {
-
 	/// <summary>
-	///	    Validates that the value should have a length at least <paramref name="length"/>.
+	///	    Validates that the value should have a minLength at least <paramref name="minLength"/>.
 	/// </summary>
 	/// <param name="target">
 	///	    The value to validate.
 	/// </param>
-	/// <param name="length">
-	///	    The minimum valid length for the string <paramref name="target"/>.
+	/// <param name="minLength">
+	///	    The minimum valid minLength for the string <paramref name="target"/>.
 	/// </param>
 	/// <returns>
-	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
-	///     message if the property is not valid.
+	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
 	/// </returns>
 	[SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Will already by validated by IV first.")]
-	public static (bool Invalid, string? Message) ValidateProperty(string target, int length) =>
-		target.Length >= length
-			? default
-			: (true, $"String is of length '{target.Length}', which is shorter than the minimum allowed length of '{length}'.");
+	public static bool ValidateProperty(string target, int minLength) =>
+		target.Length >= minLength;
+
+	/// <summary>
+	///		The default message template when the property is invalid.
+	/// </summary>
+	public const string DefaultMessage = "'{PropertyName}' must be more than {MinLengthValue} characters.";
 }

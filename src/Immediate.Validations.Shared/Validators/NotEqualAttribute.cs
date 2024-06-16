@@ -1,31 +1,33 @@
 namespace Immediate.Validations.Shared;
 
 /// <summary>
-///	    Applied to a property to indicate that the value should not be equal to <paramref name="operand"/>.
+///	    Applied to a property to indicate that the value should not be equal to <paramref name="comparison"/>.
 /// </summary>
-/// <param name="operand">
+/// <param name="comparison">
 ///		The value that the applied property should be different than.
 /// </param>
 public sealed class NotEqualAttribute(
 	[TargetType]
-	object operand
+	object comparison
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///	    Validates that the value of the applied property is not equal to <paramref name="operand"/>.
+	///	    Validates that the value of the applied property is not equal to <paramref name="comparison"/>.
 	/// </summary>
 	/// <param name="target">
 	///	    The value to validate.
 	/// </param>
-	/// <param name="operand">
+	/// <param name="comparison">
 	///		The value that the applied property should be different than.
 	/// </param>
 	/// <returns>
-	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
-	///     message if the property is not valid.
+	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
 	/// </returns>
-	public static (bool Invalid, string? Message) ValidateProperty<T>(T target, T operand) =>
-		!EqualityComparer<T>.Default.Equals(target, operand)
-			? default
-			: (true, $"Value '{target}' is equal to '{operand}'");
+	public static bool ValidateProperty<T>(T target, T comparison) =>
+		!EqualityComparer<T>.Default.Equals(target, comparison);
+
+	/// <summary>
+	///		The default message template when the property is invalid.
+	/// </summary>
+	public const string DefaultMessage = "'{PropertyName}' must not be equal to '{ComparisonValue}'.";
 }

@@ -196,7 +196,7 @@ public sealed class ValidateTargetTransformer
 					ValidatorName = "global::Immediate.Validations.Shared.EnumValueAttribute",
 					IsGenericMethod = true,
 					IsNullable = false,
-					Parameters = [],
+					Arguments = [],
 					Message = null,
 				}
 			);
@@ -324,9 +324,10 @@ public sealed class ValidateTargetTransformer
 
 		_token.ThrowIfCancellationRequested();
 
-		var parameters = BuildParameterValues(
+		var parameters = BuildArgumentValues(
 			attribute,
-			validateMethod.Parameters
+			validateMethod.Parameters,
+			propertyType
 		);
 
 		_token.ThrowIfCancellationRequested();
@@ -337,7 +338,7 @@ public sealed class ValidateTargetTransformer
 			IsGenericMethod = validateMethod.IsGenericMethod,
 			IsNullable = targetParameterType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated }
 				or { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T },
-			Parameters = parameters.ToEquatableReadOnlyList()!,
+			Arguments = parameters.ToEquatableReadOnlyList()!,
 			Message = GetMessage(attribute),
 		};
 	}
@@ -353,9 +354,10 @@ public sealed class ValidateTargetTransformer
 		return null;
 	}
 
-	private string[]? BuildParameterValues(
+	private List<Argument>? BuildArgumentValues(
 		AttributeData attribute,
-		ImmutableArray<IParameterSymbol> parameters
+		ImmutableArray<IParameterSymbol> parameters,
+		ITypeSymbol propertyType
 	)
 	{
 		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
@@ -365,14 +367,9 @@ public sealed class ValidateTargetTransformer
 			return null;
 
 		var attributeParameters = attribute.AttributeConstructor!.Parameters;
-		var attributeParameterIndex = 0;
 		List<IPropertySymbol>? attributeProperties = null;
 
-		var count = GetArgumentCount(argumentListSyntax);
-
-		var parameterValues = new string[count];
-		var propertyValuesIndex = 0;
-		var propertyParameterCount = 0;
+		var argumentValues = new List<Argument>(argumentListSyntax.Count);
 
 		for (var i = 0; i < argumentListSyntax.Count; i++)
 		{
@@ -381,23 +378,8 @@ public sealed class ValidateTargetTransformer
 			switch (argumentListSyntax[i])
 			{
 				// Message = "Value"
-				case { NameEquals.Name.Identifier.ValueText: var name }:
+				case { NameEquals.Name.Identifier.ValueText: var name } syntax:
 				{
-					if (propertyParameterCount > 0)
-					{
-						var remaining = count - i;
-						Array.Copy(
-							parameterValues,
-							i - propertyParameterCount,
-							parameterValues,
-							count - propertyParameterCount,
-							propertyParameterCount
-						);
-
-						propertyValuesIndex -= propertyParameterCount;
-						propertyParameterCount = 0;
-					}
-
 					if (name is "Message")
 						break;
 
@@ -406,103 +388,172 @@ public sealed class ValidateTargetTransformer
 						.ToList();
 					var property = attributeProperties.First(a => a.Name == name);
 
-					var parameterValue = BuildParameterValue(
-						argumentListSyntax[i],
+					var parameterValue = BuildArgumentValue(
+						syntax,
 						property,
 						parameters
 					);
-					parameterValues[propertyValuesIndex++] = parameterValue;
+					argumentValues.Add(parameterValue);
 
 					break;
 				}
 
 				// operand: "Value"
-				case { NameColon.Name.Identifier.ValueText: var name, Expression: { } expr }:
+				case { NameColon.Name.Identifier.ValueText: var name, Expression: { } expr } syntax:
 				{
 					for (var j = 0; j < attributeParameters.Length; j++)
 					{
 						if (attributeParameters[j].Name == name)
 						{
-							var parameterValue = BuildParameterValue(
-								argumentListSyntax[i],
+							var parameterValue = BuildArgumentValue(
+								syntax,
 								attributeParameters[j],
 								parameters
 							);
 
-							parameterValues[propertyValuesIndex++] = parameterValue;
+							argumentValues.Add(parameterValue);
 							break;
 						}
 					}
 
-					attributeParameterIndex++;
 					break;
 				}
 
 				// "Value"
-				default:
+				case var syntax:
 				{
-					var attributeParameter = attributeParameters[attributeParameterIndex];
+					var attributeParameter = attributeParameters[i];
 					if (!attributeParameter.IsParams)
 					{
-						var parameterValue = BuildParameterValue(
-							argumentListSyntax[i],
-							attributeParameter,
-							parameters
+						argumentValues.Add(
+							BuildArgumentValue(
+								syntax,
+								attributeParameter,
+								parameters
+							)
 						);
-						parameterValues[propertyValuesIndex++] = parameterValue;
-						attributeParameterIndex++;
+
+						break;
 					}
-					else
+
+					var parameter = GetParameter(attributeParameter.Name, parameters);
+					if (parameter.Type is not IArrayTypeSymbol { ElementType: { } elementType })
+						break;
+
+					if (elementType is ITypeParameterSymbol tps)
+						elementType = propertyType;
+
+					var (argumentName, argumentValue, isArray) = GetArgumentValue(
+						attributeParameter,
+						syntax
+					);
+
+					if (isArray)
 					{
-						var parameterValue = GetParameterValue(
+						argumentValues.Add(
+							BuildArgumentValue(
+								attributeParameter,
+								parameters,
+								argumentName,
+								argumentValue,
+								arrayType: elementType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+							)
+						);
+
+						break;
+					}
+
+					var values = new List<string>()
+					{
+						argumentValue,
+					};
+
+					for (i++; i < argumentListSyntax.Count; i++)
+					{
+						if (argumentListSyntax[i] is { NameEquals: not null })
+						{
+							i--;
+							break;
+						}
+
+						(_, argumentValue, _) = GetArgumentValue(
 							attributeParameter,
 							argumentListSyntax[i]
 						);
 
-						parameterValues[propertyValuesIndex++] = parameterValue;
-						propertyParameterCount++;
+						values.Add(argumentValue);
 					}
+
+					argumentValues.Add(
+						BuildArgumentValue(
+							attributeParameter,
+							parameters,
+							"",
+							$"[{string.Join(", ", values)}]",
+							arrayType: elementType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+						)
+					);
 
 					break;
 				}
 			}
 		}
 
-		return parameterValues;
+		return argumentValues;
 	}
 
-	private static int GetArgumentCount(SeparatedSyntaxList<AttributeArgumentSyntax> argumentListSyntax)
-	{
-		var count = argumentListSyntax.Count;
-		if (argumentListSyntax.Any(a => a is { NameEquals.Name.Identifier.ValueText: "Message", }))
-			return count - 1;
-		return count;
-	}
-
-	private string BuildParameterValue(
+	private Argument BuildArgumentValue(
 		AttributeArgumentSyntax attributeArgumentSyntax,
 		ISymbol parameterSymbol,
 		ImmutableArray<IParameterSymbol> parameters
 	)
 	{
-		var parameterName = GetParameterName(parameterSymbol.Name, parameters);
-		var parameterValue = GetParameterValue(parameterSymbol, attributeArgumentSyntax);
+		var (argumentName, argumentValue, _) = GetArgumentValue(parameterSymbol, attributeArgumentSyntax);
 
-		return $"{parameterName}: {parameterValue}";
+		return BuildArgumentValue(
+			parameterSymbol,
+			parameters,
+			argumentName,
+			argumentValue,
+			arrayType: null
+		);
 	}
 
-	private static string GetParameterName(string name, ImmutableArray<IParameterSymbol> parameters)
+	private static Argument BuildArgumentValue(
+		ISymbol parameterSymbol,
+		ImmutableArray<IParameterSymbol> parameters,
+		string argumentName,
+		string argumentValue,
+		string? arrayType
+	)
+	{
+		var parameterName = GetParameterName(parameterSymbol.Name, parameters);
+
+		return new()
+		{
+			ParameterName = parameterName.ToPascalCase(),
+			NamedParameterName = $"{parameterName}: ",
+			Name = argumentName,
+			Value = argumentValue,
+			ArrayType = arrayType,
+		};
+	}
+
+	private static string GetParameterName(string name, ImmutableArray<IParameterSymbol> parameters) =>
+		GetParameter(name, parameters).Name;
+
+	private static IParameterSymbol GetParameter(string name, ImmutableArray<IParameterSymbol> parameters)
 	{
 		foreach (var p in parameters)
 		{
 			if (p.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-				return p.Name;
+				return p;
 		}
 
-		return name;
+		throw new InvalidOperationException();
 	}
 
-	private string GetParameterValue(
+	private (string Name, string Value, bool IsArray) GetArgumentValue(
 		ISymbol parameterSymbol,
 		AttributeArgumentSyntax attributeArgumentSyntax
 	)
@@ -512,33 +563,55 @@ public sealed class ValidateTargetTransformer
 		{
 			var member = _members.FirstOrDefault(m => m.Name.Equals(name, StringComparison.Ordinal));
 
-			return member switch
-			{
-				IMethodSymbol { IsStatic: true } => $"{name}()",
-				IMethodSymbol => $"instance.{name}()",
-				{ IsStatic: true } => $"{name}",
-				_ => $"instance.{name}",
-			};
+			return (
+				member.GetDescription(),
+				member switch
+				{
+					IMethodSymbol { IsStatic: true } => $"{name}()",
+					IMethodSymbol => $"instance.{name}()",
+					{ IsStatic: true } => $"{name}",
+					_ => $"instance.{name}",
+				},
+				member switch
+				{
+					IMethodSymbol { ReturnType: var type } => type,
+					IFieldSymbol { Type: var type } => type,
+					IPropertySymbol { Type: var type } => type,
+					_ => null,
+				} is IArrayTypeSymbol
+			);
 		}
 
 		var operation = _semanticModel
 			.GetOperation(attributeArgumentSyntax.Expression);
 
-		return operation?.ConstantValue switch
-		{
-			{ HasValue: true, Value: string s } => $"@\"{s}\"",
-			{ HasValue: true, Value: { } o } => o.ToString(),
-			_ => "",
-		};
+		return (
+			"",
+			operation?.ConstantValue switch
+			{
+				{ HasValue: true, Value: string s } => $"@\"{s}\"",
+				{ HasValue: true, Value: { } o } => o.ToString(),
+				_ => "",
+			},
+			false
+		);
 	}
 }
 
 file static class Extensions
 {
 	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
-		symbol is IParameterSymbol { Type.SpecialType: SpecialType.System_Object or SpecialType.System_String }
-			or IPropertySymbol { Type.SpecialType: SpecialType.System_Object or SpecialType.System_String }
+		symbol switch
+		{
+			IParameterSymbol { Type: var type } => type.IsValidTargetTypeType(),
+			IPropertySymbol { Type: var type } => type.IsValidTargetTypeType(),
+			_ => false,
+		}
 		&& symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
+
+	private static bool IsValidTargetTypeType(this ITypeSymbol? typeSymbol) =>
+		typeSymbol is { SpecialType: SpecialType.System_Object or SpecialType.System_String }
+			or IArrayTypeSymbol { ElementType.SpecialType: SpecialType.System_Object or SpecialType.System_String };
 
 	public static bool IsNameOfExpression(this ExpressionSyntax syntax, out string? name)
 	{
@@ -564,19 +637,19 @@ file static class Extensions
 		if (symbol is IMethodSymbol)
 			return $"{symbol.Name}()";
 
-		if (symbol is not (IFieldSymbol or IPropertySymbol))
-			return symbol.Name;
-
-		foreach (var attribute in symbol.GetAttributes())
+		if (symbol is IFieldSymbol or IPropertySymbol)
 		{
-			if (attribute.AttributeClass.IsDescriptionAttribute()
-				&& attribute.ConstructorArguments is [{ Value: string v }]
-				&& !string.IsNullOrWhiteSpace(v))
+			foreach (var attribute in symbol.GetAttributes())
 			{
-				return v;
+				if (attribute.AttributeClass.IsDescriptionAttribute()
+					&& attribute.ConstructorArguments is [{ Value: string v }]
+					&& !string.IsNullOrWhiteSpace(v))
+				{
+					return v;
+				}
 			}
 		}
 
-		return symbol.Name;
+		return symbol.Name.ToTitleCase();
 	}
 }
