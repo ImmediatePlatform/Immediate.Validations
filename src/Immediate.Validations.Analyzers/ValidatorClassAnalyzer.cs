@@ -107,6 +107,17 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 			description: "Validators with two or more constructors are not yet supported."
 		);
 
+	public static readonly DiagnosticDescriptor ValidatorIsMissingDefaultMessage =
+		new(
+			id: DiagnosticIds.IV0019ValidatorIsMissingDefaultMessage,
+			title: "Validator is missing `DefaultMessage`",
+			messageFormat: "Validator `{0}` must have a `DefaultMessage` property",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Error,
+			isEnabledByDefault: true,
+			description: "Validators without a `DefaultMessage` will fail when being used."
+		);
+
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create(
 		[
@@ -119,6 +130,7 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 			ValidateMethodParameterIsIncorrectType,
 			ValidatePropertyMustBeRequired,
 			ValidatorHasTooManyConstructors,
+			ValidatorIsMissingDefaultMessage,
 		]);
 
 	public override void Initialize(AnalysisContext context)
@@ -141,6 +153,37 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 
 		if (!validatorClassSymbol.BaseType.IsValidatorAttribute())
 			return;
+
+		token.ThrowIfCancellationRequested();
+
+		if (!validatorClassSymbol
+				.GetMembers()
+				.Any(m => m
+					is IPropertySymbol
+					{
+						IsStatic: true,
+						Name: "DefaultMessage",
+						Type.SpecialType: SpecialType.System_String,
+						IsIndexer: false,
+						DeclaredAccessibility: Accessibility.Public,
+					}
+					or IFieldSymbol
+					{
+						IsConst: true,
+						Name: "DefaultMessage",
+						Type.SpecialType: SpecialType.System_String,
+						DeclaredAccessibility: Accessibility.Public,
+					}
+				)
+		)
+		{
+			context.ReportDiagnostic(
+				Diagnostic.Create(
+					ValidatorIsMissingDefaultMessage,
+					validatorClassSymbol.Locations[0],
+					validatorClassSymbol.Name)
+			);
+		}
 
 		token.ThrowIfCancellationRequested();
 
@@ -238,7 +281,10 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		var properties = validatorClassSymbol
 			.GetMembers()
 			.OfType<IPropertySymbol>()
-			.Where(p => p.Name != "Message")
+			.Where(p =>
+				p.Name != "Message"
+				&& !p.IsStatic
+			)
 			.Cast<ISymbol>()
 			.ToList();
 

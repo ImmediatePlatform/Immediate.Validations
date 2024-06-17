@@ -50,7 +50,7 @@ public sealed class ValidatorClassAnalyzerTests
 				public static bool ValidateProperty(int value, int operand) =>
 					value > operand;
 
-				public const string DefaultMessage = "";
+				public static string DefaultMessage => "";
 			}
 			"""
 		).RunAsync();
@@ -171,6 +171,8 @@ public sealed class ValidatorClassAnalyzerTests
 			public sealed class {|IV0001:GreaterThanAttribute|} : ValidatorAttribute
 			{
 				public required int Operand { get; init; }
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -187,7 +189,7 @@ public sealed class ValidatorClassAnalyzerTests
 
 				public bool {|IV0002:ValidateProperty|}(int value, int operand) =>
 					value > operand;
-			
+
 				public const string DefaultMessage = "";
 			}
 			"""
@@ -207,11 +209,13 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value > 0;
 				}
-			
+
 				public static bool {|IV0003:ValidateProperty|}(int value, int operand)
 				{
 					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -230,6 +234,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -248,6 +254,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value > -1;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -264,6 +272,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -289,6 +299,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value > 0;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -307,6 +319,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -325,6 +339,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value == operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -341,6 +357,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -357,6 +375,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value == operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -373,6 +393,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value == operand[0];
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -391,6 +413,8 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -410,6 +434,24 @@ public sealed class ValidatorClassAnalyzerTests
 				{
 					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidatorWithNoDefaultMessageShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+			
+			public sealed class {|IV0019:GreaterThanAttribute|} : ValidatorAttribute
+			{
+				public required int Operand { get; init; }
+			
+				public static bool ValidateProperty(int value, int operand) =>
+					value > operand;
 			}
 			"""
 		).RunAsync();
