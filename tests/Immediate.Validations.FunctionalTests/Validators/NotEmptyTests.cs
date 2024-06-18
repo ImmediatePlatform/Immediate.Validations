@@ -48,7 +48,7 @@ public sealed partial class NotEmptyTests
 				new()
 				{
 					PropertyName = nameof(StringRecord.StringValue),
-					ErrorMessage = "Property must not be empty.",
+					ErrorMessage = "'String Value' must not be empty.",
 				}
 			],
 			errors
@@ -77,7 +77,7 @@ public sealed partial class NotEmptyTests
 				new()
 				{
 					PropertyName = nameof(IntRecord.IntValue),
-					ErrorMessage = "Property must not be empty.",
+					ErrorMessage = "'Int Value' must not be empty.",
 				}
 			],
 			errors
@@ -106,7 +106,7 @@ public sealed partial class NotEmptyTests
 				new()
 				{
 					PropertyName = nameof(CollectionRecord.CollectionValue),
-					ErrorMessage = "Property must not be empty.",
+					ErrorMessage = "'Collection Value' must not be empty.",
 				}
 			],
 			errors

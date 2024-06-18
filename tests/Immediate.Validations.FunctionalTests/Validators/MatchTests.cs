@@ -62,7 +62,7 @@ public sealed partial class MatchTests
 				new()
 				{
 					PropertyName = "StringValue",
-					ErrorMessage = $"Property did not satisfy regex pattern '^\\d+$'.",
+					ErrorMessage = "'String Value' is not in the correct format.",
 				},
 			],
 			errors
@@ -91,7 +91,7 @@ public sealed partial class MatchTests
 				new()
 				{
 					PropertyName = "StringValue",
-					ErrorMessage = $"Property did not satisfy regex pattern '^\\d+$'.",
+					ErrorMessage = "'String Value' is not in the correct format.",
 				},
 			],
 			errors

@@ -16,14 +16,13 @@ public sealed class EnumValueAttribute : ValidatorAttribute
 	///	    The value to validate.
 	/// </param>
 	/// <returns>
-	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
-	///     message if the property is not valid.
+	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
 	/// </returns>
-	public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value)
-		where T : struct, Enum
-	{
-		return !Enum.IsDefined(value)
-			? (true, $"The value `{value}` is not defined in the enum type `{typeof(T).Name}`.")
-			: default;
-	}
+	public static bool ValidateProperty<T>(T value)
+		where T : struct, Enum => Enum.IsDefined(value);
+
+	/// <summary>
+	///		The default message template when the property is invalid.
+	/// </summary>
+	public const string DefaultMessage = "'{PropertyName}' has a range of values which does not include '{PropertyValue}'.";
 }

@@ -39,7 +39,7 @@ public sealed partial class StructTests
 				new()
 				{
 					PropertyName = "StringProperty",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'String Property' must not be null.",
 				}
 			],
 			errors
@@ -68,7 +68,7 @@ public sealed partial class StructTests
 				new()
 				{
 					PropertyName = "StringProperty",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'String Property' must not be null.",
 				}
 			],
 			errors

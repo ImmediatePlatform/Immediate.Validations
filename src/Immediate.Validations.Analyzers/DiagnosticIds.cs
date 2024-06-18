@@ -11,6 +11,7 @@ public static class DiagnosticIds
 	public const string IV0007ValidateMethodParameterIsIncorrectType = "IV0007";
 	public const string IV0008ValidatePropertyMustBeRequired = "IV0008";
 	public const string IV0009ValidatorHasTooManyConstructors = "IV0009";
+	public const string IV0019ValidatorIsMissingDefaultMessage = "IV0019";
 
 	public const string IV0011AssemblyBehaviorsShouldUseValidation = "IV0011";
 

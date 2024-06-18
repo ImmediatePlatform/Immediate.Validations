@@ -130,6 +130,25 @@ internal static class ITypeSymbolExtensions
 			},
 		};
 
+	public static bool IsValidationResult(this INamedTypeSymbol? typeSymbol) =>
+		typeSymbol is
+		{
+			MetadataName: "ValidationResult",
+			ContainingNamespace:
+			{
+				Name: "Shared",
+				ContainingNamespace:
+				{
+					Name: "Validations",
+					ContainingNamespace:
+					{
+						Name: "Immediate",
+						ContainingNamespace.IsGlobalNamespace: true,
+					},
+				},
+			},
+		};
+
 	public static bool IsIValidationTarget(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
@@ -160,17 +179,7 @@ internal static class ITypeSymbolExtensions
 	public static bool IsValidValidatorReturn(this ITypeSymbol? typeSymbol) =>
 		typeSymbol is INamedTypeSymbol
 		{
-			MetadataName: "ValueTuple`2",
-			ContainingNamespace:
-			{
-				Name: "System",
-				ContainingNamespace.IsGlobalNamespace: true,
-			},
-			TypeArguments:
-			[
-			{ SpecialType: SpecialType.System_Boolean },
-			{ SpecialType: SpecialType.System_String, NullableAnnotation: NullableAnnotation.Annotated or NullableAnnotation.None },
-			]
+			SpecialType: SpecialType.System_Boolean,
 		};
 
 	public static bool IsValidValidatePropertyMethod(this IMethodSymbol methodSymbol) =>
@@ -194,51 +203,11 @@ internal static class ITypeSymbolExtensions
 					ReturnsVoid: true,
 					Parameters:
 					[
-					{
-						Type: INamedTypeSymbol
-						{
-							ConstructedFrom: INamedTypeSymbol
-							{
-								MetadataName: "List`1",
-								ContainingNamespace:
-								{
-									Name: "Generic",
-									ContainingNamespace:
-									{
-										Name: "Collections",
-										ContainingNamespace:
-										{
-											Name: "System",
-											ContainingNamespace.IsGlobalNamespace: true,
-										},
-									},
-								},
-							},
-							TypeArguments:
-							[
-								INamedTypeSymbol
-							{
-								Name: "ValidationError",
-								ContainingNamespace:
-								{
-									Name: "Shared",
-									ContainingNamespace:
-									{
-										Name: "Validations",
-										ContainingNamespace:
-										{
-											Name: "Immediate",
-											ContainingNamespace.IsGlobalNamespace: true,
-										},
-									},
-								},
-							},
-							],
-						},
-					},
+					{ Type: INamedTypeSymbol validationResult },
 					{ Type: INamedTypeSymbol parameterType },
 					],
 				}
+				&& validationResult.IsValidationResult()
 				&& SymbolEqualityComparer.Default.Equals(parameterType, typeSymbol)
 			);
 

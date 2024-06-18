@@ -236,7 +236,7 @@ public sealed class CustomValidationTests
 			{
 				public required int Operand { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(int value, int operand) =>
+				public static bool ValidateProperty(int value, int operand) =>
 					value > operand ? default : (true, $"Value `{value}` is not greater than `{operand}`.");
 			}
 
@@ -271,7 +271,7 @@ public sealed class CustomValidationTests
 			{
 				public required string Third { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target,
 					string first,
 					string second,
@@ -319,7 +319,7 @@ public sealed class CustomValidationTests
 				public required string Fourth { get; init; }
 				public required string Fifth { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target,
 					string first,
 					string second,
@@ -412,4 +412,31 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
+	[Fact]
+	public async Task OneOfWithArrayField()
+	{
+		var driver = GeneratorTestHelper.GetDriver(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass
+			{
+				[OneOf(nameof(s_validStrings))]
+				public string StringProperty { get; init; }
+
+				private static readonly string[] s_validStrings = ["123"];
+			}
+			""");
+
+		var result = driver.GetRunResult();
+
+		Assert.Empty(result.Diagnostics);
+		_ = Assert.Single(result.GeneratedTrees);
+
+		_ = await Verify(result);
+	}
+
 }

@@ -8,24 +8,20 @@ using Immediate.Validations.Shared;
 
 partial class ValidateClass
 {
-	static List<ValidationError> IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
+	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidateClass? target)
+	public static  ValidationResult Validate(ValidateClass? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 		__ValidateIntProperty(errors, t, t.IntProperty);
@@ -37,7 +33,7 @@ partial class ValidateClass
 
 
 	private static void __ValidateIntProperty(
-		List<ValidationError> errors, ValidateClass instance, int target
+		ValidationResult errors, ValidateClass instance, int target
 	)
 	{
 
@@ -45,14 +41,26 @@ partial class ValidateClass
 
 
 
-		errors.Add(
-			global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
-				t
-				, operand: instance.KeyValue
-			),
-			$"IntProperty",
-			null
-		);
+		{
+			if (!global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
+					t
+					, comparison: instance.KeyValue
+				)
+			)
+			{
+				errors.Add(
+					$"IntProperty",
+					global::Immediate.Validations.Shared.EqualAttribute.DefaultMessage,
+					new()
+					{
+						["PropertyName"] = $"Int Property",
+						["PropertyValue"] = t,
+						["ComparisonName"] = "Key Value",
+						["ComparisonValue"] = instance.KeyValue,
+					}
+				);
+			}
+		}
 	}
 
 }

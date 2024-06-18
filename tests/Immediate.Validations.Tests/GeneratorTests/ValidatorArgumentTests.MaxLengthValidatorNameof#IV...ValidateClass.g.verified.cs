@@ -8,24 +8,20 @@ using Immediate.Validations.Shared;
 
 partial class ValidateClass
 {
-	static List<ValidationError> IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
+	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidateClass? target)
+	public static  ValidationResult Validate(ValidateClass? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 		__ValidateStringProperty(errors, t, t.StringProperty);
@@ -37,31 +33,42 @@ partial class ValidateClass
 
 
 	private static void __ValidateStringProperty(
-		List<ValidationError> errors, ValidateClass instance, string target
+		ValidationResult errors, ValidateClass instance, string target
 	)
 	{
 
 		if (target is not { } t)
 		{
-			errors.Add(new()
-			{
-				PropertyName = $"StringProperty",
-				ErrorMessage = "Property must not be `null`.",
-			});
+			errors.Add(
+				$"StringProperty",
+				$"'String Property' must not be null."
+			);
 
 			return;
 		}
 
 
 
-		errors.Add(
-			global::Immediate.Validations.Shared.MaxLengthAttribute.ValidateProperty(
-				t
-				, length: instance.KeyValue
-			),
-			$"StringProperty",
-			null
-		);
+		{
+			if (!global::Immediate.Validations.Shared.MaxLengthAttribute.ValidateProperty(
+					t
+					, maxLength: instance.KeyValue
+				)
+			)
+			{
+				errors.Add(
+					$"StringProperty",
+					global::Immediate.Validations.Shared.MaxLengthAttribute.DefaultMessage,
+					new()
+					{
+						["PropertyName"] = $"String Property",
+						["PropertyValue"] = t,
+						["MaxLengthName"] = "Key Value",
+						["MaxLengthValue"] = instance.KeyValue,
+					}
+				);
+			}
+		}
 	}
 
 }

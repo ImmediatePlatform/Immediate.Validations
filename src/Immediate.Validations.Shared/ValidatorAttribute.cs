@@ -22,7 +22,7 @@ namespace Immediate.Validations.Shared;
 public abstract class ValidatorAttribute : Attribute
 {
 	/// <summary>
-	///		A custom error message to represent the specific validation failure
+	///		A custom error message to represent the specific validation failure.
 	/// </summary>
 	public string? Message { get; init; }
 }

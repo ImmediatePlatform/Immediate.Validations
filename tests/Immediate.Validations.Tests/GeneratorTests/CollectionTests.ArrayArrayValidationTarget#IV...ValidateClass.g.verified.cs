@@ -8,24 +8,20 @@ using Immediate.Validations.Shared;
 
 partial class ValidateClass
 {
-	static List<ValidationError> IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
+	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidateClass? target)
+	public static  ValidationResult Validate(ValidateClass? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 		__ValidateValidationTargets(errors, t, t.ValidationTargets);
@@ -37,17 +33,16 @@ partial class ValidateClass
 
 
 	private static void __ValidateValidationTargets00(
-		List<ValidationError> errors, ValidateClass instance, global::ValidationTarget target, int counter0, int counter1
+		ValidationResult errors, ValidateClass instance, global::ValidationTarget target, int counter0, int counter1
 	)
 	{
 
 		if (target is not { } t)
 		{
-			errors.Add(new()
-			{
-				PropertyName = $"ValidationTargets[{counter0}][{counter1}]",
-				ErrorMessage = "Property must not be `null`.",
-			});
+			errors.Add(
+				$"ValidationTargets[{counter0}][{counter1}]",
+				$"'Validation Targets[{counter0}][{counter1}]' must not be null."
+			);
 
 			return;
 		}
@@ -66,17 +61,16 @@ partial class ValidateClass
 	}
 
 	private static void __ValidateValidationTargets0(
-		List<ValidationError> errors, ValidateClass instance, global::ValidationTarget[] target, int counter0
+		ValidationResult errors, ValidateClass instance, global::ValidationTarget[] target, int counter0
 	)
 	{
 
 		if (target is not { } t)
 		{
-			errors.Add(new()
-			{
-				PropertyName = $"ValidationTargets[{counter0}]",
-				ErrorMessage = "Property must not be `null`.",
-			});
+			errors.Add(
+				$"ValidationTargets[{counter0}]",
+				$"'Validation Targets[{counter0}]' must not be null."
+			);
 
 			return;
 		}
@@ -94,17 +88,16 @@ partial class ValidateClass
 	}
 
 	private static void __ValidateValidationTargets(
-		List<ValidationError> errors, ValidateClass instance, global::ValidationTarget[][] target
+		ValidationResult errors, ValidateClass instance, global::ValidationTarget[][] target
 	)
 	{
 
 		if (target is not { } t)
 		{
-			errors.Add(new()
-			{
-				PropertyName = $"ValidationTargets",
-				ErrorMessage = "Property must not be `null`.",
-			});
+			errors.Add(
+				$"ValidationTargets",
+				$"'Validation Targets' must not be null."
+			);
 
 			return;
 		}

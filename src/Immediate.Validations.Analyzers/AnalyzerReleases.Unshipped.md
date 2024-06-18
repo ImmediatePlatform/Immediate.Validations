@@ -19,3 +19,4 @@ IV0015 | ImmediateValidations | Warning | ValidateClassAnalyzer
 IV0016 | ImmediateValidations | Warning | ValidateClassAnalyzer
 IV0017 | ImmediateValidations | Hidden | MissingAdditionalValidationsMethodAnalyzer
 IV0018 | ImmediateValidations | Error | ValidateClassAnalyzer
+IV0019 | ImmediateValidations | Error | ValidatorClassAnalyzer

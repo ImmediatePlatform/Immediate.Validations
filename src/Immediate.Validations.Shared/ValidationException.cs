@@ -10,26 +10,21 @@ namespace Immediate.Validations.Shared;
 	"CA1032:Implement standard exception constructors",
 	Justification = "Exception is not intended for general use."
 )]
-[SuppressMessage(
-	"Design",
-	"CA1002:Do not expose generic lists",
-	Justification = "Validation system uses concrete List<> types for performance."
-)]
 public sealed class ValidationException : Exception
 {
-	private ValidationException(List<ValidationError> errors)
+	private ValidationException(IReadOnlyList<ValidationError> errors)
 		: base(BuildErrorMessage("Validation failed: ", errors))
 	{
 		Errors = errors;
 	}
 
-	internal ValidationException(string message, List<ValidationError> errors)
+	internal ValidationException(string message, IReadOnlyList<ValidationError> errors)
 		: base(BuildErrorMessage(message, errors))
 	{
 		Errors = errors;
 	}
 
-	private static string? BuildErrorMessage(string message, List<ValidationError> errors)
+	private static string? BuildErrorMessage(string message, IReadOnlyList<ValidationError> errors)
 	{
 		var messages = errors
 			.Select(e => $"{Environment.NewLine} -- {e.PropertyName}: {e.ErrorMessage}")
@@ -102,8 +97,8 @@ public sealed class ValidationException : Exception
 		ArgumentNullException.ThrowIfNull(messageFunc);
 
 		var errors = T.Validate(obj);
-		if (errors is { Count: > 0 })
-			ThrowValidationException(errors, messageFunc(obj));
+		if (!errors.IsValid)
+			ThrowValidationException(errors.Errors, messageFunc(obj));
 	}
 
 	/// <summary>
@@ -115,10 +110,11 @@ public sealed class ValidationException : Exception
 	/// <exception cref="ValidationException">
 	///		Thrown if there are any errors.
 	/// </exception>
-	public static void ThrowIfInvalid(List<ValidationError> errors)
+	public static void ThrowIfInvalid(ValidationResult errors)
 	{
-		if (errors is { Count: > 0 })
-			ThrowValidationException(errors);
+		ArgumentNullException.ThrowIfNull(errors);
+		if (!errors.IsValid)
+			ThrowValidationException(errors.Errors);
 	}
 
 	/// <summary>
@@ -133,15 +129,16 @@ public sealed class ValidationException : Exception
 	/// <exception cref="ValidationException">
 	///		Thrown if there are any errors.
 	/// </exception>
-	public static void ThrowIfInvalid(List<ValidationError> errors, string message)
+	public static void ThrowIfInvalid(ValidationResult errors, string message)
 	{
-		if (errors is { Count: > 0 })
-			ThrowValidationException(errors, message);
+		ArgumentNullException.ThrowIfNull(errors);
+		if (!errors.IsValid)
+			ThrowValidationException(errors.Errors, message);
 	}
 
-	private static void ThrowValidationException(List<ValidationError> errors) =>
+	private static void ThrowValidationException(IReadOnlyList<ValidationError> errors) =>
 		throw new ValidationException(errors);
 
-	private static void ThrowValidationException(List<ValidationError> errors, string message) =>
+	private static void ThrowValidationException(IReadOnlyList<ValidationError> errors, string message) =>
 		throw new ValidationException(message, errors);
 }

@@ -10,14 +10,14 @@ partial record struct OuterRecordStruct
 
 partial record struct ValidateRecordStruct
 {
-	static List<ValidationError> IValidationTarget<ValidateRecordStruct>.Validate(ValidateRecordStruct target) =>
+	static ValidationResult IValidationTarget<ValidateRecordStruct>.Validate(ValidateRecordStruct target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidateRecordStruct target)
+	public static  ValidationResult Validate(ValidateRecordStruct target)
 	{
 		var t = target;
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 

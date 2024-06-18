@@ -1,31 +1,33 @@
 namespace Immediate.Validations.Shared;
 
 /// <summary>
-///	    Applied to a property to indicate that the value should be greater than <paramref name="operand"/>.
+///	    Applied to a property to indicate that the value should be greater than <paramref name="comparison"/>.
 /// </summary>
-/// <param name="operand">
+/// <param name="comparison">
 ///		The value that the applied property should be greater than or equal to.
 /// </param>
 public sealed class GreaterThanOrEqualAttribute(
 	[TargetType]
-	object operand
+	object comparison
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///	    Validates that the value of the applied property is greater than <paramref name="operand"/>.
+	///	    Validates that the value of the applied property is greater than <paramref name="comparison"/>.
 	/// </summary>
 	/// <param name="target">
 	///	    The value to validate.
 	/// </param>
-	/// <param name="operand">
+	/// <param name="comparison">
 	///		The value that the applied property should be greater than or equal to.
 	/// </param>
 	/// <returns>
-	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
-	///     message if the property is not valid.
+	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
 	/// </returns>
-	public static (bool Invalid, string? Message) ValidateProperty<T>(T target, T operand) =>
-		Comparer<T>.Default.Compare(target, operand) >= 0
-			? default
-			: (true, $"Value '{target}' is not greater than or equal to '{operand}'");
+	public static bool ValidateProperty<T>(T target, T comparison) =>
+		Comparer<T>.Default.Compare(target, comparison) >= 0;
+
+	/// <summary>
+	///		The default message template when the property is invalid.
+	/// </summary>
+	public const string DefaultMessage = "'{PropertyName}' must be greater than or equal to '{ComparisonValue}'.";
 }
