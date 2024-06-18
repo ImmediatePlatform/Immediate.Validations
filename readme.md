@@ -42,7 +42,7 @@ Indicate that a class should be validated by adding the `[Validate]` attribute a
 
 ```cs
 [Validate]
-public record Query : IValidationTarget<Query>;
+public partial record Query : IValidationTarget<Query>;
 ```
 
 When Nullable Reference Types is enabled, any non-nullable reference types are automatically checked for `null`. Other
@@ -50,7 +50,7 @@ validations are available like so:
 
 ```cs
 [Validate]
-public record Query : IValidationTarget<Query>
+public partial record Query : IValidationTarget<Query>
 {
 	[GreaterThan(0)]
 	public required int Id { get; init; }
