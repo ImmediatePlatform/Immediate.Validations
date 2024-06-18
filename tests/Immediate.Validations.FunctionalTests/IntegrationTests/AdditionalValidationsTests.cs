@@ -69,7 +69,7 @@ public sealed partial class AdditionalValidationsTests
 				new()
 				{
 					PropertyName = "Id",
-					ErrorMessage = "Property must not be empty.",
+					ErrorMessage = "'Id' must not be empty.",
 				},
 			],
 			errors

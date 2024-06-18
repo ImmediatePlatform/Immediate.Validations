@@ -1,5 +1,8 @@
 using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Immediate.Validations.Shared;
@@ -107,6 +110,145 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 		string? overrideMessage = null
 	)
 	{
-		throw new NotImplementedException();
+		if (expression is not
+			{
+				Body: MethodCallExpression
+				{
+					Method: { IsStatic: true, Name: "ValidateProperty", } method,
+					Arguments: [{ } targetPropertyExpression, ..] argumentExpressions,
+				},
+				Parameters: [],
+			}
+			|| method.ReturnType != typeof(bool))
+		{
+			throw new NotSupportedException("Invalid Validation Expression");
+		}
+
+		if (method.DeclaringType?.IsAssignableTo(typeof(ValidatorAttribute)) is not true)
+			throw new NotSupportedException("Invalid Validation Expression");
+
+		var argumentValues = argumentExpressions.Select(ExpressionEvaluator.GetValue).ToArray();
+
+		if ((bool)method.Invoke(null, argumentValues)!)
+			return;
+
+		var targetObject = GetTargetObject(targetPropertyExpression);
+
+		var message = overrideMessage ?? GetValidationMessage(method.DeclaringType);
+
+		var arguments = new Dictionary<string, object?>
+		{
+			["PropertyValue"] = argumentValues[0],
+			["PropertyName"] = GetMemberName(targetPropertyExpression, targetObject),
+		};
+
+		foreach (var (expr, param, value) in argumentExpressions.Zip(method.GetParameters(), argumentValues).Skip(1))
+		{
+			var prefix = GetParameterPrefix(param);
+			arguments[$"{prefix}Value"] = value;
+			arguments[$"{prefix}Name"] = GetMemberName(expr, targetObject) ?? "";
+		}
+
+		Add(
+			GetTargetPropertyName(targetPropertyExpression),
+			message,
+			arguments
+		);
 	}
+
+	private static string GetValidationMessage(Type declaringType)
+	{
+		if (declaringType
+				.GetMember(
+					"DefaultMessage",
+					BindingFlags.Static | BindingFlags.Public
+				) is not [{ } messageProperty])
+		{
+			throw new InvalidOperationException("Unable to access the `DefaultMessage` of the validator.");
+		}
+
+		return messageProperty switch
+		{
+			FieldInfo fi => (string)fi.GetValue(null)!,
+			PropertyInfo pi => (string)pi.GetValue(null)!,
+			_ => throw new UnreachableException(),
+		};
+	}
+
+	private static object GetTargetObject(Expression? expression) =>
+		expression switch
+		{
+			MemberExpression { Expression: ConstantExpression ce } => ce.Value!,
+			MemberExpression me => GetTargetObject(me.Expression),
+			BinaryExpression { NodeType: ExpressionType.ArrayIndex } ie => GetTargetObject(ie.Left),
+			MethodCallExpression { Method.Name: "get_Item", Arguments.Count: 1 } mce => GetTargetObject(mce.Object),
+			_ => throw new NotSupportedException("Unable to determine target validation object."),
+		};
+
+	private static string? GetMemberName(Expression? expression, object targetObject) =>
+		expression switch
+		{
+			MemberExpression { Expression: ConstantExpression ce } when ReferenceEquals(ce.Value, targetObject) =>
+				"",
+			MemberExpression me =>
+				PrependMemberParent(GetMemberName(me.Expression, targetObject) ?? "", GetMemberName(me.Member), MemberIndex.Member),
+			BinaryExpression { NodeType: ExpressionType.ArrayIndex } ie =>
+				PrependMemberParent(GetMemberName(ie.Left, targetObject), $"{ExpressionEvaluator.GetValue(ie.Right)}", MemberIndex.Index),
+			MethodCallExpression { Method.Name: "get_Item", Arguments: [{ } arg] } mce =>
+				PrependMemberParent(GetMemberName(mce.Object, targetObject), $"{ExpressionEvaluator.GetValue(arg)}", MemberIndex.Index),
+			MethodCallExpression { Arguments.Count: 0 } mce =>
+				PrependMemberParent(GetMemberName(mce.Object, targetObject) ?? "", mce.Method.Name, MemberIndex.Method),
+			_ => null,
+		};
+
+	private enum MemberIndex { None = 0, Member, Index, Method }
+
+	private static string? PrependMemberParent(string? parent, string name, MemberIndex memberIndex) =>
+		(parent, memberIndex) switch
+		{
+			(null, _) => null,
+			("", MemberIndex.Method) => $"{name}()",
+			("", _) => name,
+			(_, MemberIndex.Member) => $"{parent}.{name}",
+			(_, MemberIndex.Index) => $"{parent}[{name}]",
+			(_, MemberIndex.Method) => $"{parent}.{name}()",
+			_ => null,
+		};
+
+	[GeneratedRegex(@"(?<=[^A-Z])([A-Z])")]
+	private static partial Regex FirstCharInWord();
+
+	private static string GetMemberName(MemberInfo member)
+	{
+		if (member.GetCustomAttribute<DescriptionAttribute>() is { } desc)
+			return desc.Description;
+
+		return FirstCharInWord().Replace(member.Name, " $0");
+	}
+
+	private static string GetParameterPrefix(ParameterInfo param) =>
+		string.Create(provider: null, $"{char.ToUpperInvariant(param.Name![0])}{param.Name[1..]}");
+
+	private static string GetTargetPropertyName(Expression? expression) =>
+		expression switch
+		{
+			MemberExpression { Expression: ConstantExpression } =>
+				"",
+			MemberExpression me =>
+				PrependTargetParent(GetTargetPropertyName(me.Expression), me.Member.Name, MemberIndex.Member),
+			BinaryExpression { NodeType: ExpressionType.ArrayIndex } ie =>
+				PrependTargetParent(GetTargetPropertyName(ie.Left), $"{ExpressionEvaluator.GetValue(ie.Right)}", MemberIndex.Index),
+			MethodCallExpression { Method.Name: "get_Item", Arguments: [{ } arg] } mce =>
+				PrependTargetParent(GetTargetPropertyName(mce.Object), $"{ExpressionEvaluator.GetValue(arg)}", MemberIndex.Index),
+			_ => throw new NotSupportedException("Unable to determine target validation object."),
+		};
+
+	private static string PrependTargetParent(string parent, string name, MemberIndex memberIndex) =>
+		(parent, memberIndex) switch
+		{
+			(null or "", _) => name,
+			(_, MemberIndex.Member) => $"{parent}.{name}",
+			(_, MemberIndex.Index) => $"{parent}[{name}]",
+			_ => name,
+		};
 }
