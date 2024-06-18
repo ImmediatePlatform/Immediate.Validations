@@ -115,7 +115,7 @@ internal static class ExpressionEvaluator
 	private static object? GetValueFromNew(NewExpression ne)
 	{
 		if (ne.Constructor is null)
-			throw new NotSupportedException(/* TODO: Error Message */);
+			throw new NotSupportedException("Unknown if `null` Constructor is possible.");
 
 		var arguments = ne.Arguments
 			.Select(GetValue)
@@ -127,7 +127,7 @@ internal static class ExpressionEvaluator
 	private static Array? GetValueFromNewArray(NewArrayExpression nae)
 	{
 		if (nae.Type.GetElementType() is not { } elementType)
-			throw new NotSupportedException(/* TODO: Error Message */);
+			throw new UnreachableException();
 
 		var array = Array.CreateInstance(
 			elementType,
@@ -157,8 +157,8 @@ internal static class ExpressionEvaluator
 			{ NodeType: ExpressionType.OnesComplement } => ~(dynamic)GetValue(ue.Operand)!,
 			{ NodeType: ExpressionType.Quote } => GetValue(ue.Operand),
 
-			{ NodeType: ExpressionType.Convert } => throw new NotImplementedException(/* TODO: Error Message */),
-			{ NodeType: ExpressionType.ConvertChecked } => throw new NotImplementedException(/* TODO: Error Message */),
+			{ NodeType: ExpressionType.Convert } => throw new NotImplementedException("Not implemented yet. May implement at a later date if necessary."),
+			{ NodeType: ExpressionType.ConvertChecked } => throw new NotImplementedException("Not implemented yet. May implement at a later date if necessary."),
 
 			_ => throw new UnreachableException(),
 		};
