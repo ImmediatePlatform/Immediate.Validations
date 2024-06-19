@@ -3,33 +3,44 @@ using System.Diagnostics.CodeAnalysis;
 namespace Immediate.Validations.Shared;
 
 /// <summary>
-///	    Applied to a <see cref="string"/> property to indicate that the value should have a length of exactly <paramref
-///     name="length"/>.
+///	    Applied to a <see cref="string"/> property to indicate that the value should have a length between <paramref
+///     name="minLength"/> and <paramref name="maxLength"/>.
 /// </summary>
-/// <param name="length">
+/// <param name="minLength">
+///	    The minimum length of the <see cref="string"/>.
+/// </param>
+/// <param name="maxLength">
 ///	    The maximum length of the <see cref="string"/>.
 /// </param>
 public sealed class LengthAttribute(
 	[TargetType]
-	object length
+	object minLength,
+	[TargetType]
+	object maxLength
 ) : ValidatorAttribute
 {
 	/// <summary>
-	///	    Validates that the <see cref="string"/> has a length of exactly <paramref name="length"/>.
+	///	    Validates that the <see cref="string"/> has a length between <paramref name="minLength"/> and <paramref
+	///     name="maxLength"/>.
 	/// </summary>
 	/// <param name="target">
 	///	    The value to validate.
 	/// </param>
-	/// <param name="length">
-	///		The valid length for the string <paramref name="target"/>.
+	/// <param name="minLength">
+	///	    The minimum length of the <see cref="string"/>.
+	/// </param>
+	/// <param name="maxLength">
+	///	    The maximum length of the <see cref="string"/>.
 	/// </param>
 	/// <returns>
-	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
-	///     message if the property is not valid.
+	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
 	/// </returns>
 	[SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Will already by validated by IV first.")]
-	public static (bool Invalid, string? Message) ValidateProperty(string target, int length) =>
-		target.Length == length
-			? default
-			: (true, $"String is of length '{target.Length}', which is {(target.Length < length ? "shorter" : "longer")} than the allowed length of '{length}'.");
+	public static bool ValidateProperty(string target, int minLength, int maxLength) =>
+		target.Length >= minLength && target.Length <= maxLength;
+
+	/// <summary>
+	///		The default message template when the property is invalid.
+	/// </summary>
+	public const string DefaultMessage = "'{PropertyName}' must be between {MinLengthValue} and {MaxLengthValue} characters.";
 }

@@ -32,27 +32,8 @@ partial class ValidateClass
 
 
 
-	private static void __ValidateStringProperty0(
-		ValidationResult errors, ValidateClass instance, string target, int counter0
-	)
-	{
-
-		if (target is not { } t)
-		{
-			errors.Add(
-				$"StringProperty[{counter0}]",
-				$"'String Property[{counter0}]' must not be null."
-			);
-
-			return;
-		}
-
-
-
-	}
-
 	private static void __ValidateStringProperty(
-		ValidationResult errors, ValidateClass instance, global::System.Collections.Generic.List<string> target
+		ValidationResult errors, ValidateClass instance, string target
 	)
 	{
 
@@ -67,15 +48,27 @@ partial class ValidateClass
 		}
 
 
-		var counter0 = 0;
-		foreach (var item0 in t)
-		{
-			__ValidateStringProperty0(
-				errors, instance, item0, counter0
-			);
-			counter0++;
-		}
 
+		{
+			if (!global::Immediate.Validations.Shared.OneOfAttribute.ValidateProperty(
+					t
+					, values: s_validStrings
+				)
+			)
+			{
+				errors.Add(
+					$"StringProperty",
+					global::Immediate.Validations.Shared.OneOfAttribute.DefaultMessage,
+					new()
+					{
+						["PropertyName"] = $"String Property",
+						["PropertyValue"] = t,
+						["ValuesName"] = "s_valid Strings",
+						["ValuesValue"] = string.Join<string>(", ", s_validStrings),
+					}
+				);
+			}
+		}
 	}
 
 }

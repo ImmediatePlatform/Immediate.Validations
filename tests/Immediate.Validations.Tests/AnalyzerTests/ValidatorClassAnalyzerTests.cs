@@ -29,12 +29,10 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public required int Operand { get; init; }
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int operand)
-				{
-					return value <= operand
-						? (true, "Property must not be `null`.")
-						: default;
-				}
+				public static bool ValidateProperty(int value, int operand) =>
+					value > operand;
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -49,12 +47,10 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public int Operand { get; } = operand;
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int operand)
-				{
-					return value <= operand
-						? (true, "Property must not be `null`.")
-						: default;
-				}
+				public static bool ValidateProperty(int value, int operand) =>
+					value > operand;
+
+				public static string DefaultMessage => "";
 			}
 			"""
 		).RunAsync();
@@ -71,12 +67,10 @@ public sealed class ValidatorClassAnalyzerTests
 				[TargetType]
 				public required object Operand { get; init; }
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, T operand)
-				{
-					return Comparer<T>.Default.Compare(value, operand) <= 0
-						? (true, "Property must not be `null`.")
-						: default;
-				}
+				public static bool ValidateProperty<T>(T value, T operand) =>
+					Comparer<T>.Default.Compare(value, operand) > 0;
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -95,12 +89,10 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public object Operand { get; } = operand;
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, T operand)
-				{
-					return Comparer<T>.Default.Compare(value, operand) <= 0
-						? (true, "Property must not be `null`.")
-						: default;
-				}
+				public static bool ValidateProperty<T>(T value, T operand) =>
+					Comparer<T>.Default.Compare(value, operand) > 0;
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -119,12 +111,10 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public object Operand { get; } = operand;
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, int operand)
-				{
-					return Comparer<T>.Default.Compare(value, (T)(object)operand) <= 0
-						? (true, "Property must not be `null`.")
-						: default;
-				}
+				public static bool ValidateProperty<T>(T value, int operand) =>
+					Comparer<T>.Default.Compare(value, (T)(object)operand) > 0;
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -142,12 +132,10 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public object Operand { get; } = operand;
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(string value, params string[] operand)
-				{
-					return Comparer<string>.Default.Compare(value, operand[0]) <= 0
-						? (true, "Property must not be `null`.")
-						: default;
-				}
+				public static bool ValidateProperty(string value, params string[] operand) =>
+					Comparer<string>.Default.Compare(value, operand[0]) > 0;
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -166,12 +154,10 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public object Operand { get; } = operand;
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value, params T[] operand)
-				{
-					return Comparer<T>.Default.Compare(value, operand[0]) <= 0
-						? (true, "Property must not be `null`.")
-						: default;
-				}
+				public static bool ValidateProperty<T>(T value, params T[] operand) =>
+					Comparer<T>.Default.Compare(value, operand[0]) > 0;
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -185,6 +171,8 @@ public sealed class ValidatorClassAnalyzerTests
 			public sealed class {|IV0001:GreaterThanAttribute|} : ValidatorAttribute
 			{
 				public required int Operand { get; init; }
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -199,12 +187,10 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public required int Operand { get; init; }
 
-				public (bool Invalid, string? DefaultMessage) {|IV0002:ValidateProperty|}(int value, int operand)
-				{
-					return value <= operand
-						? (true, "Property must not be `null`.")
-						: default;
-				}
+				public bool {|IV0002:ValidateProperty|}(int value, int operand) =>
+					value > operand;
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -219,20 +205,18 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public required int Operand { get; init; }
 			
-				public static (bool Invalid, string? DefaultMessage) {|IV0003:ValidateProperty|}(int value)
+				public static bool {|IV0003:ValidateProperty|}(int value)
 				{
-					return value <= 0
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > 0;
 				}
-			
-				public static (bool Invalid, string? DefaultMessage) {|IV0003:ValidateProperty|}(int value, int operand)
+
+				public static bool {|IV0003:ValidateProperty|}(int value, int operand)
 				{
-					return value <= operand
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > operand;
 				}
-						}
+
+				public const string DefaultMessage = "";
+			}
 			"""
 		).RunAsync();
 
@@ -246,10 +230,12 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public required int Operand { get; init; }
 
-				public static bool {|IV0004:ValidateProperty|}(int value, int operand)
+				public static int {|IV0004:ValidateProperty|}(int value, int operand)
 				{
-					return value <= operand;
+					return value;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -264,12 +250,12 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public required int {|IV0005:Operand|} { get; init; }
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value)
+				public static bool ValidateProperty(int value)
 				{
-					return value <= -1
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > -1;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -302,12 +288,12 @@ public sealed class ValidatorClassAnalyzerTests
 
 			public sealed class GreaterThanAttribute : ValidatorAttribute
 			{
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int {|IV0006:operand|})
+				public static bool ValidateProperty(int value, int {|IV0006:operand|})
 				{
-					return value <= operand
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -324,17 +310,17 @@ public sealed class ValidatorClassAnalyzerTests
 				public required int {|IV0005:Charlie|} { get; init; }
 				public required int {|IV0005:Echo|} { get; init; }
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(
+				public static bool ValidateProperty(
 					int value, 
 					int {|IV0006:bravo|},
 					int {|IV0006:delta|},
 					int {|IV0006:foxtrot|}
 				)
 				{
-					return value <= 0
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > 0;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -376,12 +362,12 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public required int? {|IV0007:Operand|} { get; init; }
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int {|IV0007:operand|})
+				public static bool ValidateProperty(int value, int {|IV0007:operand|})
 				{
-					return value <= operand
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -396,12 +382,12 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public required string? {|IV0007:Operand|} { get; init; }
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(string value, string {|IV0007:operand|})
+				public static bool ValidateProperty(string value, string {|IV0007:operand|})
 				{
-					return value != operand
-						? (true, "Property must not be `null`.")
-						: default;
+					return value == operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -414,12 +400,12 @@ public sealed class ValidatorClassAnalyzerTests
 
 			public sealed class GreaterThanAttribute(int? {|IV0007:operand|}) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int {|IV0007:operand|})
+				public static bool ValidateProperty(int value, int {|IV0007:operand|})
 				{
-					return value <= operand
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -432,12 +418,12 @@ public sealed class ValidatorClassAnalyzerTests
 
 			public sealed class EqualToAttribute(string? {|IV0007:operand|}) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(string value, string {|IV0007:operand|})
+				public static bool ValidateProperty(string value, string {|IV0007:operand|})
 				{
-					return value != operand
-						? (true, "Property must not be `null`.")
-						: default;
+					return value == operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -450,12 +436,12 @@ public sealed class ValidatorClassAnalyzerTests
 
 			public sealed class EqualToAttribute(params string?[] {|IV0007:operand|}) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(string value, params string[] {|IV0007:operand|})
+				public static bool ValidateProperty(string value, params string[] {|IV0007:operand|})
 				{
-					return value != operand[0]
-						? (true, "Property must not be `null`.")
-						: default;
+					return value == operand[0];
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -470,12 +456,12 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public int {|IV0008:Operand|} { get; init; }
 
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int operand)
+				public static bool ValidateProperty(int value, int operand)
 				{
-					return value <= operand
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > operand;
 				}
+
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -490,14 +476,30 @@ public sealed class ValidatorClassAnalyzerTests
 			{
 				public {|IV0009:GreaterThanAttribute|}(int operand) { }
 				public {|IV0009:GreaterThanAttribute|}(string operand) { }
-			
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value, int {|IV0006:operand|})
+
+				public static bool ValidateProperty(int value, int {|IV0006:operand|})
 				{
-					return value <= operand
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > operand;
 				}
-						}
+
+				public const string DefaultMessage = "";
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidatorWithNoDefaultMessageShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+			
+			public sealed class {|IV0010:GreaterThanAttribute|} : ValidatorAttribute
+			{
+				public required int Operand { get; init; }
+			
+				public static bool ValidateProperty(int value, int operand) =>
+					value > operand;
+			}
 			"""
 		).RunAsync();
 }

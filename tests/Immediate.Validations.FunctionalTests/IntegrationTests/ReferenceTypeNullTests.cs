@@ -71,7 +71,7 @@ public sealed partial class ReferenceTypeNullTests
 				new ValidationError()
 				{
 					PropertyName = "NotNull",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Not Null' must not be null.",
 				},
 			],
 			errors

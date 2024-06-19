@@ -10,14 +10,14 @@ partial struct OuterStruct
 
 partial struct ValidateStruct
 {
-	static List<ValidationError> IValidationTarget<ValidateStruct>.Validate(ValidateStruct target) =>
+	static ValidationResult IValidationTarget<ValidateStruct>.Validate(ValidateStruct target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidateStruct target)
+	public static  ValidationResult Validate(ValidateStruct target)
 	{
 		var t = target;
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 

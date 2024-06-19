@@ -12,7 +12,7 @@ public sealed partial class ImmediateValidationsGenerator : IIncrementalGenerato
 			.ForAttributeWithMetadataName(
 				"Immediate.Validations.Shared.ValidateAttribute",
 				(_, _) => true,
-				TransformMethod
+				(ctx, ct) => new ValidateTargetTransformer(ctx, ct).Transform()
 			)
 			.Where(m => m != null);
 

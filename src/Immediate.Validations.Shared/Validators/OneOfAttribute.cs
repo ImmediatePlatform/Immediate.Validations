@@ -14,11 +14,18 @@ public sealed class OneOfAttribute(
 	/// <summary>
 	///	    Validates that the property value is one of the specified <paramref name="values"/>.
 	/// </summary>
-	/// <param name="target"></param>
+	/// <param name="value">
+	///	    The value to validate.
+	/// </param>
 	/// <param name="values"></param>
-	/// <returns></returns>
-	public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T target, params T[] values) =>
-		values.Contains(target)
-			? default
-			: (true, $"Value `{target}` was not one of the specified values: {string.Join(", ", values)}.");
+	/// <returns>
+	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
+	/// </returns>
+	public static bool ValidateProperty<T>(T value, params T[] values) =>
+		values.Contains(value);
+
+	/// <summary>
+	///		The default message template when the property is invalid.
+	/// </summary>
+	public const string DefaultMessage = "'{PropertyName}' was not one of the specified values: {ValuesValue}.";
 }

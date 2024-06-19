@@ -15,14 +15,13 @@ public sealed class NotNullAttribute : ValidatorAttribute
 	///	    The value to validate.
 	/// </param>
 	/// <returns>
-	///	    A <see cref="ValueTuple{T1, T2}"/> indicating whether the property is valid or not, along with an error
-	///     message if the property is not valid.
+	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
 	/// </returns>
-	public static (bool Invalid, string? DefaultMessage) ValidateProperty<T>(T value)
-		where T : class
-	{
-		return value is null
-			? (true, "Property must not be `null`.")
-			: default;
-	}
+	public static bool ValidateProperty<T>(T value)
+		where T : class => value is not null;
+
+	/// <summary>
+	///		The default message template when the property is invalid.
+	/// </summary>
+	public const string DefaultMessage = "'{PropertyName}' must be empty.";
 }

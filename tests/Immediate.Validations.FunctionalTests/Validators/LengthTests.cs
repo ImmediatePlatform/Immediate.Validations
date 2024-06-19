@@ -8,7 +8,7 @@ public sealed partial class LengthTests
 	[Validate]
 	public partial record StringRecord : IValidationTarget<StringRecord>
 	{
-		[Length(12)]
+		[Length(12, 12)]
 		public required string StringValue { get; init; }
 	}
 
@@ -24,7 +24,7 @@ public sealed partial class LengthTests
 				new()
 				{
 					PropertyName = nameof(StringRecord.StringValue),
-					ErrorMessage = "String is of length '5', which is shorter than the allowed length of '12'.",
+					ErrorMessage = "'String Value' must be between 12 and 12 characters.",
 				}
 			],
 			errors
@@ -53,7 +53,7 @@ public sealed partial class LengthTests
 				new()
 				{
 					PropertyName = nameof(StringRecord.StringValue),
-					ErrorMessage = "String is of length '38', which is longer than the allowed length of '12'.",
+					ErrorMessage = "'String Value' must be between 12 and 12 characters.",
 				}
 			],
 			errors

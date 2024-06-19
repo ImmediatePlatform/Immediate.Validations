@@ -7,7 +7,7 @@ public sealed record ValidationTarget
 	public required Class Class { get; init; }
 	public required bool HasAdditionalValidationsMethod { get; init; }
 	public required bool IsReferenceType { get; init; }
-	public required EquatableReadOnlyList<string> BaseValidatorTypes { get; init; }
+	public required EquatableReadOnlyList<string> BaseValidationTargets { get; init; }
 	public required EquatableReadOnlyList<ValidationTargetProperty> Properties { get; init; }
 }
 
@@ -25,7 +25,6 @@ public sealed record ValidationTargetProperty
 	public required bool IsReferenceType { get; init; }
 	public required bool IsNullable { get; init; }
 	public required bool IsValidationProperty { get; init; }
-	public required bool IsVogenProperty { get; init; }
 	public required string? ValidationTypeFullName { get; init; }
 	public required ValidationTargetProperty? CollectionPropertyDetails { get; init; }
 	public required EquatableReadOnlyList<PropertyValidation> Validations { get; init; }
@@ -37,7 +36,15 @@ public sealed record PropertyValidation
 	public required string ValidatorName { get; init; }
 	public required bool IsGenericMethod { get; init; }
 	public required bool IsNullable { get; init; }
-	public required EquatableReadOnlyList<string> Parameters { get; init; }
+	public required EquatableReadOnlyList<Argument> Arguments { get; init; }
 	public required string? Message { get; init; }
 }
 
+public sealed record Argument
+{
+	public required string? ParameterName { get; init; }
+	public required string? NamedParameterName { get; init; }
+	public required string Name { get; init; }
+	public required string Value { get; init; }
+	public required string? ArrayType { get; init; }
+}

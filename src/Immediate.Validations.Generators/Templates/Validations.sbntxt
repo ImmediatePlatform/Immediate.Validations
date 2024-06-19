@@ -15,31 +15,28 @@ partial {{ c.type }} {{ c.name }}
 
 partial {{ class.type }} {{ class.name }}
 {
-	static List<ValidationError> IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
+	static ValidationResult IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
 		Validate(target);
 
-	public static {{ if class.type == "interface"; "new"; end }} List<ValidationError> Validate({{ class.name; if is_reference_type; "?"; end }} target)
+	public static {{ if class.type == "interface"; "new"; end }} ValidationResult Validate({{ class.name; if is_reference_type; "?"; end }} target)
 	{
 		{{~ if is_reference_type ~}}
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		{{~ else ~}}
 		var t = target;
 		{{~ end ~}}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
-		{{~ for bc in base_validator_types ~}}
-		errors.AddRange({{ bc }}.Validate(t));
+		{{~ for bc in base_validation_targets ~}}
+		foreach (var error in {{ bc }}.Validate(t))
+			errors.Add(error);
 		{{~ end ~}}
 
 		{{~ for p in properties ~}}
@@ -54,18 +51,38 @@ partial {{ class.type }} {{ class.name }}
 	}
 
 		{{~
-			func validate(p, target, property_name)
+			func validate(p, target, property_name, name)
 		~}}
-		errors.Add(
-			{{ p.validator_name }}.ValidateProperty(
-				{{ target }}
-				{{~ for param in p.parameters ~}}
-				, {{ param }}
-				{{~ end ~}}
-			),
-			{{ property_name }},
-			{{ if string.empty p.message; "null"; else; p.message; end }}
-		);
+		{
+			if (!{{ p.validator_name }}.ValidateProperty(
+					{{ target }}
+					{{~ for param in p.arguments ~}}
+					, {{ param.named_parameter_name; param.value }}
+					{{~ end ~}}
+				)
+			)
+			{
+				errors.Add(
+					{{ property_name }},
+					{{ if string.empty p.message; p.validator_name + ".DefaultMessage"; else; p.message; end }},
+					new()
+					{
+						["PropertyName"] = {{ name }},
+						["PropertyValue"] = {{ target }},
+						{{~ for a in p.arguments ~}}
+						{{~ if !string.empty a.parameter_name ~}}
+						["{{ a.parameter_name }}Name"] = "{{ a.name }}",
+						{{~ if !string.empty a.array_type ~}}
+						["{{ a.parameter_name }}Value"] = string.Join<{{ a.array_type }}>(", ", {{ a.value }}),
+						{{~ else ~}}
+						["{{ a.parameter_name }}Value"] = {{ a.value }},
+						{{~ end ~}}
+						{{~ end ~}}
+						{{~ end ~}}
+					}
+				);
+			}
+		}
 		{{~ end ~}}
 
 	{{~
@@ -82,12 +99,12 @@ partial {{ class.type }} {{ class.name }}
 	{{~ func validate_property(p, depth = 0) ~}}
 	{{- if p.collection_property_details; validate_property(p.collection_property_details, depth + 1); end ~}}
 	private static void __Validate{{ p.property_name }}{{ if depth != 0; for i in 1..depth; "0"; end; end }}(
-		List<ValidationError> errors, {{ class.name }} instance, {{ p.type_full_name }} target{{ if depth != 0; for i in 1..depth }}, int counter{{i-1}}{{ end; end }}
+		ValidationResult errors, {{ class.name }} instance, {{ p.type_full_name }} target{{ if depth != 0; for i in 1..depth }}, int counter{{i-1}}{{ end; end }}
 	)
 	{
 		{{~ 
 			for v in p.null_validations
-				validate(v, "target", $"$\"{get_prop_name(p.name, depth)}\"")
+				validate(v, "target", $"$\"{get_prop_name(p.property_name, depth)}\"", $"$\"{get_prop_name(p.name, depth)}\"")
 			end
 		~}}
 
@@ -95,11 +112,10 @@ partial {{ class.type }} {{ class.name }}
 		if (target is not { } t)
 		{
 			{{~ if !p.is_nullable ~}}
-			errors.Add(new()
-			{
-				PropertyName = $"{{ get_prop_name(p.name, depth) }}",
-				ErrorMessage = "Property must not be `null`.",
-			});
+			errors.Add(
+				$"{{ get_prop_name(p.property_name, depth) }}",
+				$"'{{ get_prop_name(p.name, depth) }}' must not be null."
+			);
 			{{~ end ~}}
 
 			return;
@@ -113,20 +129,10 @@ partial {{ class.type }} {{ class.name }}
 		{
 			errors.Add(error with 
 			{
-				PropertyName = $"{{ get_prop_name(p.name, depth) }}.{error.PropertyName}",
+				PropertyName = string.IsNullOrWhiteSpace(error.PropertyName)
+					? $"{{ get_prop_name(p.property_name, depth) }}"
+					: $"{{ get_prop_name(p.property_name, depth) }}.{error.PropertyName}",
 			});
-		}
-		{{~ else if p.is_vogen_property ~}}
-		{
-			var validation = {{ p.validation_type_full_name }}.Validate(t.Value);
-			if (!string.IsNullOrWhiteSpace(validation.ErrorMessage))
-			{
-				errors.Add(new()
-				{
-					PropertyName = $"{{ get_prop_name(p.name, depth) }}",
-					ErrorMessage = validation.ErrorMessage,
-				});
-			}
 		}
 		{{~ end ~}}
 
@@ -143,7 +149,7 @@ partial {{ class.type }} {{ class.name }}
 
 		{{~ 
 			for v in p.validations
-				validate(v, "t", $"$\"{get_prop_name(p.name, depth)}\"")
+				validate(v, "t", $"$\"{get_prop_name(p.property_name, depth)}\"", $"$\"{get_prop_name(p.name, depth)}\"")
 			end
 		~}}
 	}

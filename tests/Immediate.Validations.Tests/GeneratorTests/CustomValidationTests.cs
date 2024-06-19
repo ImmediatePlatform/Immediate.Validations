@@ -236,7 +236,7 @@ public sealed class CustomValidationTests
 			{
 				public required int Operand { get; init; }
 
-				public static (bool Invalid, string Message) ValidateProperty(int value, int operand) =>
+				public static bool ValidateProperty(int value, int operand) =>
 					value > operand ? default : (true, $"Value `{value}` is not greater than `{operand}`.");
 			}
 
@@ -271,7 +271,7 @@ public sealed class CustomValidationTests
 			{
 				public required string Third { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target,
 					string first,
 					string second,
@@ -319,7 +319,7 @@ public sealed class CustomValidationTests
 				public required string Fourth { get; init; }
 				public required string Fifth { get; init; }
 
-				public static (bool Invalid, string? Message) ValidateProperty(
+				public static bool ValidateProperty(
 					string target,
 					string first,
 					string second,
@@ -412,29 +412,22 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
-
 	[Fact]
-	public async Task VogenValidation()
+	public async Task OneOfWithArrayField()
 	{
 		var driver = GeneratorTestHelper.GetDriver(
 			"""
 			#nullable enable
 
-			using System.Collections.Generic;
 			using Immediate.Validations.Shared;
-			using Vogen;
 
-			[ValueObject]
-			public readonly partial struct UserId
-			{
-				public static Validation Validate(int value) =>
-					value > 0 ? Validation.Ok : Validation.Invalid("Must be greater than zero.");
-			}
-			
 			[Validate]
-			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			public partial class ValidateClass
 			{
-				public required UserId UserId { get; init; }
+				[OneOf(nameof(s_validStrings))]
+				public string StringProperty { get; init; }
+
+				private static readonly string[] s_validStrings = ["123"];
 			}
 			""");
 
@@ -445,4 +438,5 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
+
 }

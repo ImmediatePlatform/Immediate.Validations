@@ -8,24 +8,20 @@ using Immediate.Validations.Shared;
 
 partial interface BaseInterface
 {
-	static List<ValidationError> IValidationTarget<BaseInterface>.Validate(BaseInterface? target) =>
+	static ValidationResult IValidationTarget<BaseInterface>.Validate(BaseInterface? target) =>
 		Validate(target);
 
-	public static new List<ValidationError> Validate(BaseInterface? target)
+	public static new ValidationResult Validate(BaseInterface? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 

@@ -40,7 +40,7 @@ public sealed partial class CollectionTests
 				new()
 				{
 					PropertyName = "Strings",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Strings' must not be null.",
 				}
 			],
 			errors
@@ -68,12 +68,12 @@ public sealed partial class CollectionTests
 				new()
 				{
 					PropertyName = "Strings[1]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Strings[1]' must not be null.",
 				},
 				new()
 				{
 					PropertyName = "Strings[3]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Strings[3]' must not be null.",
 				},
 			],
 			errors
@@ -109,27 +109,27 @@ public sealed partial class CollectionTests
 				new()
 				{
 					PropertyName = "Strings[0][1]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Strings[0][1]' must not be null.",
 				},
 				new()
 				{
 					PropertyName = "Strings[1]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Strings[1]' must not be null.",
 				},
 				new()
 				{
 					PropertyName = "Strings[2][0]",
-					ErrorMessage = "Property must not be empty.",
+					ErrorMessage = "'Strings[2][0]' must not be empty.",
 				},
 				new()
 				{
 					PropertyName = "Strings[2][2]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Strings[2][2]' must not be null.",
 				},
 				new()
 				{
 					PropertyName = "Strings[3]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Strings[3]' must not be null.",
 				},
 			],
 			errors
@@ -158,7 +158,7 @@ public sealed partial class CollectionTests
 				new()
 				{
 					PropertyName = "Commands",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Commands' must not be null.",
 				}
 			],
 			errors
@@ -186,17 +186,17 @@ public sealed partial class CollectionTests
 				new()
 				{
 					PropertyName = "Commands[1]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Commands[1]' must not be null.",
 				},
 				new()
 				{
 					PropertyName = "Commands[2][0].Id",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Id' must not be null.",
 				},
 				new()
 				{
 					PropertyName = "Commands[3]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Commands[3]' must not be null.",
 				},
 			],
 			errors
@@ -232,17 +232,17 @@ public sealed partial class CollectionTests
 				new()
 				{
 					PropertyName = "Commands[1]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Commands[1]' must not be null.",
 				},
 				new()
 				{
 					PropertyName = "Commands[2][0].Id",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Id' must not be null.",
 				},
 				new()
 				{
 					PropertyName = "Commands[3]",
-					ErrorMessage = "Property must not be `null`.",
+					ErrorMessage = "'Commands[3]' must not be null.",
 				},
 			],
 			errors

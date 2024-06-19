@@ -67,7 +67,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 	public static readonly DiagnosticDescriptor ValidateParameterNameofInvalid =
 		new(
-			id: DiagnosticIds.IV0018ValidateParameterNameofInvalid,
+			id: DiagnosticIds.IV0017ValidateParameterNameofInvalid,
 			title: "nameof() target is invalid",
 			messageFormat: "nameof({0}) must refer to a property or method on the class `{1}`",
 			category: "ImmediateValidations",
@@ -120,13 +120,13 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			.Interfaces
 			.Any(i => i.IsIValidationTarget());
 
-		if (!hasValidateAttribute && !isIValidationTarget)
-			return;
-
 		token.ThrowIfCancellationRequested();
 
 		if (!hasValidateAttribute)
 		{
+			if (!isIValidationTarget && !symbol.HasValidatedProperties())
+				return;
+
 			context.ReportDiagnostic(
 				Diagnostic.Create(
 					ValidateAttributeMissing,
@@ -217,26 +217,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		if (attributeSymbol
 				.GetMembers()
 				.OfType<IMethodSymbol>()
-				.Where(m => m is
-				{
-					IsStatic: true,
-					Parameters.Length: >= 1,
-					Name: "ValidateProperty",
-					ReturnType: INamedTypeSymbol
-					{
-						MetadataName: "ValueTuple`2",
-						ContainingNamespace:
-						{
-							Name: "System",
-							ContainingNamespace.IsGlobalNamespace: true,
-						},
-						TypeArguments:
-						[
-						{ SpecialType: SpecialType.System_Boolean },
-						{ SpecialType: SpecialType.System_String },
-						]
-					},
-				})
+				.Where(m => m.IsValidValidatePropertyMethod())
 				.SingleValue() is not
 				{
 					Parameters: [{ Type: { } targetParameterType }, ..],
@@ -249,7 +230,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 		if (targetParameterType is ITypeParameterSymbol tps)
 		{
-			if (Utility.SatisfiesConstraints(tps, propertyType, compilation))
+			if (tps.SatisfiesConstraints(propertyType, compilation))
 			{
 				return new()
 				{
@@ -529,4 +510,13 @@ file static class Extensions
 			return false;
 		}
 	}
+
+	public static bool HasValidatedProperties(this INamedTypeSymbol symbol) =>
+		symbol
+			.GetAllMembers()
+			.Any(
+				s => s is IPropertySymbol
+					&& s.GetAttributes()
+						.Any(a => a.AttributeClass.ImplementsValidatorAttribute())
+			);
 }

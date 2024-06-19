@@ -8,24 +8,20 @@ using Immediate.Validations.Shared;
 
 partial class ValidationTarget
 {
-	static List<ValidationError> IValidationTarget<ValidationTarget>.Validate(ValidationTarget? target) =>
+	static ValidationResult IValidationTarget<ValidationTarget>.Validate(ValidationTarget? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidationTarget? target)
+	public static  ValidationResult Validate(ValidationTarget? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 		__ValidateStringProperty(errors, t, t.StringProperty);
@@ -37,17 +33,16 @@ partial class ValidationTarget
 
 
 	private static void __ValidateStringProperty(
-		List<ValidationError> errors, ValidationTarget instance, string target
+		ValidationResult errors, ValidationTarget instance, string target
 	)
 	{
 
 		if (target is not { } t)
 		{
-			errors.Add(new()
-			{
-				PropertyName = $"StringProperty",
-				ErrorMessage = "Property must not be `null`.",
-			});
+			errors.Add(
+				$"StringProperty",
+				$"'String Property' must not be null."
+			);
 
 			return;
 		}

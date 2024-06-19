@@ -10,24 +10,20 @@ partial record OuterRecord
 
 partial record ValidateRecord
 {
-	static List<ValidationError> IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target) =>
+	static ValidationResult IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target) =>
 		Validate(target);
 
-	public static  List<ValidationError> Validate(ValidateRecord? target)
+	public static  ValidationResult Validate(ValidateRecord? target)
 	{
 		if (target is not { } t)
 		{
-			return 
-			[
-				new()
-				{
-					PropertyName = ".self",
-					ErrorMessage = "`target` must not be `null`.",
-				},
-			];
+			return new()
+			{
+				{ ".self", "`target` must not be `null`." },
+			};
 		}
 		
-		var errors = new List<ValidationError>();
+		var errors = new ValidationResult();
 
 
 

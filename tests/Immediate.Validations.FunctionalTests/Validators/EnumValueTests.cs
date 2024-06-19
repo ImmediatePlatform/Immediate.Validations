@@ -40,7 +40,7 @@ public sealed partial class EnumValueTests
 				new()
 				{
 					PropertyName = nameof(EnumRecord.ValidState),
-					ErrorMessage = $"The value `3` is not defined in the enum type `{nameof(ValidState)}`.",
+					ErrorMessage = "'Valid State' has a range of values which does not include '3'.",
 				}
 			],
 			errors
