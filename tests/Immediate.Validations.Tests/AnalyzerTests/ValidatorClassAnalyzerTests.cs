@@ -268,14 +268,14 @@ public sealed class ValidatorClassAnalyzerTests
 
 			public sealed class GreaterThanAttribute(
 				int {|IV0005:operand|}
-			): ValidatorAttribute
+			) : ValidatorAttribute
 			{
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(int value)
+				public static bool ValidateProperty(int value)
 				{
-					return value <= -1
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > -1;
 				}
+			
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
@@ -337,17 +337,17 @@ public sealed class ValidatorClassAnalyzerTests
 				int {|IV0005:echo|}
 			): ValidatorAttribute
 			{
-				public static (bool Invalid, string? DefaultMessage) ValidateProperty(
+				public static bool ValidateProperty(
 					int value, 
 					int {|IV0006:bravo|},
 					int {|IV0006:delta|},
 					int {|IV0006:foxtrot|}
 				)
 				{
-					return value <= 0
-						? (true, "Property must not be `null`.")
-						: default;
+					return value > 0;
 				}
+			
+				public const string DefaultMessage = "";
 			}
 			"""
 		).RunAsync();
