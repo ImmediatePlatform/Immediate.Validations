@@ -21,6 +21,4 @@ public static class DiagnosticIds
 	public const string IV0015ValidateParameterIncompatibleType = "IV0015";
 	public const string IV0016ValidateParameterPropertyIncompatibleType = "IV0016";
 	public const string IV0018ValidateParameterNameofInvalid = "IV0018";
-
-	public const string IV0017AdditionalValidationsMissing = "IV0017";
 }
