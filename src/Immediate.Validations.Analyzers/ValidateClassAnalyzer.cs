@@ -120,13 +120,13 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			.Interfaces
 			.Any(i => i.IsIValidationTarget());
 
-		if (!hasValidateAttribute && !isIValidationTarget)
-			return;
-
 		token.ThrowIfCancellationRequested();
 
 		if (!hasValidateAttribute)
 		{
+			if (!isIValidationTarget && !symbol.HasValidatedProperties())
+				return;
+
 			context.ReportDiagnostic(
 				Diagnostic.Create(
 					ValidateAttributeMissing,
@@ -510,4 +510,13 @@ file static class Extensions
 			return false;
 		}
 	}
+
+	public static bool HasValidatedProperties(this INamedTypeSymbol symbol) =>
+		symbol
+			.GetAllMembers()
+			.Any(
+				s => s is IPropertySymbol
+					&& s.GetAttributes()
+						.Any(a => a.AttributeClass.ImplementsValidatorAttribute())
+			);
 }
