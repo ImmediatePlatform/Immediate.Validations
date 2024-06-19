@@ -446,7 +446,7 @@ public sealed class ValidatorClassAnalyzerTests
 			"""
 			using Immediate.Validations.Shared;
 			
-			public sealed class {|IV0019:GreaterThanAttribute|} : ValidatorAttribute
+			public sealed class {|IV0010:GreaterThanAttribute|} : ValidatorAttribute
 			{
 				public required int Operand { get; init; }
 			

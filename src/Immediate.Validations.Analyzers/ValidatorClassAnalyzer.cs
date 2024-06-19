@@ -109,7 +109,7 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 
 	public static readonly DiagnosticDescriptor ValidatorIsMissingDefaultMessage =
 		new(
-			id: DiagnosticIds.IV0019ValidatorIsMissingDefaultMessage,
+			id: DiagnosticIds.IV0010ValidatorIsMissingDefaultMessage,
 			title: "Validator is missing `DefaultMessage`",
 			messageFormat: "Validator `{0}` must have a `DefaultMessage` property",
 			category: "ImmediateValidations",
