@@ -12,7 +12,20 @@ public sealed class ValidateClassAnalyzerTests
 
 			public sealed record Target
 			{
-				[NotNull]
+				public required int Id { get; init; }
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task UnmarkedClassWithValidatedPropertiesShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed record {|IV0012:{|IV0013:Target|}|}
+			{
+				[NotEmpty]
 				public required int Id { get; init; }
 			}
 			"""
