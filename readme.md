@@ -57,7 +57,130 @@ public partial record Query : IValidationTarget<Query>
 }
 ```
 
+### Referencing Other Properties
+
+Since attributes cannot reference anything other than constant strings, the way to reference static and instance
+properties, fields, and methods is to use the `nameof()` to identify which property, field, or method should be used. Example:
+
+```cs
+[Validate]
+public partial record Query : IValidationTarget<Query>
+{
+	[GeneratedRegex(@"^\d+$")]
+	private static partial Regex AllDigitsRegex();
+
+	[Match(regex: nameof(AllDigitsRegex))]
+	public required string Id { get; init; }
+}
+```
+
+### Custom Messages
+
+Provide a custom message to any validation using the `Message` property of the attribute. This message will be parsed
+for template parameters, which will be applied to the message before rendering to the validation result. The target property
+name is available as `{PropertyName}`, and it's value via `{PropertyValue}`. 
+
+Other parameter values will be added using their property name suffixed with `Value` (for example, the
+`GreaterThanAttribute` uses a `comparison` parameter, so the value is available via `ComparisonValue`). If another
+property on the target class is referenced via `nameof(Property)`, the name of that property will be available using the
+`Name` suffix (for example, `ComparisonName` for the `comparison` property).
+
+```cs
+[Validate]
+public partial record Query : IValidationTarget<Query>
+{
+	[GreaterThan(0, Message = "'{PropertyName}' must be greater than '{ComparisonValue}'")]
+	public required int Id { get; init; }
+}
+```
+
+### Extending Validation Classes
+
+If attributes are not enough to specify how to validate a class, an `AdditionalValidations` method can be used to write
+additional validations for the class.
+
+```cs
+[Validate]
+public partial record Query : IValidationTarget<Query>
+{
+	public required bool Enabled { get; init; }
+	public required int Id { get; init; }
+
+	private static void AdditionalValidations(
+		ValidationResult errors,
+		Query target
+	)
+	{
+		if (target.Enabled)
+		{
+			// Use a lambda to use the default message or override message;
+			// the message will be templated in the same way as attribute validations.
+			errors.Add(
+				() => GreaterThanAttribute.ValidateProperty(
+					target.Id,
+					0
+				)
+			);
+		}
+
+		if (false)
+		{
+			// Manually create a `ValidationError` and add it to the `ValidationResult`.
+			errors.Add(
+				new ValidationError()
+				{
+					PropertyName = "ExampleProperty",
+					ErrorMessage = "Example Message",
+				}
+			)
+		}
+	}
+}
+```
+
 ### Results
 
 The result of doing the above is that when a parameter fails one or more validations, a `ValidationException` is thrown,
 which can be handled via ProblemDetails or any other infrastructure mechanism.
+
+Example using ProblemDetails:
+```cs
+builder.Services.AddProblemDetails(ConfigureProblemDetails);
+
+public static void ConfigureProblemDetails(ProblemDetailsOptions options) =>
+	options.CustomizeProblemDetails = c =>
+	{
+		if (c.Exception is null)
+			return;
+
+		c.ProblemDetails = c.Exception switch
+		{
+			ValidationException ex => new ValidationProblemDetails(
+				ex
+					.Errors
+					.GroupBy(x => x.PropertyName, StringComparer.OrdinalIgnoreCase)
+					.ToDictionary(
+						x => x.Key,
+						x => x.Select(x => x.ErrorMessage).ToArray(),
+						StringComparer.OrdinalIgnoreCase
+					)
+			)
+			{
+				Status = StatusCodes.Status400BadRequest,
+			},
+
+			// other exception handling as desired
+
+			var ex => new ProblemDetails
+			{
+				Detail = "An error has occurred.",
+				Status = StatusCodes.Status500InternalServerError,
+			},
+		};
+
+		c.HttpContext.Response.StatusCode =
+			c.ProblemDetails.Status
+			?? StatusCodes.Status500InternalServerError;
+	};
+
+```
