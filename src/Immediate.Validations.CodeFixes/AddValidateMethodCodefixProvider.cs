@@ -28,8 +28,9 @@ public class AddValidateMethodCodefixProvider : CodeFixProvider
 
 		var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
-		if (root?.FindNode(diagnosticSpan) is ClassDeclarationSyntax classDeclarationSyntax &&
-		root is CompilationUnitSyntax compilationUnitSyntax)
+		if (root is CompilationUnitSyntax compilationUnitSyntax
+			&& root.FindNode(diagnosticSpan) is ClassDeclarationSyntax classDeclarationSyntax
+		)
 		{
 			context.RegisterCodeFix(
 				CodeAction.Create(
@@ -49,22 +50,7 @@ public class AddValidateMethodCodefixProvider : CodeFixProvider
 	)
 	{
 		var validatePropertyMethod = MethodDeclaration(
-				TupleType(
-					SeparatedList<TupleElementSyntax>(
-						new SyntaxNodeOrToken[]
-						{
-							TupleElement(
-									PredefinedType(
-										Token(SyntaxKind.BoolKeyword)))
-								.WithIdentifier(
-									Identifier("Invalid")),
-							Token(SyntaxKind.CommaToken), TupleElement(
-									NullableType(
-										PredefinedType(
-											Token(SyntaxKind.StringKeyword))))
-								.WithIdentifier(
-									Identifier("DefaultMessage"))
-						})),
+				PredefinedType(Token(SyntaxKind.BoolKeyword)),
 				Identifier("ValidateProperty"))
 			.WithModifiers(
 				TokenList(
@@ -93,7 +79,6 @@ public class AddValidateMethodCodefixProvider : CodeFixProvider
 				Token(SyntaxKind.SemicolonToken))
 			.WithAdditionalAnnotations(Formatter.Annotation);
 
-		// Manually add trailing trivia to ensure proper spacing
 		var newMembers = classDeclarationSyntax.Members
 			.Insert(
 				0,

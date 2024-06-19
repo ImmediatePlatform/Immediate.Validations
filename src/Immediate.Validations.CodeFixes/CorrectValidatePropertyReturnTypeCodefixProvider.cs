@@ -47,24 +47,8 @@ public class CorrectValidatePropertyReturnTypeCodefixProvider : CodeFixProvider
 		MethodDeclarationSyntax methodDeclarationSyntax
 	)
 	{
-		var tupleSyntax = TupleType(
-			SeparatedList<TupleElementSyntax>(
-				new SyntaxNodeOrToken[]
-				{
-					TupleElement(
-							PredefinedType(
-								Token(SyntaxKind.BoolKeyword)))
-						.WithIdentifier(
-							Identifier("Invalid")),
-					Token(SyntaxKind.CommaToken), TupleElement(
-							NullableType(
-								PredefinedType(
-									Token(SyntaxKind.StringKeyword))))
-						.WithIdentifier(
-							Identifier("DefaultMessage"))
-				}));
-
-		var newMethodDeclarationSyntax = methodDeclarationSyntax.WithReturnType(tupleSyntax);
+		var newMethodDeclarationSyntax = methodDeclarationSyntax
+			.WithReturnType(PredefinedType(Token(SyntaxKind.BoolKeyword)));
 
 		var newRoot = root.ReplaceNode(methodDeclarationSyntax, newMethodDeclarationSyntax);
 
