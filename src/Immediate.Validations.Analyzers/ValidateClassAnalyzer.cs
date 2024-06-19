@@ -67,7 +67,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 	public static readonly DiagnosticDescriptor ValidateParameterNameofInvalid =
 		new(
-			id: DiagnosticIds.IV0018ValidateParameterNameofInvalid,
+			id: DiagnosticIds.IV0017ValidateParameterNameofInvalid,
 			title: "nameof() target is invalid",
 			messageFormat: "nameof({0}) must refer to a property or method on the class `{1}`",
 			category: "ImmediateValidations",

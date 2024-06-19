@@ -105,6 +105,18 @@ IV only supports a single constructor.
 | Severity | Error                |
 | CodeFix  | False                |
 
+## IV0010: Validator is missing `DefaultMessage`
+
+A Validator that inherits from `ValidatorAttribute` must have a `public static string DefaultMessage => "";` or `public
+const string DefaultMessage = "";` to provide a default validation message when the property is invalid.
+
+| Item     | Value                |
+|----------|----------------------|
+| Category | ImmediateValidations |
+| Enabled  | True                 |
+| Severity | Error                |
+| CodeFix  | False                |
+
 ## IV0011: Assembly-wide `Behaviors` attribute should use `ValidationBehavior<,>`
 
 The `ValidationBehavior<,>` behavior should be registered as part of the assembly-wide Immediate.Handlers pipeline. This
@@ -175,22 +187,10 @@ A `nameof()` reference of invalid type was provided to the validator.
 | Severity | Warning              |
 | CodeFix  | False                |
 
-## IV0018: nameof() target is invalid
+## IV0017: nameof() target is invalid
 
 An invalid `nameof()` destination was used. Only immediate properties, fields, and methods are allowed to be used as a
 `nameof()` value for the validator.
-
-| Item     | Value                |
-|----------|----------------------|
-| Category | ImmediateValidations |
-| Enabled  | True                 |
-| Severity | Error                |
-| CodeFix  | False                |
-
-## IV0019: Validator is missing `DefaultMessage`
-
-A Validator that inherits from `ValidatorAttribute` must have a `public static string DefaultMessage => "";` or `public
-const string DefaultMessage = "";` to provide a default validation message when the property is invalid.
 
 | Item     | Value                |
 |----------|----------------------|

@@ -835,7 +835,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[Equal({|IV0018:nameof(DateTime)|})]
+				[Equal({|IV0017:nameof(DateTime)|})]
 				public required string Id { get; init; }
 			
 				public static ValidationResult Validate(Target target) => [];
