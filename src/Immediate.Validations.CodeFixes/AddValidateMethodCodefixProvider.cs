@@ -20,10 +20,7 @@ public class AddValidateMethodCodefixProvider : CodeFixProvider
 
 	public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 	{
-		// We link only one diagnostic and assume there is only one diagnostic in the context.
 		var diagnostic = context.Diagnostics.Single();
-
-		// 'SourceSpan' of 'Location' is the highlighted area. We're going to use this area to find the 'SyntaxNode' to rename.
 		var diagnosticSpan = diagnostic.Location.SourceSpan;
 
 		var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
@@ -88,13 +85,8 @@ public class AddValidateMethodCodefixProvider : CodeFixProvider
 		var newClassDecl = classDeclarationSyntax
 			.WithMembers(newMembers);
 
-		// Replace the old class declaration with the new one
 		var newRoot = root.ReplaceNode(classDeclarationSyntax, newClassDecl);
-
-		// Create a new document with the updated syntax root
 		var newDocument = document.WithSyntaxRoot(newRoot);
-
-		// Return the new document
 		return Task.FromResult(newDocument);
 	}
 }

@@ -76,13 +76,8 @@ public class AddAdditionalValidationsCodeRefactoringProvider : CodeRefactoringPr
 					.Add(validatePropertyMethod)
 			);
 
-		// Replace the old class declaration with the new one
 		var newRoot = root.ReplaceNode(typeDeclarationSyntax, newClassDecl);
-
-		// Create a new document with the updated syntax root
 		var newDocument = document.WithSyntaxRoot(newRoot);
-
-		// Return the new document
 		return Task.FromResult(newDocument);
 	}
 }

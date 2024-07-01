@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Immediate.Validations.CodeFixes;
 
+[ExcludeFromCodeCoverage]
 internal static class RefactoringExtensions
 {
 	internal static void Deconstruct(this CodeRefactoringContext context, out Document document, out TextSpan span, out CancellationToken cancellationToken)

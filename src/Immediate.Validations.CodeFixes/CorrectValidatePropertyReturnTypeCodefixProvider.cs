@@ -19,26 +19,24 @@ public class CorrectValidatePropertyReturnTypeCodefixProvider : CodeFixProvider
 
 	public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 	{
-		// We link only one diagnostic and assume there is only one diagnostic in the context.
 		var diagnostic = context.Diagnostics.Single();
-
-		// 'SourceSpan' of 'Location' is the highlighted area. We're going to use this area to find the 'SyntaxNode' to rename.
 		var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-		var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+		if (await context.Document.GetSyntaxRootAsync(context.CancellationToken) is not CompilationUnitSyntax root)
+			return;
 
-		if (root?.FindNode(diagnosticSpan) is MethodDeclarationSyntax methodDeclarationSyntax &&
-		root is CompilationUnitSyntax compilationUnitSyntax)
-		{
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: "Correct 'ValidateProperty' return type",
-					createChangedDocument: _ =>
-						CorrectValidatePropertyReturnType(context.Document, compilationUnitSyntax, methodDeclarationSyntax),
-					equivalenceKey: nameof(CorrectValidatePropertyReturnType)
-				),
-				diagnostic);
-		}
+		if (root.FindNode(diagnosticSpan) is not MethodDeclarationSyntax methodDeclarationSyntax)
+			return;
+
+		context.RegisterCodeFix(
+			CodeAction.Create(
+				title: "Correct 'ValidateProperty' return type",
+				createChangedDocument: _ =>
+					CorrectValidatePropertyReturnType(context.Document, root, methodDeclarationSyntax),
+				equivalenceKey: nameof(CorrectValidatePropertyReturnType)
+			),
+			diagnostic
+		);
 	}
 
 	private static Task<Document> CorrectValidatePropertyReturnType(
@@ -51,11 +49,7 @@ public class CorrectValidatePropertyReturnTypeCodefixProvider : CodeFixProvider
 			.WithReturnType(PredefinedType(Token(SyntaxKind.BoolKeyword)));
 
 		var newRoot = root.ReplaceNode(methodDeclarationSyntax, newMethodDeclarationSyntax);
-
-		// Create a new document with the updated syntax root
 		var newDocument = document.WithSyntaxRoot(newRoot);
-
-		// Return the new document
 		return Task.FromResult(newDocument);
 	}
 }
