@@ -26,7 +26,7 @@ public class AddAdditionalValidationsCodeRefactoringProvider : CodeRefactoringPr
 		if (model.GetDeclaredSymbol(tds, token) is not INamedTypeSymbol symbol)
 			return;
 
-		if (!symbol.GetAttributes().Any(a => a.AttributeClass.IsValidatorAttribute()) is not true
+		if (symbol.GetAttributes().Any(a => a.AttributeClass.IsValidateAttribute()) is not true
 			|| symbol.HasAdditionalValidationsMethod())
 		{
 			return;
