@@ -1,10 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
 using Immediate.Validations.Analyzers;
 using Immediate.Validations.CodeFixes;
 
 namespace Immediate.Validations.Tests.CodeFixTests;
 
-[SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "Test methods")]
 public sealed class AddValidateMethodCodefixProviderTests
 {
 	[Fact]
