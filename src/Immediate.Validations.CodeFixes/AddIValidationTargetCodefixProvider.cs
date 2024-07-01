@@ -52,14 +52,21 @@ public sealed class AddIValidationTargetCodefixProvider : CodeFixProvider
 				)
 			);
 
-		var newDecl = typeDeclaration.BaseList is not null
-			? typeDeclaration.AddBaseListTypes(newBaseType)
-			: typeDeclaration
-				.WithBaseList(
-					BaseList(SingletonSeparatedList<BaseTypeSyntax>(newBaseType))
-						.WithTrailingTrivia(typeDeclaration.GetTrailingTrivia())
-				)
-				.WithIdentifier(typeDeclaration.Identifier.WithoutTrivia());
+		var newDecl = typeDeclaration.AddBaseListTypes(newBaseType);
+		var prevToken = newDecl.BaseList!.ColonToken.GetPreviousToken();
+
+		if (prevToken.TrailingTrivia.Count > 0
+			&& prevToken.TrailingTrivia[^1].IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.EndOfLineTrivia))
+		{
+			newDecl = newDecl
+				.ReplaceToken(
+					prevToken,
+					prevToken
+						.WithTrailingTrivia(
+							Whitespace(" ")
+						)
+				);
+		}
 
 		var newRoot = root.ReplaceNode(typeDeclaration, newDecl);
 		var newDocument = document.WithSyntaxRoot(newRoot);
