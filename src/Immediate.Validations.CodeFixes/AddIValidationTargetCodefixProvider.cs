@@ -3,6 +3,7 @@ using Immediate.Validations.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -55,8 +56,7 @@ public sealed class AddIValidationTargetCodefixProvider : CodeFixProvider
 		var newDecl = typeDeclaration.AddBaseListTypes(newBaseType);
 		var prevToken = newDecl.BaseList!.ColonToken.GetPreviousToken();
 
-		if (prevToken.TrailingTrivia.Count > 0
-			&& prevToken.TrailingTrivia[^1].IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.EndOfLineTrivia))
+		if (prevToken.TrailingTrivia is [.., { RawKind: (int)SyntaxKind.EndOfLineTrivia }])
 		{
 			newDecl = newDecl
 				.ReplaceToken(
