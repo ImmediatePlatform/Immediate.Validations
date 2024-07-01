@@ -23,8 +23,7 @@ partial interface IInterface
 		
 		var errors = new ValidationResult();
 
-		foreach (var error in global::IBaseInterface.Validate(t))
-			errors.Add(error);
+		errors.AddRange(global::IBaseInterface.Validate(t));
 
 		__ValidateValueB(errors, t, t.ValueB);
 

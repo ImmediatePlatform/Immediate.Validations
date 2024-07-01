@@ -35,8 +35,7 @@ partial {{ class.type }} {{ class.name }}
 		var errors = new ValidationResult();
 
 		{{~ for bc in base_validation_targets ~}}
-		foreach (var error in {{ bc }}.Validate(t))
-			errors.Add(error);
+		errors.AddRange({{ bc }}.Validate(t));
 		{{~ end ~}}
 
 		{{~ for p in properties ~}}

@@ -44,6 +44,19 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 	}
 
 	/// <summary>
+	///	    Unconditionally add a range of <see cref="ValidationError" />s.
+	/// </summary>
+	/// <param name="errors">
+	///		A sequence <see cref="ValidationError"/> to add to the current list.
+	/// </param>
+	public void AddRange(
+		IEnumerable<ValidationError> errors
+	)
+	{
+		(_errors ??= []).AddRange(errors);
+	}
+
+	/// <summary>
 	///	    Unconditionally add a <see cref="ValidationError"/> for <paramref name="propertyName"/>.
 	/// </summary>
 	/// <param name="propertyName">

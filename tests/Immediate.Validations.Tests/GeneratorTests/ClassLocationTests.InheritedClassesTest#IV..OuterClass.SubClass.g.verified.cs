@@ -25,8 +25,7 @@ partial class SubClass
 		
 		var errors = new ValidationResult();
 
-		foreach (var error in global::OuterClass.BaseClass.Validate(t))
-			errors.Add(error);
+		errors.AddRange(global::OuterClass.BaseClass.Validate(t));
 
 		__ValidateValueB(errors, t, t.ValueB);
 
