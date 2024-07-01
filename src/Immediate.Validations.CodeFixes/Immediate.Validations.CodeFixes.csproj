@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<Compile Include="../Common/*.cs" Link="Common/%(Filename).cs" />
 	<Compile Include="../Immediate.Validations.Analyzers/DiagnosticIds.cs" />
   </ItemGroup>
 

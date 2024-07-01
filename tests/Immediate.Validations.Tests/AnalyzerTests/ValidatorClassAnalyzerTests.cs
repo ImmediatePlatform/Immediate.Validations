@@ -241,7 +241,7 @@ public sealed class ValidatorClassAnalyzerTests
 		).RunAsync();
 
 	[Fact]
-	public async Task ValidateMethodMissingParameterShouldWarn() =>
+	public async Task ValidateMethodMissingParameterFromPropertyShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
 			using Immediate.Validations.Shared;
@@ -255,6 +255,26 @@ public sealed class ValidatorClassAnalyzerTests
 					return value > -1;
 				}
 
+				public const string DefaultMessage = "";
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidateMethodMissingParameterFromParameterShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(
+				int {|IV0005:operand|}
+			) : ValidatorAttribute
+			{
+				public static bool ValidateProperty(int value)
+				{
+					return value > -1;
+				}
+			
 				public const string DefaultMessage = "";
 			}
 			"""
@@ -279,7 +299,7 @@ public sealed class ValidatorClassAnalyzerTests
 		).RunAsync();
 
 	[Fact]
-	public async Task ValidateMethodGeneralParameterVarianceShouldWarn() =>
+	public async Task ValidateMethodGeneralParameterVarianceFromPropertyShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
 			using Immediate.Validations.Shared;
@@ -300,6 +320,33 @@ public sealed class ValidatorClassAnalyzerTests
 					return value > 0;
 				}
 
+				public const string DefaultMessage = "";
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task ValidateMethodGeneralParameterVarianceFromParametersShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			public sealed class GreaterThanAttribute(
+				int {|IV0005:alpha|},
+				int {|IV0005:charlie|},
+				int {|IV0005:echo|}
+			): ValidatorAttribute
+			{
+				public static bool ValidateProperty(
+					int value, 
+					int {|IV0006:bravo|},
+					int {|IV0006:delta|},
+					int {|IV0006:foxtrot|}
+				)
+				{
+					return value > 0;
+				}
+			
 				public const string DefaultMessage = "";
 			}
 			"""
