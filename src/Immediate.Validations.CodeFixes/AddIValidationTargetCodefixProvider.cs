@@ -9,10 +9,10 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Immediate.Validations.CodeFixes;
 
 [ExportCodeFixProvider(LanguageNames.CSharp)]
-public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
+public sealed class AddIValidationTargetCodefixProvider : CodeFixProvider
 {
 	public sealed override ImmutableArray<string> FixableDiagnosticIds { get; } =
-		ImmutableArray.Create([DiagnosticIds.IV0012ValidateAttributeMissing]);
+		ImmutableArray.Create([DiagnosticIds.IV0013IValidationTargetMissing]);
 
 	public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
@@ -29,24 +29,37 @@ public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
 
 		context.RegisterCodeFix(
 			CodeAction.Create(
-				"Add `[Validate]`",
+				$"Add `IValidationTarget<{typeDeclaration.Identifier}>`",
 				createChangedDocument: _ =>
-					AddValidateAttribute(context.Document, root, typeDeclaration),
-				equivalenceKey: nameof(AddValidateAttributeCodefixProvider)
+					AddIValidationTarget(context.Document, root, typeDeclaration),
+				equivalenceKey: nameof(AddIValidationTargetCodefixProvider)
 			),
 			diagnostic
 		);
 	}
 
-	private static Task<Document> AddValidateAttribute(Document document, CompilationUnitSyntax root, TypeDeclarationSyntax typeDeclaration)
+	private static Task<Document> AddIValidationTarget(Document document, CompilationUnitSyntax root, TypeDeclarationSyntax typeDeclaration)
 	{
-		var newDecl = typeDeclaration
-			.WithAttributeLists(
-				typeDeclaration.AttributeLists
-					.Add(AttributeList(
-						SingletonSeparatedList(
-							Attribute(
-								IdentifierName("Validate"))))));
+		var newBaseType =
+			SimpleBaseType(
+				GenericName(
+					Identifier("IValidationTarget"),
+					TypeArgumentList(
+						SingletonSeparatedList<TypeSyntax>(
+							IdentifierName(typeDeclaration.Identifier)
+						)
+					)
+				)
+			);
+
+		var newDecl = typeDeclaration.BaseList is not null
+			? typeDeclaration.AddBaseListTypes(newBaseType)
+			: typeDeclaration
+				.WithBaseList(
+					BaseList(SingletonSeparatedList<BaseTypeSyntax>(newBaseType))
+						.WithTrailingTrivia(typeDeclaration.GetTrailingTrivia())
+				)
+				.WithIdentifier(typeDeclaration.Identifier.WithoutTrivia());
 
 		var newRoot = root.ReplaceNode(typeDeclaration, newDecl);
 		var newDocument = document.WithSyntaxRoot(newRoot);
