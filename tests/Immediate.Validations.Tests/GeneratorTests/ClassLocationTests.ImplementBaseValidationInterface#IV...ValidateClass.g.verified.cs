@@ -23,8 +23,7 @@ partial class ValidateClass
 		
 		var errors = new ValidationResult();
 
-		foreach (var error in global::BaseInterface.Validate(t))
-			errors.Add(error);
+		errors.AddRange(global::BaseInterface.Validate(t));
 
 
 
