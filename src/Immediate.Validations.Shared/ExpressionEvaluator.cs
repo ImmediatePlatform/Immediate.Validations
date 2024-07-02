@@ -157,9 +157,44 @@ internal static class ExpressionEvaluator
 			{ NodeType: ExpressionType.OnesComplement } => ~(dynamic)GetValue(ue.Operand)!,
 			{ NodeType: ExpressionType.Quote } => GetValue(ue.Operand),
 
-			{ NodeType: ExpressionType.Convert } => throw new NotImplementedException("Not implemented yet. May implement at a later date if necessary."),
-			{ NodeType: ExpressionType.ConvertChecked } => throw new NotImplementedException("Not implemented yet. May implement at a later date if necessary."),
+			{ NodeType: ExpressionType.Convert } => ConvertValue(GetValue(ue.Operand), ue.Type, isChecked: false),
+			{ NodeType: ExpressionType.ConvertChecked } => ConvertValue(GetValue(ue.Operand), ue.Type, isChecked: true),
 
 			_ => throw new UnreachableException(),
 		};
+
+	private static object? ConvertValue(object? value, Type targetType, bool isChecked)
+	{
+		if (value is null)
+		{
+			if (targetType.IsValueType
+				&& Nullable.GetUnderlyingType(targetType) is null)
+			{
+				throw new InvalidOperationException("Nullable object must have a value.");
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		if (Nullable.GetUnderlyingType(targetType) is { } underlying)
+			value = ConvertValue(value, underlying, isChecked);
+
+		var method = isChecked
+			? s_identityCheckedMethod.MakeGenericMethod(targetType)
+			: s_identityUncheckedMethod.MakeGenericMethod(targetType);
+
+		return method.Invoke(null, [value!])!;
+	}
+
+	private static T IdentityChecked<T>(dynamic value) => checked((T)value);
+	private static readonly MethodInfo s_identityCheckedMethod =
+		typeof(ExpressionEvaluator)
+			.GetMethod(nameof(IdentityChecked), BindingFlags.Static | BindingFlags.NonPublic)!;
+
+	private static T IdentityUnchecked<T>(dynamic value) => (T)value;
+	private static readonly MethodInfo s_identityUncheckedMethod =
+		typeof(ExpressionEvaluator)
+			.GetMethod(nameof(IdentityUnchecked), BindingFlags.Static | BindingFlags.NonPublic)!;
 }
