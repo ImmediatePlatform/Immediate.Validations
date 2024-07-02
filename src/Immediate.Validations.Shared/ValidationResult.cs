@@ -211,6 +211,8 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 				PrependMemberParent(GetMemberName(mce.Object, targetObject), $"{ExpressionEvaluator.GetValue(arg)}", MemberIndex.Index),
 			MethodCallExpression { Arguments.Count: 0 } mce =>
 				PrependMemberParent(GetMemberName(mce.Object, targetObject) ?? "", mce.Method.Name, MemberIndex.Method),
+			UnaryExpression { NodeType: ExpressionType.Convert or ExpressionType.ConvertChecked } ue =>
+				GetMemberName(ue.Operand, targetObject),
 			_ => null,
 		};
 
