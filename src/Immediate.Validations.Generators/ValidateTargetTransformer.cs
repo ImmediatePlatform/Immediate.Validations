@@ -366,7 +366,10 @@ public sealed class ValidateTargetTransformer
 		if (argumentListSyntax.Count == 0)
 			return null;
 
-		var attributeParameters = attribute.AttributeConstructor!.Parameters;
+		if (attribute.AttributeConstructor is null)
+			return null;
+
+		var attributeParameters = attribute.AttributeConstructor.Parameters;
 		List<IPropertySymbol>? attributeProperties = null;
 
 		var argumentValues = new List<Argument>(argumentListSyntax.Count);
