@@ -52,7 +52,7 @@ partial class ValidateClass
 		{
 			if (!global::Immediate.Validations.Shared.NotEqualAttribute.ValidateProperty(
 					t
-					, comparison: @"Hello World"
+					, comparison: "Hello World"
 				)
 			)
 			{
@@ -64,7 +64,7 @@ partial class ValidateClass
 						["PropertyName"] = $"String Property",
 						["PropertyValue"] = t,
 						["ComparisonName"] = "",
-						["ComparisonValue"] = @"Hello World",
+						["ComparisonValue"] = "Hello World",
 					}
 				);
 			}

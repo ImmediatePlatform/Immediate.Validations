@@ -30,6 +30,13 @@ public sealed partial class MatchTests
 		public required string StringValue { get; init; }
 	}
 
+	[Validate]
+	public sealed partial record ExprQuoteMatchRecord : IValidationTarget<ExprQuoteMatchRecord>
+	{
+		[Match("\t\n^(?(\")(\".+?(?<!\\\\)\"@)|(([0-9a-z]((\\.(?!\\.))|[-!#\\$%&'\\*\\+/=\\?\\^`\\{\\}\\|~\\w])*)(?<=[0-9a-z])@))(?(\\[)(\\[(\\d{1,3}\\.){3}\\d{1,3}\\])|(([0-9a-z][-\\w]*[0-9a-z]*\\.)+[a-z0-9][\\-a-z0-9]{0,22}[a-z0-9]))$")]
+		public required string UnusualRegexValue { get; init; }
+	}
+
 	[Fact]
 	public void InvalidMatchThrows()
 	{
@@ -43,7 +50,7 @@ public sealed partial class MatchTests
 	[Fact]
 	public void MatchExprWhenValid()
 	{
-		var record = new ExprMatchRecord { StringValue = "123", };
+		var record = new ExprMatchRecord { StringValue = "123" };
 
 		var errors = ExprMatchRecord.Validate(record);
 
@@ -53,7 +60,7 @@ public sealed partial class MatchTests
 	[Fact]
 	public void MatchExprWhenInvalid()
 	{
-		var record = new ExprMatchRecord { StringValue = "asdf", };
+		var record = new ExprMatchRecord { StringValue = "asdf" };
 
 		var errors = ExprMatchRecord.Validate(record);
 

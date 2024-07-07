@@ -35,7 +35,7 @@ public sealed class MatchAttribute(
 	/// <returns>
 	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
 	/// </returns>
-	public static bool ValidateProperty(string target, Regex? regex = null, string? expr = null)
+	public static bool ValidateProperty(string target, Regex? regex = null, [StringSyntax("Regex")] string? expr = null)
 	{
 		if (regex is null)
 		{

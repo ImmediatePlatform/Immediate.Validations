@@ -54,10 +54,10 @@ partial record Target
 			if (!global::DummyAttribute.ValidateProperty(
 					t
 					, first: instance.FirstValue
-					, second: @"Hello World"
-					, third: [@"Test1", instance.FirstValue, @"Test3"]
-					, fourth: @"Abcd"
-					, fifth: @"The end?"
+					, second: "Hello World"
+					, third: ["Test1", instance.FirstValue, "Test3"]
+					, fourth: "Abcd"
+					, fifth: "The end?"
 				)
 			)
 			{
@@ -71,13 +71,13 @@ partial record Target
 						["FirstName"] = "First Value",
 						["FirstValue"] = instance.FirstValue,
 						["SecondName"] = "",
-						["SecondValue"] = @"Hello World",
+						["SecondValue"] = "Hello World",
 						["ThirdName"] = "",
-						["ThirdValue"] = string.Join<string>(", ", [@"Test1", instance.FirstValue, @"Test3"]),
+						["ThirdValue"] = string.Join<string>(", ", ["Test1", instance.FirstValue, "Test3"]),
 						["FourthName"] = "",
-						["FourthValue"] = @"Abcd",
+						["FourthValue"] = "Abcd",
 						["FifthName"] = "",
-						["FifthValue"] = @"The end?",
+						["FifthValue"] = "The end?",
 					}
 				);
 			}

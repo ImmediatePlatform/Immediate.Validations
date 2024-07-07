@@ -23,5 +23,5 @@ public sealed class NotNullAttribute : ValidatorAttribute
 	/// <summary>
 	///		The default message template when the property is invalid.
 	/// </summary>
-	public const string DefaultMessage = "'{PropertyName}' must be empty.";
+	public const string DefaultMessage = "'{PropertyName}' must not be null.";
 }
