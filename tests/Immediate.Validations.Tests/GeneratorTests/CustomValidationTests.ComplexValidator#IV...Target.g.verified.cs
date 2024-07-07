@@ -54,8 +54,8 @@ partial record Target
 			if (!global::DummyAttribute.ValidateProperty(
 					t
 					, first: instance.FirstValue
-					, second: @"Hello World"
-					, third: @"Value"
+					, second: "Hello World"
+					, third: "Value"
 				)
 			)
 			{
@@ -69,9 +69,9 @@ partial record Target
 						["FirstName"] = "First Value",
 						["FirstValue"] = instance.FirstValue,
 						["SecondName"] = "",
-						["SecondValue"] = @"Hello World",
+						["SecondValue"] = "Hello World",
 						["ThirdName"] = "",
-						["ThirdValue"] = @"Value",
+						["ThirdValue"] = "Value",
 					}
 				);
 			}
