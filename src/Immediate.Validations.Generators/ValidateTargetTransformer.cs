@@ -592,8 +592,12 @@ public sealed class ValidateTargetTransformer
 			"",
 			operation?.ConstantValue switch
 			{
-				{ HasValue: true, Value: string s } => $"@\"{s}\"",
-				{ HasValue: true, Value: { } o } => o.ToString(),
+				{ HasValue: true, Value: string s } =>
+					SymbolDisplay.FormatLiteral(s, quote: true),
+
+				{ HasValue: true, Value: { } o } =>
+					SymbolDisplay.FormatPrimitive(o, quoteStrings: false, useHexadecimalNumbers: false),
+
 				_ => "",
 			},
 			false
