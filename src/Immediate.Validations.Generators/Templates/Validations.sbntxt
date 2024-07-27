@@ -63,7 +63,9 @@ partial {{ class.type }} {{ class.name }}
 			{
 				errors.Add(
 					{{ property_name }},
-					{{ if string.empty p.message; p.validator_name + ".DefaultMessage"; else; p.message; end }},
+					ValidationConfiguration.Localizer != null && !ValidationConfiguration.Localizer["{{ p.validator_name | string.split '.' | array.last }}"].ResourceNotFound
+					? ValidationConfiguration.Localizer["{{ p.validator_name | string.split '.' | array.last }}"].Value
+					: {{ if string.empty p.message; p.validator_name + ".DefaultMessage"; else; p.message; end }},
 					new()
 					{
 						["PropertyName"] = {{ name }},

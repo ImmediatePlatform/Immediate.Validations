@@ -53,7 +53,9 @@ partial class SubClass
 			{
 				errors.Add(
 					$"ValueB",
-					global::Immediate.Validations.Shared.EqualAttribute.DefaultMessage,
+					ValidationConfiguration.Localizer != null
+					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.EqualAttribute"]
+					: global::Immediate.Validations.Shared.EqualAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"Value B",

@@ -58,7 +58,9 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"StringProperty",
-					global::Immediate.Validations.Shared.NotEqualAttribute.DefaultMessage,
+					ValidationConfiguration.Localizer != null
+					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.NotEqualAttribute"]
+					: global::Immediate.Validations.Shared.NotEqualAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"String Property",

@@ -61,7 +61,9 @@ partial record Target
 			{
 				errors.Add(
 					$"Id",
-					"What's going on?",
+					ValidationConfiguration.Localizer != null
+					? ValidationConfiguration.Localizer["global::DummyAttribute"]
+					: "What's going on?",
 					new()
 					{
 						["PropertyName"] = $"Id",

@@ -57,7 +57,9 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"StringProperty[{counter0}][{counter1}]",
-					global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
+					ValidationConfiguration.Localizer != null
+					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.NotEmptyAttribute"]
+					: global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"String Property[{counter0}][{counter1}]",
@@ -101,7 +103,9 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"StringProperty[{counter0}]",
-					global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
+					ValidationConfiguration.Localizer != null
+					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.NotEmptyAttribute"]
+					: global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"String Property[{counter0}]",
@@ -145,7 +149,9 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"StringProperty",
-					global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
+					ValidationConfiguration.Localizer != null
+					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.NotEmptyAttribute"]
+					: global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"String Property",

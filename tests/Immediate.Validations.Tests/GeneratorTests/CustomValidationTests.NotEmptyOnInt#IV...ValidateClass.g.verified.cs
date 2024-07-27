@@ -49,7 +49,9 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"IntProperty",
-					global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
+					ValidationConfiguration.Localizer != null
+					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.NotEmptyAttribute"]
+					: global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"Int Property",

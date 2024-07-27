@@ -50,7 +50,9 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"IntProperty",
-					"Must be greater than zero.",
+					ValidationConfiguration.Localizer != null
+					? ValidationConfiguration.Localizer["global::GreaterThanAttribute"]
+					: "Must be greater than zero.",
 					new()
 					{
 						["PropertyName"] = $"Int Property",
