@@ -13,5 +13,5 @@ public static class ValidationConfiguration
 	/// <value>
 	///	    An instance of <see cref="IStringLocalizer"/> used to localize validation messages.
 	/// </value>
-	public static IStringLocalizer? Localizer { get; set; }
+	public static IStringLocalizer Localizer { get; set; } = new ValidatorLocalizer();
 }

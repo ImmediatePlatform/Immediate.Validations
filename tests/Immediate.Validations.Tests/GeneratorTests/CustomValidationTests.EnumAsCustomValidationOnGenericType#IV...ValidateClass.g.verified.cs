@@ -53,9 +53,7 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"EnumProperty",
-					ValidationConfiguration.Localizer != null
-					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.EnumValueAttribute"]
-					: global::Immediate.Validations.Shared.EnumValueAttribute.DefaultMessage,
+					global::Immediate.Validations.Shared.EnumValueAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"Enum Property",

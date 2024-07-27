@@ -55,5 +55,5 @@ public sealed class MatchAttribute(
 	/// <summary>
 	///		The default message template when the property is invalid.
 	/// </summary>
-	public const string DefaultMessage = "'{PropertyName}' is not in the correct format.";
+	public static string DefaultMessage { get; } = ValidationConfiguration.Localizer[nameof(EmptyAttribute)].Value;
 }

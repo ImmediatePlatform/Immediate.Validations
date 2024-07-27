@@ -53,9 +53,7 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"StringProperty",
-					ValidationConfiguration.Localizer != null
-					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.NotNullAttribute"]
-					: global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
+					global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"String Property",

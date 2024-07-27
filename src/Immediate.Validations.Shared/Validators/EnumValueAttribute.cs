@@ -24,5 +24,5 @@ public sealed class EnumValueAttribute : ValidatorAttribute
 	/// <summary>
 	///		The default message template when the property is invalid.
 	/// </summary>
-	public const string DefaultMessage = "'{PropertyName}' has a range of values which does not include '{PropertyValue}'.";
+	public static string DefaultMessage { get; } = ValidationConfiguration.Localizer[nameof(EmptyAttribute)].Value;
 }

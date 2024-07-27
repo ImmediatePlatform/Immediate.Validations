@@ -206,9 +206,10 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 		}
 
 		token.ThrowIfCancellationRequested();
-		if (validatorClassSymbol.Constructors is { Length: > 1 })
+		var constructors = validatorClassSymbol.Constructors.Where(x => !x.IsStatic).ToList();
+		if (constructors is { Count: > 1 })
 		{
-			foreach (var constructor in validatorClassSymbol.Constructors)
+			foreach (var constructor in constructors)
 			{
 				context.ReportDiagnostic(
 					Diagnostic.Create(

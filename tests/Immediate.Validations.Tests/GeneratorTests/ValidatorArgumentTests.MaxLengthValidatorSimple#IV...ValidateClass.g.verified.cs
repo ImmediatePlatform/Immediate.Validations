@@ -58,9 +58,7 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"StringProperty",
-					ValidationConfiguration.Localizer != null
-					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.MaxLengthAttribute"]
-					: global::Immediate.Validations.Shared.MaxLengthAttribute.DefaultMessage,
+					global::Immediate.Validations.Shared.MaxLengthAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"String Property",

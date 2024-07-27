@@ -50,9 +50,7 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"IntProperty",
-					ValidationConfiguration.Localizer != null
-					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.EqualAttribute"]
-					: "Must be equal to zero.",
+					"Must be equal to zero.",
 					new()
 					{
 						["PropertyName"] = $"Int Property",

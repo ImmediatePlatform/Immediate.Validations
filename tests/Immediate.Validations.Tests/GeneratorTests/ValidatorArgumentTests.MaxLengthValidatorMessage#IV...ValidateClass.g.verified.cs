@@ -58,9 +58,7 @@ partial class ValidateClass
 			{
 				errors.Add(
 					$"StringProperty",
-					ValidationConfiguration.Localizer != null
-					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.MaxLengthAttribute"]
-					: "Must be MaxLength to zero.",
+					"Must be MaxLength to zero.",
 					new()
 					{
 						["PropertyName"] = $"String Property",

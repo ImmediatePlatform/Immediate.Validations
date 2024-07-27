@@ -7,22 +7,8 @@ using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
-public sealed partial class LocalizationTests : IDisposable
+public sealed partial class LocalizationTests
 {
-	private readonly NullLoggerFactory _loggerFactory;
-
-	public LocalizationTests()
-	{
-		var resourceManager = Resources.Validators.ResourceManager;
-		var assembly = typeof(LocalizationTests).Assembly;
-		var cache = new ResourceNamesCache();
-		_loggerFactory = new NullLoggerFactory();
-		var logger = new Logger<LocalizationTests>(_loggerFactory);
-		ValidationConfiguration.Localizer = new ResourceManagerStringLocalizer(resourceManager, assembly, resourceManager.BaseName, cache, logger);
-		var t = ValidationConfiguration.Localizer["GreaterThanAttribute"];
-		var _ = t.Value;
-	}
-
 	[Validate]
 	public sealed partial record ValidateRecord : IValidationTarget<ValidateRecord>
 	{
@@ -33,11 +19,23 @@ public sealed partial class LocalizationTests : IDisposable
 	[Fact]
 	public void DefaultLocalizedMessage()
 	{
-		var record = new ValidateRecord { Id = 0 };
+		using var loggerFactory = new NullLoggerFactory();
+		var resourceManagerLocalizer = CreateResourceManagerLocalizer(loggerFactory);
+		var defaultLocalizer = ValidationConfiguration.Localizer;
 
-		Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-CA");
+		ValidationResult errors;
+		lock (ValidationConfiguration.Localizer)
+		{
+			ValidationConfiguration.Localizer = resourceManagerLocalizer;
 
-		var errors = ValidateRecord.Validate(record);
+			var record = new ValidateRecord { Id = 0 };
+
+			Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-CA");
+
+			errors = ValidateRecord.Validate(record);
+
+			ValidationConfiguration.Localizer = defaultLocalizer;
+		}
 
 		Assert.Equal(
 			[
@@ -51,8 +49,12 @@ public sealed partial class LocalizationTests : IDisposable
 		);
 	}
 
-	public void Dispose()
+	private static ResourceManagerStringLocalizer CreateResourceManagerLocalizer(ILoggerFactory loggerFactory)
 	{
-		_loggerFactory.Dispose();
+		var resourceManager = Resources.Validators.ResourceManager;
+		var assembly = typeof(LocalizationTests).Assembly;
+		var cache = new ResourceNamesCache();
+		var logger = new Logger<LocalizationTests>(loggerFactory);
+		return new ResourceManagerStringLocalizer(resourceManager, assembly, resourceManager.BaseName, cache, logger);
 	}
 }

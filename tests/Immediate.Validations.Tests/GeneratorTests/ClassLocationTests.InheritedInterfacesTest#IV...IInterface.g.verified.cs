@@ -51,9 +51,7 @@ partial interface IInterface
 			{
 				errors.Add(
 					$"ValueB",
-					ValidationConfiguration.Localizer != null
-					? ValidationConfiguration.Localizer["global::Immediate.Validations.Shared.EqualAttribute"]
-					: global::Immediate.Validations.Shared.EqualAttribute.DefaultMessage,
+					global::Immediate.Validations.Shared.EqualAttribute.DefaultMessage,
 					new()
 					{
 						["PropertyName"] = $"Value B",
