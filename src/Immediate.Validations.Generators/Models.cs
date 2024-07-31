@@ -7,6 +7,7 @@ public sealed record ValidationTarget
 	public required Class Class { get; init; }
 	public required bool HasAdditionalValidationsMethod { get; init; }
 	public required bool IsReferenceType { get; init; }
+	public required bool SkipSelf { get; init; }
 	public required EquatableReadOnlyList<string> BaseValidationTargets { get; init; }
 	public required EquatableReadOnlyList<ValidationTargetProperty> Properties { get; init; }
 }

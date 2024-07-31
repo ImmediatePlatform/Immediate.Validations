@@ -56,7 +56,8 @@ public sealed class ValidateTargetTransformer
 		var @class = GetClass(_symbol);
 		var hasAdditionalValidationsMethod = _symbol.HasAdditionalValidationsMethod();
 		var baseValidationTargets = GetBaseValidationTargets();
-		var properties = GetProperties();
+		var skipSelf = GetSkipSelf();
+		var properties = skipSelf ? [] : GetProperties();
 
 		return new()
 		{
@@ -65,6 +66,7 @@ public sealed class ValidateTargetTransformer
 			Class = @class,
 			HasAdditionalValidationsMethod = hasAdditionalValidationsMethod,
 			IsReferenceType = _symbol.IsReferenceType,
+			SkipSelf = skipSelf,
 			BaseValidationTargets = baseValidationTargets,
 			Properties = properties,
 		};
@@ -119,6 +121,18 @@ public sealed class ValidateTargetTransformer
 			return default;
 
 		return baseValidationTargets.ToEquatableReadOnlyList();
+	}
+
+	private bool GetSkipSelf()
+	{
+		var attribute = _context.Attributes[0];
+
+		var skipSelf = attribute.NamedArguments
+			.Where(na => na.Key is "SkipSelf")
+			.Select(na => na.Value.Value is bool b && b)
+			.FirstOrDefault();
+
+		return skipSelf;
 	}
 
 	private EquatableReadOnlyList<ValidationTargetProperty> GetProperties()

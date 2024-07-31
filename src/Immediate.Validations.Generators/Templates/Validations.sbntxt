@@ -38,12 +38,14 @@ partial {{ class.type }} {{ class.name }}
 		errors.AddRange({{ bc }}.Validate(t));
 		{{~ end ~}}
 
+		{{~ if !skip_self ~}}
 		{{~ for p in properties ~}}
 		__Validate{{ p.property_name }}(errors, t, t.{{ p.property_name }});
 		{{~ end ~}}
 
 		{{~ if has_additional_validations_method ~}}
 		AdditionalValidations(errors, t);
+		{{~ end ~}}
 		{{~ end ~}}
 
 		return errors;
