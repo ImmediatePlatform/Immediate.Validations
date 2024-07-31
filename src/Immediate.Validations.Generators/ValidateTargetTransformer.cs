@@ -172,7 +172,8 @@ public sealed class ValidateTargetTransformer
 
 		var isReferenceType = propertyType.IsReferenceType;
 		var isNullable = isReferenceType
-			? nullableAnnotation is NullableAnnotation.Annotated
+			? (nullableAnnotation is NullableAnnotation.Annotated
+				|| attributes.Any(a => a.AttributeClass.IsAllowNullAttribute()))
 			: propertyType.IsNullableType();
 
 		var baseType = !isReferenceType && isNullable

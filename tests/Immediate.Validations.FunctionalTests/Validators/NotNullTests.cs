@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Immediate.Validations.Shared;
 using Xunit;
 
@@ -8,6 +9,13 @@ public sealed partial class NotNullTests
 	[Validate]
 	public partial record StringRecord : IValidationTarget<StringRecord>
 	{
+		public required string StringValue { get; init; }
+	}
+
+	[Validate]
+	public partial record AllowNullRecord : IValidationTarget<AllowNullRecord>
+	{
+		[AllowNull]
 		public required string StringValue { get; init; }
 	}
 
@@ -38,5 +46,25 @@ public sealed partial class NotNullTests
 			],
 			errors
 		);
+	}
+
+	[Fact]
+	public void StringAllowedNullTestWhenNotNull()
+	{
+		var instance = new AllowNullRecord { StringValue = "Hello World!" };
+
+		var errors = AllowNullRecord.Validate(instance);
+
+		Assert.Empty(errors);
+	}
+
+	[Fact]
+	public void StringAllowedNullTestWhenNull()
+	{
+		var instance = new AllowNullRecord { StringValue = null };
+
+		var errors = AllowNullRecord.Validate(instance);
+
+		Assert.Empty(errors);
 	}
 }
