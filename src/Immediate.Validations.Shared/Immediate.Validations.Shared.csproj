@@ -15,5 +15,9 @@
 	<PackageReference Include="Immediate.Handlers" PrivateAssets="all" />
 	<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
   </ItemGroup>
+	
+	<ItemGroup>
+	<InternalsVisibleTo Include="Immediate.Validations.FunctionalTests" />
+	</ItemGroup>
 
 </Project>
