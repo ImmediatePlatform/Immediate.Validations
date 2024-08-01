@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Immediate.Validations.Shared.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace Immediate.Validations.Shared;
 
