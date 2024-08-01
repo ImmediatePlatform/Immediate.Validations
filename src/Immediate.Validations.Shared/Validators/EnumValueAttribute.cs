@@ -37,7 +37,7 @@ public sealed class EnumValueAttribute : ValidatorAttribute
 	/// <summary>
 	///		The default message template when the property is invalid.
 	/// </summary>
-	public static string DefaultMessage => ValidationConfiguration.Localizer[nameof(EmptyAttribute)].Value;
+	public static string DefaultMessage => ValidationConfiguration.Localizer[nameof(EnumValueAttribute)].Value;
 }
 
 file static class Enums
