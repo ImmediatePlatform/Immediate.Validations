@@ -30,7 +30,6 @@ internal sealed partial class ValidatorLocalizer : IStringLocalizer
 				return value;
 
 			return new LocalizedString(name, name, true);
-
 		}
 	}
 
