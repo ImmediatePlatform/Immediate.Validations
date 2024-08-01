@@ -1,0 +1,4 @@
+﻿{
+	"collectionBehavior": "CollectionPerClass",
+	"collectionOrderer": "Immediate.Validations.FunctionalTests.Common.IsolatedTestOrderer, Immediate.Validations.FunctionalTests"
+}

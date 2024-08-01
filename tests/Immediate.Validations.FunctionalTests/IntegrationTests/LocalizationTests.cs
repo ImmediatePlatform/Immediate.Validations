@@ -1,4 +1,5 @@
 using System.Globalization;
+using Immediate.Validations.FunctionalTests.Common;
 using Immediate.Validations.Shared;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
+[Collection(nameof(IsolatedTestCollectionDefinition))]
 public sealed partial class LocalizationTests
 {
 	[Validate]
@@ -23,19 +25,15 @@ public sealed partial class LocalizationTests
 		var resourceManagerLocalizer = CreateResourceManagerLocalizer(loggerFactory);
 		var defaultLocalizer = ValidationConfiguration.Localizer;
 
-		ValidationResult errors;
-		lock (ValidationConfiguration.Localizer)
-		{
-			ValidationConfiguration.Localizer = resourceManagerLocalizer;
+		ValidationConfiguration.Localizer = resourceManagerLocalizer;
 
-			var record = new ValidateRecord { Id = 0 };
+		var record = new ValidateRecord { Id = 0 };
 
-			Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-CA");
+		Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-CA");
 
-			errors = ValidateRecord.Validate(record);
+		var errors = ValidateRecord.Validate(record);
 
-			ValidationConfiguration.Localizer = defaultLocalizer;
-		}
+		ValidationConfiguration.Localizer = defaultLocalizer;
 
 		Assert.Equal(
 			[
