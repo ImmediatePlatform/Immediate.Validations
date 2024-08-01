@@ -22,7 +22,7 @@ public sealed class EmptyAttribute : ValidatorAttribute
 	/// <summary>
 	///		The default message template when the property is invalid.
 	/// </summary>
-	public static string DefaultMessage { get; } = ValidationConfiguration.Localizer[nameof(EmptyAttribute)].Value;
+	public static string DefaultMessage => ValidationConfiguration.Localizer[nameof(EmptyAttribute)].Value;
 
 	internal static bool IsEmpty<T>(T value) =>
 		value switch

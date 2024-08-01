@@ -42,5 +42,5 @@ public sealed class LengthAttribute(
 	/// <summary>
 	///		The default message template when the property is invalid.
 	/// </summary>
-	public static string DefaultMessage { get; } = ValidationConfiguration.Localizer[nameof(EmptyAttribute)].Value;
+	public static string DefaultMessage => ValidationConfiguration.Localizer[nameof(EmptyAttribute)].Value;
 }
