@@ -5,7 +5,11 @@ namespace Immediate.Validations.Shared.Localization;
 
 internal sealed partial class ValidatorLocalizer : IStringLocalizer
 {
-	private static readonly Dictionary<string, Dictionary<string, LocalizedString>> s_localizations = new() { ["en"] = En(), ["fr"] = Fr(), };
+	private static readonly Dictionary<string, Dictionary<string, LocalizedString>> s_localizations = new()
+	{
+		["en"] = En(),
+		["fr"] = Fr(),
+	};
 
 	public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
 	{
