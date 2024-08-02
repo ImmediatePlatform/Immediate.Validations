@@ -263,4 +263,23 @@ internal static class ITypeSymbolExtensions
 				},
 			},
 		};
+
+	public static bool IsAllowNullAttribute(this ITypeSymbol? typeSymbol) =>
+		typeSymbol is INamedTypeSymbol
+		{
+			Name: "AllowNullAttribute",
+			ContainingNamespace:
+			{
+				Name: "CodeAnalysis",
+				ContainingNamespace:
+				{
+					Name: "Diagnostics",
+					ContainingNamespace:
+					{
+						Name: "System",
+						ContainingNamespace.IsGlobalNamespace: true,
+					}
+				}
+			}
+		};
 }
