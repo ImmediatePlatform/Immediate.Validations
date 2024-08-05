@@ -8,8 +8,9 @@ namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
 [Collection(nameof(CustomLocalizerTests))]
 [CollectionDefinition(nameof(CustomLocalizerTests), DisableParallelization = true)]
-public sealed partial class CustomLocalizerTests : IClassFixture<CustomLocalizerTestsFixture>
+public sealed partial class CustomLocalizerTests(CustomLocalizerTestsFixture fixture) : IClassFixture<CustomLocalizerTestsFixture>
 {
+	public CustomLocalizerTestsFixture Fixture { get; } = fixture;
 
 	[Validate]
 	public sealed partial record ValidateRecord : IValidationTarget<ValidateRecord>
@@ -63,12 +64,12 @@ public sealed partial class CustomLocalizerTests : IClassFixture<CustomLocalizer
 
 public sealed class CustomLocalizerTestsFixture : IDisposable
 {
-	private readonly IStringLocalizer _defaultLocalizer;
+	private static IStringLocalizer? s_defaultLocalizer;
 	private readonly CultureInfo _culture;
 
 	public CustomLocalizerTestsFixture()
 	{
-		_defaultLocalizer = ValidationConfiguration.Localizer;
+		s_defaultLocalizer ??= ValidationConfiguration.Localizer;
 		_culture = Thread.CurrentThread.CurrentUICulture;
 
 		ValidationConfiguration.Localizer = CreateResourceManagerLocalizer();
@@ -77,7 +78,9 @@ public sealed class CustomLocalizerTestsFixture : IDisposable
 	public void Dispose()
 	{
 		Thread.CurrentThread.CurrentUICulture = _culture;
-		ValidationConfiguration.Localizer = _defaultLocalizer;
+
+		if (s_defaultLocalizer != null)
+			ValidationConfiguration.Localizer = s_defaultLocalizer;
 	}
 
 	private static ResourceManagerStringLocalizer CreateResourceManagerLocalizer()
