@@ -29,5 +29,5 @@ public sealed class EqualAttribute(
 	/// <summary>
 	///		The default message template when the property is invalid.
 	/// </summary>
-	public const string DefaultMessage = "'{PropertyName}' must be equal to '{ComparisonValue}'.";
+	public static string DefaultMessage => ValidationConfiguration.Localizer[nameof(EqualAttribute)].Value;
 }

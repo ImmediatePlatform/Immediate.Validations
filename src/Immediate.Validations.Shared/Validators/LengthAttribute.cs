@@ -42,5 +42,5 @@ public sealed class LengthAttribute(
 	/// <summary>
 	///		The default message template when the property is invalid.
 	/// </summary>
-	public const string DefaultMessage = "'{PropertyName}' must be between {MinLengthValue} and {MaxLengthValue} characters.";
+	public static string DefaultMessage => ValidationConfiguration.Localizer[nameof(LengthAttribute)].Value;
 }

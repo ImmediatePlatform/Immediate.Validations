@@ -27,5 +27,5 @@ public sealed class OneOfAttribute(
 	/// <summary>
 	///		The default message template when the property is invalid.
 	/// </summary>
-	public const string DefaultMessage = "'{PropertyName}' was not one of the specified values: {ValuesValue}.";
+	public static string DefaultMessage => ValidationConfiguration.Localizer[nameof(OneOfAttribute)].Value;
 }
