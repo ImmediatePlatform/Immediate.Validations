@@ -16,9 +16,9 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -40,9 +40,9 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace..ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -67,9 +67,9 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace.OuterClass.ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterClass.ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -94,9 +94,9 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace.OuterRecord.ValidateRecord.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterRecord.ValidateRecord.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -121,9 +121,9 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace.OuterRecordStruct.ValidateRecordStruct.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterRecordStruct.ValidateRecordStruct.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -148,9 +148,9 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace.OuterInterface.ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterInterface.ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -175,9 +175,9 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace.OuterStruct.ValidateStruct.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterStruct.ValidateStruct.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -202,10 +202,10 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace..BaseClass.g.cs",
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace..ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..BaseClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -230,10 +230,10 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace..BaseInterface.g.cs",
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace..ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..BaseInterface.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -268,10 +268,10 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace.OuterClass.BaseClass.g.cs",
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace.OuterClass.SubClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterClass.BaseClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterClass.SubClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -303,10 +303,10 @@ public sealed class ClassLocationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace..IBaseInterface.g.cs",
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV.Namespace..IInterface.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..IBaseInterface.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..IInterface.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);

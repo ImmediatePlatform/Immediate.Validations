@@ -22,9 +22,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -50,9 +50,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -86,9 +86,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -122,9 +122,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -154,9 +154,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -182,9 +182,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -210,9 +210,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -239,9 +239,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -275,9 +275,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -321,9 +321,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...Target.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...Target.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -379,9 +379,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...Target.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...Target.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -407,9 +407,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -438,10 +438,10 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...BaseClass.g.cs",
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...SubClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...BaseClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...SubClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
@@ -468,9 +468,9 @@ public sealed class CustomValidationTests
 
 		Assert.Equal(
 			[
-				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
 			],
-			result.GeneratedTrees.Select(t => t.FilePath)
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
 		);
 
 		_ = await Verify(result);
