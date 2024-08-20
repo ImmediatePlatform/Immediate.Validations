@@ -5,23 +5,26 @@ public sealed class NativeValidationTests
 	[Fact]
 	public async Task NotNullValidation()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
 			using Immediate.Validations.Shared;
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
-				public string StringProperty { get; init; }
+				public required string StringProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -29,23 +32,26 @@ public sealed class NativeValidationTests
 	[Fact]
 	public async Task NullDoesNotUseNotNullValidation()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
 			using Immediate.Validations.Shared;
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
-				public string? StringProperty { get; init; }
+				public required string? StringProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -53,7 +59,7 @@ public sealed class NativeValidationTests
 	[Fact]
 	public async Task EnumValidation()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
@@ -65,16 +71,19 @@ public sealed class NativeValidationTests
 			}
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
-				public TestEnum TestEnum { get; init; }
+				public required TestEnum TestEnum { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}

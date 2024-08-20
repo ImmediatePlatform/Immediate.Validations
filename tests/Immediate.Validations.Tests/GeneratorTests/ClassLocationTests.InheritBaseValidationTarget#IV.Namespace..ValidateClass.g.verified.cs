@@ -1,19 +1,19 @@
-﻿//HintName: IV..OuterInterface.ValidateClass.g.cs
+﻿//HintName: IV.Namespace..ValidateClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
-partial interface OuterInterface
-{
+namespace Namespace;
 
-partial interface ValidateClass
+
+partial class ValidateClass
 {
 	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
 		Validate(target);
 
-	public static new ValidationResult Validate(ValidateClass? target)
+	public static  ValidationResult Validate(ValidateClass? target)
 	{
 		if (target is not { } t)
 		{
@@ -25,6 +25,7 @@ partial interface ValidateClass
 		
 		var errors = new ValidationResult();
 
+		errors.AddRange(global::Namespace.BaseClass.Validate(t));
 
 
 
@@ -35,4 +36,3 @@ partial interface ValidateClass
 
 }
 
-}

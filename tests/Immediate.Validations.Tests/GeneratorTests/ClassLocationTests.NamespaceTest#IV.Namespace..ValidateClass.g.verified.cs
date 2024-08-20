@@ -1,17 +1,19 @@
-﻿//HintName: IV...BaseInterface.g.cs
+﻿//HintName: IV.Namespace..ValidateClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
+namespace Namespace;
 
-partial interface BaseInterface
+
+partial class ValidateClass
 {
-	static ValidationResult IValidationTarget<BaseInterface>.Validate(BaseInterface? target) =>
+	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
 		Validate(target);
 
-	public static new ValidationResult Validate(BaseInterface? target)
+	public static  ValidationResult Validate(ValidateClass? target)
 	{
 		if (target is not { } t)
 		{

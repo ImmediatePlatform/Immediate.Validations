@@ -1,9 +1,11 @@
-﻿//HintName: IV..OuterClass.BaseClass.g.cs
+﻿//HintName: IV.Namespace.OuterClass.BaseClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
+
+namespace Namespace;
 
 partial class OuterClass
 {

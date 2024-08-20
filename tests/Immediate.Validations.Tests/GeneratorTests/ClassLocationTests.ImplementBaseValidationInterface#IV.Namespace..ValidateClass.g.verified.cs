@@ -1,17 +1,19 @@
-﻿//HintName: IV...IBaseInterface.g.cs
+﻿//HintName: IV.Namespace..ValidateClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
+namespace Namespace;
 
-partial interface IBaseInterface
+
+partial class ValidateClass
 {
-	static ValidationResult IValidationTarget<IBaseInterface>.Validate(IBaseInterface? target) =>
+	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
 		Validate(target);
 
-	public static new ValidationResult Validate(IBaseInterface? target)
+	public static  ValidationResult Validate(ValidateClass? target)
 	{
 		if (target is not { } t)
 		{
@@ -23,6 +25,7 @@ partial interface IBaseInterface
 		
 		var errors = new ValidationResult();
 
+		errors.AddRange(global::Namespace.BaseInterface.Validate(t));
 
 
 

@@ -5,24 +5,27 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task NotEmptyOnString()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
 			using Immediate.Validations.Shared;
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
 				[NotEmpty]
-				public string StringProperty { get; init; }
+				public required string StringProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -30,24 +33,27 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task NotEmptyOnInt()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
 			using Immediate.Validations.Shared;
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
 				[NotEmpty]
-				public int IntProperty { get; init; }
+				public required int IntProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -55,7 +61,7 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task CustomValidationOnProperType()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
@@ -70,17 +76,20 @@ public sealed class CustomValidationTests
 			}
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
 				[IntGreaterThanZero]
-				public int IntProperty { get; init; }
+				public required int IntProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -88,7 +97,7 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task CustomValidationOnInvalidType()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
@@ -103,17 +112,20 @@ public sealed class CustomValidationTests
 			}
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
 				[IntGreaterThanZero]
-				public string StringProperty { get; init; }
+				public required string StringProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -121,7 +133,7 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task CustomValidationMissingValidateMethod()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
@@ -132,17 +144,20 @@ public sealed class CustomValidationTests
 			}
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
 				[IntGreaterThanZero]
-				public int IntProperty { get; init; }
+				public required int IntProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -150,24 +165,27 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task NotNullAsCustomValidationOnGenericType()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
 			using Immediate.Validations.Shared;
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
 				[NotNull]
-				public string? StringProperty { get; init; }
+				public required string? StringProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -175,24 +193,27 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task NotNullAsCustomValidationOnInvalidGenericType()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
 			using Immediate.Validations.Shared;
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
 				[NotNull]
-				public int? IntProperty { get; init; }
+				public required int? IntProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -200,7 +221,7 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task EnumAsCustomValidationOnGenericType()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
@@ -209,16 +230,19 @@ public sealed class CustomValidationTests
 			public enum TestEnum { None = 0, Valid = 1 }
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
-				public TestEnum? EnumProperty { get; init; }
+				public required TestEnum? EnumProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -226,7 +250,7 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task CustomValidatorWithParameters()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
@@ -237,21 +261,24 @@ public sealed class CustomValidationTests
 				public required int Operand { get; init; }
 
 				public static bool ValidateProperty(int value, int operand) =>
-					value > operand ? default : (true, $"Value `{value}` is not greater than `{operand}`.");
+					value > operand;
 			}
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
 				[GreaterThan(Operand = 0, Message = "Must be greater than zero.")]
 				public int IntProperty { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -259,10 +286,12 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task ComplexValidator()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using System.Collections.Generic;
 			using Immediate.Validations.Shared;
+
+			#pragma warning disable CS9113
 
 			public sealed class DummyAttribute(
 				[TargetType] object first,
@@ -277,10 +306,7 @@ public sealed class CustomValidationTests
 					string second,
 					string third,
 					string fourth = "fourth"
-				) =>
-					target == $"{first}-{second}-{third}-{fourth}"
-						? default
-						: (true, $"Value '{target}' is not equal to '{first}-{second}-{third}-{fourth}'");
+				) => target == $"{first}-{second}-{third}-{fourth}";
 			}
 						
 			[Validate]
@@ -289,15 +315,16 @@ public sealed class CustomValidationTests
 				[Dummy(first: nameof(FirstValue), "Hello World", Third = "Value", Message = "What's going on?")]
 				public required string Id { get; init; }
 				public required string FirstValue { get; init; }
-
-				public static List<ValidationError> Validate(Target target) => [];
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...Target.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -305,10 +332,12 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task ParamsConstructor()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using System.Collections.Generic;
 			using Immediate.Validations.Shared;
+
+			#pragma warning disable CS9113
 
 			public sealed class DummyAttribute(
 				[TargetType] object first,
@@ -326,10 +355,7 @@ public sealed class CustomValidationTests
 					string fourth,
 					string fifth,
 					params string[] third
-				) =>
-					target == first
-						? default
-						: (true, $"Value '{target}' is not equal to '{first}'");
+				) => target == first;
 			}
 						
 			[Validate]
@@ -347,15 +373,16 @@ public sealed class CustomValidationTests
 				)]
 				public required string Id { get; init; }
 				public required string FirstValue { get; init; }
-
-				public static List<ValidationError> Validate(Target target) => [];
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...Target.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -363,7 +390,7 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task AdditionalValidations()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
@@ -375,12 +402,15 @@ public sealed class CustomValidationTests
 			{
 				private static void AdditionalValidations(List<ValidationError> errors, ValidateClass target) { }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
@@ -388,7 +418,7 @@ public sealed class CustomValidationTests
 	[Fact]
 	public async Task AdditionalValidationsInherited()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
@@ -403,40 +433,46 @@ public sealed class CustomValidationTests
 			
 			[Validate]
 			public partial class SubClass : BaseClass, IValidationTarget<SubClass>;
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		Assert.Equal(2, result.GeneratedTrees.Length);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...BaseClass.g.cs",
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...SubClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
 	[Fact]
 	public async Task OneOfWithArrayField()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			#nullable enable
 
 			using Immediate.Validations.Shared;
 
 			[Validate]
-			public partial class ValidateClass
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
 				[OneOf(nameof(s_validStrings))]
-				public string StringProperty { get; init; }
+				public required string StringProperty { get; init; }
 
 				private static readonly string[] s_validStrings = ["123"];
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators\Immediate.Validations.Generators.ImmediateValidationsGenerator\IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath)
+		);
 
 		_ = await Verify(result);
 	}
-
 }
