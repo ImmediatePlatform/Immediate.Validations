@@ -1,17 +1,19 @@
-﻿//HintName: IV...ValidateClass.g.cs
+﻿//HintName: IV.Namespace..BaseClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
+namespace Namespace;
 
-partial class ValidateClass
+
+partial class BaseClass
 {
-	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
+	static ValidationResult IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
 		Validate(target);
 
-	public static  ValidationResult Validate(ValidateClass? target)
+	public static  ValidationResult Validate(BaseClass? target)
 	{
 		if (target is not { } t)
 		{

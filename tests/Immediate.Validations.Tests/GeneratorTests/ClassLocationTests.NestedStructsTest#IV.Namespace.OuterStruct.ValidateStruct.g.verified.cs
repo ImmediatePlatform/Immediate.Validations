@@ -1,9 +1,11 @@
-﻿//HintName: IV..OuterStruct.ValidateStruct.g.cs
+﻿//HintName: IV.Namespace.OuterStruct.ValidateStruct.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
+
+namespace Namespace;
 
 partial struct OuterStruct
 {

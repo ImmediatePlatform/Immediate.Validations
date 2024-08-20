@@ -6,12 +6,10 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public static class GeneratorTestHelper
 {
-	public static GeneratorDriver GetDriver(string source)
+	public static GeneratorDriverRunResult RunGenerator(string source)
 	{
-		// Parse the provided string into a C# syntax tree
 		var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
-		// Create a Roslyn compilation for the syntax tree.
 		var compilation = CSharpCompilation.Create(
 			assemblyName: "Tests",
 			syntaxTrees: [syntaxTree],
@@ -19,16 +17,29 @@ public static class GeneratorTestHelper
 			[
 				.. Basic.Reference.Assemblies.Net80.References.All,
 				.. Utility.GetMetadataReferences(),
-			]
+			],
+			options: new(
+				outputKind: OutputKind.DynamicallyLinkedLibrary
+			)
 		);
 
-		// Create an instance of our incremental source generator
 		var generator = new ImmediateValidationsGenerator();
 
-		// The GeneratorDriver is used to run our generator against a compilation
-		GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+		var driver = CSharpGeneratorDriver
+			.Create(generator)
+			.RunGeneratorsAndUpdateCompilation(
+				compilation,
+				out var outputCompilation,
+				out var diagnostics
+			);
 
-		// Run the source generator!
-		return driver.RunGenerators(compilation);
+		Assert.Empty(
+			outputCompilation
+				.GetDiagnostics()
+				.Where(d => d.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning)
+		);
+
+		Assert.Empty(diagnostics);
+		return driver.GetRunResult();
 	}
 }

@@ -1,10 +1,14 @@
-﻿//HintName: IV...ValidateClass.g.cs
+﻿//HintName: IV.Namespace.OuterClass.ValidateClass.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
+namespace Namespace;
+
+partial class OuterClass
+{
 
 partial class ValidateClass
 {
@@ -23,7 +27,6 @@ partial class ValidateClass
 		
 		var errors = new ValidationResult();
 
-		errors.AddRange(global::BaseInterface.Validate(t));
 
 
 
@@ -34,3 +37,4 @@ partial class ValidateClass
 
 }
 
+}

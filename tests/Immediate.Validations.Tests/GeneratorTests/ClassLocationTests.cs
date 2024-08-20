@@ -5,18 +5,21 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task NoNamespaceTest()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
 			[Validate]
-			public partial class ValidateClass;
-			""");
+			public partial class ValidateClass : IValidationTarget<ValidateClass>;
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -24,20 +27,23 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task NamespaceTest()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			[Validate]
-			public partial class ValidateClass;
-			""");
+			public partial class ValidateClass : IValidationTarget<ValidateClass>;
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -45,23 +51,26 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task NestedClassesTest()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			public partial class OuterClass
 			{
 				[Validate]
-				public partial class ValidateClass;
+				public partial class ValidateClass : IValidationTarget<ValidateClass>;
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterClass.ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -69,23 +78,26 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task NestedRecordsTest()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			public partial record OuterRecord
 			{
 				[Validate]
-				public partial record ValidateRecord;
+				public partial record ValidateRecord : IValidationTarget<ValidateRecord>;
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterRecord.ValidateRecord.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -93,23 +105,26 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task NestedRecordStructsTest()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			public partial record struct OuterRecordStruct
 			{
 				[Validate]
-				public partial record struct ValidateRecordStruct;
+				public partial record struct ValidateRecordStruct : IValidationTarget<ValidateRecordStruct>;
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterRecordStruct.ValidateRecordStruct.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -117,23 +132,26 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task NestedInterfacesTest()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			public partial interface OuterInterface
 			{
 				[Validate]
-				public partial interface ValidateClass;
+				public partial interface ValidateClass : IValidationTarget<ValidateClass>;
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterInterface.ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -141,23 +159,26 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task NestedStructsTest()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			public partial struct OuterStruct
 			{
 				[Validate]
-				public partial struct ValidateStruct;
+				public partial struct ValidateStruct : IValidationTarget<ValidateStruct>;
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		_ = Assert.Single(result.GeneratedTrees);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterStruct.ValidateStruct.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -165,23 +186,27 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task InheritBaseValidationTarget()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			[Validate]
 			public partial class BaseClass : IValidationTarget<BaseClass>;
 
 			[Validate]
 			public partial class ValidateClass : BaseClass, IValidationTarget<ValidateClass>;
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		Assert.Equal(2, result.GeneratedTrees.Length);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..BaseClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -189,23 +214,27 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task ImplementBaseValidationInterface()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			[Validate]
 			public partial interface BaseInterface : IValidationTarget<BaseInterface>;
 
 			[Validate]
 			public partial class ValidateClass : BaseInterface, IValidationTarget<ValidateClass>;
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		Assert.Equal(2, result.GeneratedTrees.Length);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..BaseInterface.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -213,11 +242,11 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task InheritedClassesTest()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			public partial class OuterClass
 			{
@@ -234,12 +263,16 @@ public sealed class ClassLocationTests
 					public required int ValueB { get; init; }
 				}
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		Assert.Equal(2, result.GeneratedTrees.Length);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterClass.BaseClass.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace.OuterClass.SubClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}
@@ -247,30 +280,34 @@ public sealed class ClassLocationTests
 	[Fact]
 	public async Task InheritedInterfacesTest()
 	{
-		var driver = GeneratorTestHelper.GetDriver(
+		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using Immediate.Validations.Shared;
 
-			using Namespace
+			namespace Namespace;
 
 			[Validate]
 			public partial interface IBaseInterface : IValidationTarget<IBaseInterface>
 			{
-				public required int ValueA { get; init; }
+				int ValueA { get; init; }
 			}
 
 			[Validate]
 			public partial interface IInterface : IBaseInterface, IValidationTarget<IInterface>
 			{
 				[Equal(nameof(ValueA))]
-				public required int ValueB { get; init; }
+				int ValueB { get; init; }
 			}
-			""");
+			"""
+		);
 
-		var result = driver.GetRunResult();
-
-		Assert.Empty(result.Diagnostics);
-		Assert.Equal(2, result.GeneratedTrees.Length);
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..IBaseInterface.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV.Namespace..IInterface.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
 
 		_ = await Verify(result);
 	}

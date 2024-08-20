@@ -1,19 +1,19 @@
-﻿//HintName: IV..OuterClass.SubClass.g.cs
+﻿//HintName: IV.Namespace..IInterface.g.cs
 using System.Collections.Generic;
 using Immediate.Validations.Shared;
 
 #nullable enable
 #pragma warning disable CS1591
 
-partial class OuterClass
-{
+namespace Namespace;
 
-partial class SubClass
+
+partial interface IInterface
 {
-	static ValidationResult IValidationTarget<SubClass>.Validate(SubClass? target) =>
+	static ValidationResult IValidationTarget<IInterface>.Validate(IInterface? target) =>
 		Validate(target);
 
-	public static  ValidationResult Validate(SubClass? target)
+	public static new ValidationResult Validate(IInterface? target)
 	{
 		if (target is not { } t)
 		{
@@ -25,7 +25,7 @@ partial class SubClass
 		
 		var errors = new ValidationResult();
 
-		errors.AddRange(global::OuterClass.BaseClass.Validate(t));
+		errors.AddRange(global::Namespace.IBaseInterface.Validate(t));
 
 		__ValidateValueB(errors, t, t.ValueB);
 
@@ -36,7 +36,7 @@ partial class SubClass
 
 
 	private static void __ValidateValueB(
-		ValidationResult errors, SubClass instance, int target
+		ValidationResult errors, IInterface instance, int target
 	)
 	{
 
@@ -68,4 +68,3 @@ partial class SubClass
 
 }
 
-}
