@@ -379,4 +379,34 @@ public sealed class ValidatorArgumentTests
 
 		_ = await Verify(result);
 	}
+
+	[Fact]
+	public async Task EnumAttributeArgument()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			public enum Dummy { None = 0, Dummy1 = 1, }
+			
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				[OneOf(Dummy.Dummy1)]
+				public required Dummy DummyValue { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
 }
