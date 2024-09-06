@@ -603,6 +603,11 @@ public sealed class ValidateTargetTransformer
 		var operation = _semanticModel
 			.GetOperation(attributeArgumentSyntax.Expression);
 
+		if (operation?.Type is INamedTypeSymbol { TypeKind: TypeKind.Enum })
+		{
+			return ("", attributeArgumentSyntax.ToFullString(), false);
+		}
+
 		return (
 			"",
 			operation?.ConstantValue switch
