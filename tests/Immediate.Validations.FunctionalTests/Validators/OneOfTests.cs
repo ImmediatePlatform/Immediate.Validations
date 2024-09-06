@@ -28,6 +28,21 @@ public sealed partial class OneOfTests
 		private static readonly int[] s_validValues = [123, 456, 789];
 	}
 
+	public enum Dummy
+	{
+		None = 0,
+		Value1 = 1,
+		Value2 = 2,
+		Value3 = 3,
+	}
+
+	[Validate]
+	public partial record EnumRecord : IValidationTarget<EnumRecord>
+	{
+		[OneOf(Dummy.Value1, Dummy.Value2)]
+		public required Dummy EnumValue { get; init; }
+	}
+
 	[Fact]
 	public void StringValueIsOneOfNoErrors()
 	{
@@ -109,6 +124,35 @@ public sealed partial class OneOfTests
 				{
 					PropertyName = nameof(IntFieldRecord.IntValue),
 					ErrorMessage = "'Int Value' was not one of the specified values: 123, 456, 789.",
+				}
+			],
+			errors
+		);
+	}
+
+	[Fact]
+	public void EnumValueIsOneOfNoErrors()
+	{
+		var instance = new EnumRecord { EnumValue = Dummy.Value1 };
+
+		var errors = EnumRecord.Validate(instance);
+
+		Assert.Empty(errors);
+	}
+
+	[Fact]
+	public void EnumValueIsNotOneOfHasErrors()
+	{
+		var instance = new EnumRecord { EnumValue = Dummy.Value3 };
+
+		var errors = EnumRecord.Validate(instance);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = nameof(EnumRecord.EnumValue),
+					ErrorMessage = "'Enum Value' was not one of the specified values: Value1, Value2.",
 				}
 			],
 			errors
