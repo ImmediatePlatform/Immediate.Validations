@@ -14,6 +14,7 @@ public sealed class AddValidateAttributeCodefixProviderTests
 			public sealed record {|IV0012:Data|} : IValidationTarget<Data>
 			{
 				public static ValidationResult Validate(Data target) => [];
+				public static ValidationResult Validate(Data target, ValidationResult errors) => [];
 			}
 			""",
 			$$"""
@@ -23,6 +24,7 @@ public sealed class AddValidateAttributeCodefixProviderTests
 			public sealed record Data : IValidationTarget<Data>
 			{
 				public static ValidationResult Validate(Data target) => [];
+				public static ValidationResult Validate(Data target, ValidationResult errors) => [];
 			}
 			"""
 		).RunAsync();

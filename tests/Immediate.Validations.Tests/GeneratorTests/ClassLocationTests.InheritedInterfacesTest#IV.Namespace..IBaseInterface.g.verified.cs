@@ -11,9 +11,15 @@ namespace Namespace;
 partial interface IBaseInterface
 {
 	static ValidationResult IValidationTarget<IBaseInterface>.Validate(IBaseInterface? target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static new ValidationResult Validate(IBaseInterface? target)
+	static ValidationResult IValidationTarget<IBaseInterface>.Validate(IBaseInterface? target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static new ValidationResult Validate(IBaseInterface? target) =>
+		Validate(target, []);
+
+	public static new ValidationResult Validate(IBaseInterface? target, ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -22,9 +28,10 @@ partial interface IBaseInterface
 				{ ".self", "`target` must not be `null`." },
 			};
 		}
-		
-		var errors = new ValidationResult();
 
+		if (!errors.VisitType(typeof(IBaseInterface)))
+			return errors;
+		
 
 
 

@@ -9,9 +9,15 @@ using Immediate.Validations.Shared;
 partial class SubClass
 {
 	static ValidationResult IValidationTarget<SubClass>.Validate(SubClass? target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static  ValidationResult Validate(SubClass? target)
+	static ValidationResult IValidationTarget<SubClass>.Validate(SubClass? target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static  ValidationResult Validate(SubClass? target) =>
+		Validate(target, []);
+
+	public static  ValidationResult Validate(SubClass? target, ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -20,10 +26,11 @@ partial class SubClass
 				{ ".self", "`target` must not be `null`." },
 			};
 		}
-		
-		var errors = new ValidationResult();
 
-		errors.AddRange(global::BaseClass.Validate(t));
+		if (!errors.VisitType(typeof(SubClass)))
+			return errors;
+		
+		global::BaseClass.Validate(t, errors);
 
 
 

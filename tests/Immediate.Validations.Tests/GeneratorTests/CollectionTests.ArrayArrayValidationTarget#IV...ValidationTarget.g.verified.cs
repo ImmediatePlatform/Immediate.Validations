@@ -9,9 +9,15 @@ using Immediate.Validations.Shared;
 partial class ValidationTarget
 {
 	static ValidationResult IValidationTarget<ValidationTarget>.Validate(ValidationTarget? target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static  ValidationResult Validate(ValidationTarget? target)
+	static ValidationResult IValidationTarget<ValidationTarget>.Validate(ValidationTarget? target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static  ValidationResult Validate(ValidationTarget? target) =>
+		Validate(target, []);
+
+	public static  ValidationResult Validate(ValidationTarget? target, ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -20,9 +26,10 @@ partial class ValidationTarget
 				{ ".self", "`target` must not be `null`." },
 			};
 		}
-		
-		var errors = new ValidationResult();
 
+		if (!errors.VisitType(typeof(ValidationTarget)))
+			return errors;
+		
 
 		__ValidateStringProperty(errors, t, t.StringProperty);
 

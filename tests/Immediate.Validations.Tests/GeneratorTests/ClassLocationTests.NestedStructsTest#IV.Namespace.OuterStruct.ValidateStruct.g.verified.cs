@@ -13,14 +13,21 @@ partial struct OuterStruct
 partial struct ValidateStruct
 {
 	static ValidationResult IValidationTarget<ValidateStruct>.Validate(ValidateStruct target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static  ValidationResult Validate(ValidateStruct target)
+	static ValidationResult IValidationTarget<ValidateStruct>.Validate(ValidateStruct target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static  ValidationResult Validate(ValidateStruct target) =>
+		Validate(target, []);
+
+	public static  ValidationResult Validate(ValidateStruct target, ValidationResult errors)
 	{
 		var t = target;
-		
-		var errors = new ValidationResult();
 
+		if (!errors.VisitType(typeof(ValidateStruct)))
+			return errors;
+		
 
 
 

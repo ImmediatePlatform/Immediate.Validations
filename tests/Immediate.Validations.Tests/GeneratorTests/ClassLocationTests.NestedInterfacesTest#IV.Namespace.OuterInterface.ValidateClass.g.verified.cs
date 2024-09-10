@@ -13,9 +13,15 @@ partial interface OuterInterface
 partial interface ValidateClass
 {
 	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static new ValidationResult Validate(ValidateClass? target)
+	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static new ValidationResult Validate(ValidateClass? target) =>
+		Validate(target, []);
+
+	public static new ValidationResult Validate(ValidateClass? target, ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -24,9 +30,10 @@ partial interface ValidateClass
 				{ ".self", "`target` must not be `null`." },
 			};
 		}
-		
-		var errors = new ValidationResult();
 
+		if (!errors.VisitType(typeof(ValidateClass)))
+			return errors;
+		
 
 
 

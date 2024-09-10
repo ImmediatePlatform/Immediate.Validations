@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Immediate.Validations.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -6,7 +7,7 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public static class GeneratorTestHelper
 {
-	public static GeneratorDriverRunResult RunGenerator(string source)
+	public static GeneratorDriverRunResult RunGenerator([StringSyntax("c#-test")] string source)
 	{
 		var syntaxTree = CSharpSyntaxTree.ParseText(source);
 

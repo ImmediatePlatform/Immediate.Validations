@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -10,7 +11,7 @@ namespace Immediate.Validations.Tests.AnalyzerTests;
 public static class AnalyzerTestHelpers
 {
 	public static CSharpAnalyzerTest<TAnalyzer, DefaultVerifier> CreateAnalyzerTest<TAnalyzer>(
-		string inputSource
+		[StringSyntax("c#-test")] string inputSource
 	)
 		where TAnalyzer : DiagnosticAnalyzer, new()
 	{
@@ -105,7 +106,7 @@ public static class AnalyzerTestHelpers
 	}
 
 	public static CSharpSuppressorTest<TSuppressor, DefaultVerifier> CreateSuppressorTest<TSuppressor>(
-		string inputSource
+		[StringSyntax("c#-test")] string inputSource
 	)
 		where TSuppressor : DiagnosticSuppressor, new()
 	{
@@ -128,7 +129,7 @@ public static class AnalyzerTestHelpers
 	}
 
 	public static CSharpSuppressorTest<TSuppressor, DefaultVerifier> CreateSuppressorTest<TSuppressor, TAnalyzer>(
-		string inputSource
+		[StringSyntax("c#-test")] string inputSource
 	)
 		where TSuppressor : DiagnosticSuppressor, new()
 		where TAnalyzer : DiagnosticAnalyzer, new()
