@@ -68,7 +68,7 @@ partial class ValidateClass
 		{
 			if (!global::Immediate.Validations.Shared.OneOfAttribute.ValidateProperty(
 					t
-					, values: [Dummy.Dummy1]
+					, values: [global::Dummy.Dummy1]
 				)
 			)
 			{
@@ -80,7 +80,7 @@ partial class ValidateClass
 						["PropertyName"] = $"Dummy Value",
 						["PropertyValue"] = t,
 						["ValuesName"] = "",
-						["ValuesValue"] = string.Join<global::Dummy>(", ", [Dummy.Dummy1]),
+						["ValuesValue"] = string.Join<global::Dummy>(", ", [global::Dummy.Dummy1]),
 					}
 				);
 			}
