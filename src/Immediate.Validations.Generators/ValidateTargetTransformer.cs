@@ -605,7 +605,11 @@ public sealed class ValidateTargetTransformer
 
 		if (operation?.Type is INamedTypeSymbol { TypeKind: TypeKind.Enum })
 		{
-			return ("", attributeArgumentSyntax.ToFullString(), false);
+			var symbolInfo = _semanticModel.GetSymbolInfo(attributeArgumentSyntax.Expression);
+			var symbol = (IFieldSymbol)symbolInfo.Symbol!;
+			var reference = $"{symbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{symbol.Name}";
+
+			return ("", reference, false);
 		}
 
 		return (
