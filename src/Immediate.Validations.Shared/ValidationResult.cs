@@ -1,6 +1,7 @@
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -16,6 +17,18 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 	private static partial Regex FormatRegex();
 
 	private List<ValidationError>? _errors;
+	private HashSet<string>? _types;
+
+	/// <summary>
+	///		Internal function used to support tracking which types have been visited as part of validation.
+	/// </summary>
+	/// <remarks>
+	///		Should not be used by consumers.
+	/// </remarks>
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	[SuppressMessage("Design", "CA1062:Validate arguments of public methods")]
+	public bool VisitType(Type type) =>
+		(_types ??= []).Add(type.ToString());
 
 	/// <summary>
 	///		Indicates whether the validation was successful.

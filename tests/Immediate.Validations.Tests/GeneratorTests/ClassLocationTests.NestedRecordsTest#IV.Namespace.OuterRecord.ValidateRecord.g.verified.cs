@@ -13,9 +13,15 @@ partial record OuterRecord
 partial record ValidateRecord
 {
 	static ValidationResult IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static  ValidationResult Validate(ValidateRecord? target)
+	static ValidationResult IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static  ValidationResult Validate(ValidateRecord? target) =>
+		Validate(target, []);
+
+	public static  ValidationResult Validate(ValidateRecord? target, ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -24,9 +30,10 @@ partial record ValidateRecord
 				{ ".self", "`target` must not be `null`." },
 			};
 		}
-		
-		var errors = new ValidationResult();
 
+		if (!errors.VisitType(typeof(ValidateRecord)))
+			return errors;
+		
 
 
 

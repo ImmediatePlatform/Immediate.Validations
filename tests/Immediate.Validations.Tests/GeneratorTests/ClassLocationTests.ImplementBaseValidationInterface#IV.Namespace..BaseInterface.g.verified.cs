@@ -11,9 +11,15 @@ namespace Namespace;
 partial interface BaseInterface
 {
 	static ValidationResult IValidationTarget<BaseInterface>.Validate(BaseInterface? target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static new ValidationResult Validate(BaseInterface? target)
+	static ValidationResult IValidationTarget<BaseInterface>.Validate(BaseInterface? target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static new ValidationResult Validate(BaseInterface? target) =>
+		Validate(target, []);
+
+	public static new ValidationResult Validate(BaseInterface? target, ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -22,9 +28,10 @@ partial interface BaseInterface
 				{ ".self", "`target` must not be `null`." },
 			};
 		}
-		
-		var errors = new ValidationResult();
 
+		if (!errors.VisitType(typeof(BaseInterface)))
+			return errors;
+		
 
 
 

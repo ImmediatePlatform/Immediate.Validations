@@ -11,9 +11,15 @@ namespace Namespace;
 partial class BaseClass
 {
 	static ValidationResult IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static  ValidationResult Validate(BaseClass? target)
+	static ValidationResult IValidationTarget<BaseClass>.Validate(BaseClass? target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static  ValidationResult Validate(BaseClass? target) =>
+		Validate(target, []);
+
+	public static  ValidationResult Validate(BaseClass? target, ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -22,9 +28,10 @@ partial class BaseClass
 				{ ".self", "`target` must not be `null`." },
 			};
 		}
-		
-		var errors = new ValidationResult();
 
+		if (!errors.VisitType(typeof(BaseClass)))
+			return errors;
+		
 
 
 

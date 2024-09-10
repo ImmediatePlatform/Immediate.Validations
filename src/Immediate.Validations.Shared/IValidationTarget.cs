@@ -25,4 +25,23 @@ public interface IValidationTarget<T>
 		Justification = "This is a static method to validate an instance of the self type."
 	)]
 	static abstract ValidationResult Validate(T? target);
+
+	/// <summary>
+	///	    A method which can be used to validate instances of the type <typeparamref name="T"/>.
+	/// </summary>
+	/// <param name="target">
+	///	    An instance of type <typeparamref name="T"/> which should be validated.
+	/// </param>
+	/// <param name="errors">
+	///		The operating <see cref="ValidationResult" /> to add validation entries to.
+	/// </param>
+	/// <returns>
+	///	    The parameter <paramref name="errors"/>, for easier consumption.
+	/// </returns>
+	[SuppressMessage(
+		"Design",
+		"CA1000:Do not declare static members on generic types",
+		Justification = "This is a static method to validate an instance of the self type."
+	)]
+	static abstract ValidationResult Validate(T? target, ValidationResult errors);
 }

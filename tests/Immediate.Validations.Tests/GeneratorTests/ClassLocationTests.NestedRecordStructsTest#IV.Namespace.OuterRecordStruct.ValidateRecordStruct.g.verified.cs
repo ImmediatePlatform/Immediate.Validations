@@ -13,14 +13,21 @@ partial record struct OuterRecordStruct
 partial record struct ValidateRecordStruct
 {
 	static ValidationResult IValidationTarget<ValidateRecordStruct>.Validate(ValidateRecordStruct target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static  ValidationResult Validate(ValidateRecordStruct target)
+	static ValidationResult IValidationTarget<ValidateRecordStruct>.Validate(ValidateRecordStruct target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static  ValidationResult Validate(ValidateRecordStruct target) =>
+		Validate(target, []);
+
+	public static  ValidationResult Validate(ValidateRecordStruct target, ValidationResult errors)
 	{
 		var t = target;
-		
-		var errors = new ValidationResult();
 
+		if (!errors.VisitType(typeof(ValidateRecordStruct)))
+			return errors;
+		
 
 
 

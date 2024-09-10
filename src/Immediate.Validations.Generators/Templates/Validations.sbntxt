@@ -16,9 +16,15 @@ partial {{ c.type }} {{ c.name }}
 partial {{ class.type }} {{ class.name }}
 {
 	static ValidationResult IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
-		Validate(target);
+		Validate(target, []);
 
-	public static {{ if class.type == "interface"; "new"; end }} ValidationResult Validate({{ class.name; if is_reference_type; "?"; end }} target)
+	static ValidationResult IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target, ValidationResult errors) =>
+		Validate(target, errors);
+
+	public static {{ if class.type == "interface"; "new"; end }} ValidationResult Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
+		Validate(target, []);
+
+	public static {{ if class.type == "interface"; "new"; end }} ValidationResult Validate({{ class.name; if is_reference_type; "?"; end }} target, ValidationResult errors)
 	{
 		{{~ if is_reference_type ~}}
 		if (target is not { } t)
@@ -31,11 +37,12 @@ partial {{ class.type }} {{ class.name }}
 		{{~ else ~}}
 		var t = target;
 		{{~ end ~}}
-		
-		var errors = new ValidationResult();
 
+		if (!errors.VisitType(typeof({{ class.name }})))
+			return errors;
+		
 		{{~ for bc in base_validation_targets ~}}
-		errors.AddRange({{ bc }}.Validate(t));
+		{{ bc }}.Validate(t, errors);
 		{{~ end ~}}
 
 		{{~ if !skip_self ~}}
