@@ -30,7 +30,7 @@ public sealed class ValidationException : Exception
 	{
 		var messages = errors
 			.Select(e => $"{Environment.NewLine} -- {e.PropertyName}: {e.ErrorMessage}")
-			.Prepend(message + ": ");
+			.Prepend(message + ":");
 		return string.Concat(messages);
 	}
 
