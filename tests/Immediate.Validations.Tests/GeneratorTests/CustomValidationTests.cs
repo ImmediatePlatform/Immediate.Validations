@@ -59,6 +59,90 @@ public sealed class CustomValidationTests
 	}
 
 	[Fact]
+	public async Task NotNullOnInt()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				[NotNull]
+				public required int IntProperty { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task NotNullOnNullableInt()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				[NotNull]
+				public required int? IntProperty { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+	public async Task NotNullOnString()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				[NotNull]
+				public required string? StringProperty { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
 	public async Task CustomValidationOnProperType()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -199,10 +283,19 @@ public sealed class CustomValidationTests
 
 			using Immediate.Validations.Shared;
 
+			public sealed class NotNullClassAttribute : ValidatorAttribute
+			{
+				public static bool ValidateProperty<T>(T value)
+					where T : class =>
+					value is not null;
+
+				public static string DefaultMessage => ValidationConfiguration.Localizer[nameof(NotNullAttribute)].Value;
+			}
+			
 			[Validate]
 			public partial class ValidateClass : IValidationTarget<ValidateClass>
 			{
-				[NotNull]
+				[NotNullClass]
 				public required int? IntProperty { get; init; }
 			}
 			"""

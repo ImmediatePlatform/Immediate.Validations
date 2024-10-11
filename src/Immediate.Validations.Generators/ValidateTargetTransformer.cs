@@ -190,7 +190,9 @@ public sealed class ValidateTargetTransformer
 				|| attributes.Any(a => a.AttributeClass.IsAllowNullAttribute()))
 			: propertyType.IsNullableType();
 
-		var baseType = !isReferenceType && isNullable
+		var validateNotNull = !isNullable || attributes.Any(a => a.AttributeClass.IsNotNullAttribute());
+
+		var baseType = propertyType.IsNullableType()
 			? ((INamedTypeSymbol)propertyType).TypeArguments[0]
 			: propertyType;
 
@@ -261,7 +263,8 @@ public sealed class ValidateTargetTransformer
 		};
 
 		if (
-			(isNullable || !isReferenceType)
+			(!validateNotNull
+				|| (!isReferenceType && !propertyType.IsNullableType()))
 			&& !isValidationProperty
 			&& collectionPropertyDetails is null
 			&& validations is []
@@ -277,6 +280,7 @@ public sealed class ValidateTargetTransformer
 			TypeFullName = propertyType.ToDisplayString(s_fullyQualifiedPlusNullable),
 			IsReferenceType = isReferenceType,
 			IsNullable = isNullable,
+			ValidateNotNull = validateNotNull,
 
 			IsValidationProperty = isValidationProperty,
 			ValidationTypeFullName = isValidationProperty
@@ -303,7 +307,7 @@ public sealed class ValidateTargetTransformer
 		_token.ThrowIfCancellationRequested();
 
 		var @class = attribute.AttributeClass;
-		if (!@class.ImplementsValidatorAttribute())
+		if (!@class.ImplementsValidatorAttribute() || @class.IsNotNullAttribute())
 			return null;
 
 		_token.ThrowIfCancellationRequested();

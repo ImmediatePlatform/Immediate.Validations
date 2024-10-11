@@ -31,32 +31,12 @@ partial class ValidateClass
 			return errors;
 		
 
-		__ValidateStringProperty(errors, t, t.StringProperty);
 
 
 		return errors;
 	}
 
 
-
-	private static void __ValidateStringProperty(
-		ValidationResult errors, ValidateClass instance, string? target
-	)
-	{
-
-		if (target is not { } t)
-		{
-			errors.Add(
-				$"StringProperty",
-				$"'String Property' must not be null."
-			);
-
-			return;
-		}
-
-
-
-	}
 
 }
 
