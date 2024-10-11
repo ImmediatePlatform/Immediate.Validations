@@ -119,7 +119,7 @@ partial {{ class.type }} {{ class.name }}
 		{{~ if p.is_reference_type || p.is_nullable ~}}
 		if (target is not { } t)
 		{
-			{{~ if !p.is_nullable ~}}
+			{{~ if p.validate_not_null ~}}
 			errors.Add(
 				$"{{ get_prop_name(p.property_name, depth) }}",
 				$"'{{ get_prop_name(p.name, depth) }}' must not be null."

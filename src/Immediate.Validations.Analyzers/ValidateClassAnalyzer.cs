@@ -76,6 +76,17 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			description: "Invalid nameof will generate incorrect code."
 		);
 
+	public static readonly DiagnosticDescriptor ValidateNotNullWhenInvalid =
+		new(
+			id: DiagnosticIds.IV0018ValidateNotNullWhenInvalid,
+			title: "`[NotNull]` applied to not-null property",
+			messageFormat: "`[NotNull]` is applied to property `{0}`, but type `{1}` cannot be null",
+			category: "ImmediateValidations",
+			defaultSeverity: DiagnosticSeverity.Warning,
+			isEnabledByDefault: true,
+			description: "Invalid `[NotNull]` will generate incorrect code."
+		);
+
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
 		ImmutableArray.Create(
 		[
@@ -85,6 +96,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			ValidateParameterIncompatibleType,
 			ValidateParameterPropertyIncompatibleType,
 			ValidateParameterNameofInvalid,
+			ValidateNotNullWhenInvalid,
 		]);
 
 	public override void Initialize(AnalysisContext context)
@@ -168,7 +180,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			{
 				var status = ValidateAttribute(context.Compilation, property.Type, attribute.AttributeClass!, token);
 
-				if (status.Report)
+				if (status.IncompatibleType)
 				{
 					context.ReportDiagnostic(
 						Diagnostic.Create(
@@ -176,6 +188,17 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 							attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation(),
 							attribute.AttributeClass!.Name,
 							property.Name
+						)
+					);
+				}
+				else if (status.InvalidNotNull)
+				{
+					context.ReportDiagnostic(
+						Diagnostic.Create(
+							ValidateNotNullWhenInvalid,
+							attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation(),
+							property.Name,
+							property.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
 						)
 					);
 				}
@@ -195,7 +218,8 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 	private sealed record AttributeValidationStatus
 	{
-		public required bool Report { get; init; }
+		public bool IncompatibleType { get; init; }
+		public bool InvalidNotNull { get; init; }
 		public bool ValidateArguments { get; init; }
 		public ImmutableArray<IParameterSymbol> ValidateParameterSymbols { get; init; }
 	}
@@ -210,7 +234,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		token.ThrowIfCancellationRequested();
 
 		if (!attributeSymbol.ImplementsValidatorAttribute())
-			return new() { Report = false };
+			return new();
 
 		token.ThrowIfCancellationRequested();
 
@@ -225,16 +249,23 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		)
 		{
 			// covered by other analyzers
-			return new() { Report = false };
+			return new();
 		}
+
+		token.ThrowIfCancellationRequested();
 
 		if (targetParameterType is ITypeParameterSymbol tps)
 		{
+			if (attributeSymbol.IsNotNullAttribute()
+				&& propertyType is { IsReferenceType: false, OriginalDefinition.SpecialType: not SpecialType.System_Nullable_T })
+			{
+				return new() { InvalidNotNull = true };
+			}
+
 			if (tps.SatisfiesConstraints(propertyType, compilation))
 			{
 				return new()
 				{
-					Report = false,
 					ValidateArguments = true,
 					ValidateParameterSymbols = validateMethod.Parameters,
 				};
@@ -255,12 +286,13 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			{
 				return new()
 				{
-					Report = false,
 					ValidateArguments = true,
 					ValidateParameterSymbols = validateMethod.Parameters,
 				};
 			}
 		}
+
+		token.ThrowIfCancellationRequested();
 
 		return propertyType switch
 		{
@@ -285,7 +317,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 					token
 				),
 
-			_ => new() { Report = true, },
+			_ => new() { IncompatibleType = true, },
 		};
 	}
 

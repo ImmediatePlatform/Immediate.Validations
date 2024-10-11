@@ -17,8 +17,8 @@ public sealed class NotNullAttribute : ValidatorAttribute
 	/// <returns>
 	///	    <see langword="true" /> if the property is valid; <see langword="false" /> otherwise.
 	/// </returns>
-	public static bool ValidateProperty<T>(T value)
-		where T : class => value is not null;
+	public static bool ValidateProperty<T>(T value) =>
+		value is not null;
 
 	/// <summary>
 	///		The default message template when the property is invalid.

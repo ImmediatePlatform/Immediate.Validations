@@ -59,13 +59,13 @@ public class AddAdditionalValidationsCodeRefactoringProvider : CodeRefactoringPr
 				]))
 			.WithParameterList(
 				ParameterList(
-					SeparatedList(new ParameterSyntax[]
-					{
+					SeparatedList(
+					[
 						Parameter(Identifier("errors"))
 							.WithType(IdentifierName("ValidationResult")),
 						Parameter(Identifier("target"))
 							.WithType(IdentifierName(typeDeclarationSyntax.Identifier)),
-					})))
+					])))
 			.WithBody(
 				Block())
 			.WithAdditionalAnnotations(Formatter.Annotation);

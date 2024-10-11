@@ -18,6 +18,7 @@
 	<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeRefactoring.Testing" />
 	<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
 	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+	<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
 	<PackageReference Include="Microsoft.NET.Test.Sdk" />
 	<PackageReference Include="Verify.SourceGenerators" />
 	<PackageReference Include="Verify.Xunit" />

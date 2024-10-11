@@ -106,11 +106,20 @@ public sealed class ValidateClassAnalyzerTests
 			"""
 			using System.Collections.Generic;
 			using Immediate.Validations.Shared;
+
+			public sealed class NotNullClassAttribute : ValidatorAttribute
+			{
+				public static bool ValidateProperty<T>(T value)
+					where T : class =>
+					value is not null;
+			
+				public static string DefaultMessage => ValidationConfiguration.Localizer[nameof(NotNullAttribute)].Value;
+			}
 			
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0014:NotNull|}]
+				[{|IV0014:NotNullClass|}]
 				public required int Id { get; init; }
 
 				public static ValidationResult Validate(Target target) => [];
@@ -937,6 +946,66 @@ public sealed class ValidateClassAnalyzerTests
 				static ValidationResult IValidationTarget<IInterface>.Validate(IInterface target, ValidationResult errors) => [];
 				public static ValidationResult Validate(IInterface target) => [];
 				public static ValidationResult Validate(IInterface target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task NotNullOnIntShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[{|IV0018:NotNull|}]
+				public required int IntProperty { get; init; }
+			
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task NotNullOnNullableIntShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[NotNull]
+				public required int? IntProperty { get; init; }
+			
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Fact]
+	public async Task NotNullOnStringShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[NotNull]
+				public required string StringProperty { get; init; }
+			
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
 		).RunAsync();

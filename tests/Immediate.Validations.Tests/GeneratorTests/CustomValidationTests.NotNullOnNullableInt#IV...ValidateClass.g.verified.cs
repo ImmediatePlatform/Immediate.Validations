@@ -31,7 +31,7 @@ partial class ValidateClass
 			return errors;
 		
 
-		__ValidateStringProperty(errors, t, t.StringProperty);
+		__ValidateIntProperty(errors, t, t.IntProperty);
 
 
 		return errors;
@@ -39,16 +39,16 @@ partial class ValidateClass
 
 
 
-	private static void __ValidateStringProperty(
-		ValidationResult errors, ValidateClass instance, string? target
+	private static void __ValidateIntProperty(
+		ValidationResult errors, ValidateClass instance, int? target
 	)
 	{
 
 		if (target is not { } t)
 		{
 			errors.Add(
-				$"StringProperty",
-				$"'String Property' must not be null."
+				$"IntProperty",
+				$"'Int Property' must not be null."
 			);
 
 			return;

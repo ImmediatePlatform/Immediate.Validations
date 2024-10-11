@@ -130,6 +130,25 @@ internal static class ITypeSymbolExtensions
 			},
 		};
 
+	public static bool IsNotNullAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
+		typeSymbol is
+		{
+			Name: "NotNullAttribute",
+			ContainingNamespace:
+			{
+				Name: "Shared",
+				ContainingNamespace:
+				{
+					Name: "Validations",
+					ContainingNamespace:
+					{
+						Name: "Immediate",
+						ContainingNamespace.IsGlobalNamespace: true,
+					},
+				},
+			},
+		};
+
 	public static bool IsValidationResult(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
