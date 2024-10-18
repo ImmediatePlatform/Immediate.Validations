@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -20,7 +19,7 @@ public sealed partial class GreaterThanTests
 		public required string KeyValue { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void IntGreaterThanRecordWhenZero()
 	{
 		var instance = new IntGreaterThanRecord { IntValue = 1 };
@@ -30,7 +29,7 @@ public sealed partial class GreaterThanTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void IntGreaterThanRecordWhenNotZero()
 	{
 		var instance = new IntGreaterThanRecord { IntValue = 0 };
@@ -49,7 +48,7 @@ public sealed partial class GreaterThanTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void StringGreaterThanRecordWhenGreaterThan()
 	{
 		var instance = new StringGreaterThanRecord { StringValue = "Qax", KeyValue = "Foo" };
@@ -59,7 +58,7 @@ public sealed partial class GreaterThanTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void StringGreaterThanRecordWhenNotGreaterThan()
 	{
 		var instance = new StringGreaterThanRecord { StringValue = "Foo", KeyValue = "Foo" };

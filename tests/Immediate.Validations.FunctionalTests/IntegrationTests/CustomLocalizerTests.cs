@@ -1,17 +1,12 @@
-using System.Globalization;
 using Immediate.Validations.Shared;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
-[Collection(nameof(CustomLocalizerTests))]
-[CollectionDefinition(nameof(CustomLocalizerTests), DisableParallelization = true)]
-public sealed partial class CustomLocalizerTests(CustomLocalizerTestsFixture fixture) : IClassFixture<CustomLocalizerTestsFixture>
+[NotInParallel]
+public sealed partial class CustomLocalizerTests
 {
-	public CustomLocalizerTestsFixture Fixture { get; } = fixture;
-
 	[Validate]
 	public sealed partial record ValidateRecord : IValidationTarget<ValidateRecord>
 	{
@@ -19,10 +14,10 @@ public sealed partial class CustomLocalizerTests(CustomLocalizerTestsFixture fix
 		public required int Id { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void EnLocalizedMessage()
 	{
-		Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+		using var scope = new LocalizerScope("en-US");
 
 		var record = new ValidateRecord { Id = 0 };
 
@@ -40,10 +35,10 @@ public sealed partial class CustomLocalizerTests(CustomLocalizerTestsFixture fix
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void FrLocalizedMessage()
 	{
-		Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-CA");
+		using var scope = new LocalizerScope("fr-CA");
 
 		var record = new ValidateRecord { Id = 0 };
 
@@ -62,25 +57,25 @@ public sealed partial class CustomLocalizerTests(CustomLocalizerTestsFixture fix
 	}
 }
 
-public sealed class CustomLocalizerTestsFixture : IDisposable
+public sealed class LocalizerScope : IDisposable
 {
-	private static IStringLocalizer? s_defaultLocalizer;
-	private readonly CultureInfo _culture;
+	private readonly IStringLocalizer? _defaultLocalizer;
+	private readonly CultureScope _cultureScope;
 
-	public CustomLocalizerTestsFixture()
+	public LocalizerScope(string culture)
 	{
-		s_defaultLocalizer ??= ValidationConfiguration.Localizer;
-		_culture = Thread.CurrentThread.CurrentUICulture;
+		_defaultLocalizer ??= ValidationConfiguration.Localizer;
+		_cultureScope = new(culture);
 
 		ValidationConfiguration.Localizer = CreateResourceManagerLocalizer();
 	}
 
 	public void Dispose()
 	{
-		Thread.CurrentThread.CurrentUICulture = _culture;
+		_cultureScope.Dispose();
 
-		if (s_defaultLocalizer != null)
-			ValidationConfiguration.Localizer = s_defaultLocalizer;
+		if (_defaultLocalizer != null)
+			ValidationConfiguration.Localizer = _defaultLocalizer;
 	}
 
 	private static ResourceManagerStringLocalizer CreateResourceManagerLocalizer()

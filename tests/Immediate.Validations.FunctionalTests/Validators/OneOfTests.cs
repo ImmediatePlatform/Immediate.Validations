@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -43,7 +42,7 @@ public sealed partial class OneOfTests
 		public required Dummy EnumValue { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void StringValueIsOneOfNoErrors()
 	{
 		var instance = new StringRecord { StringValue = "123" };
@@ -53,7 +52,7 @@ public sealed partial class OneOfTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void StringValueIsNotOneOfHasErrors()
 	{
 		var instance = new StringRecord { StringValue = "124" };
@@ -72,7 +71,7 @@ public sealed partial class OneOfTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void IntValueIsOneOfNoErrors()
 	{
 		var instance = new IntRecord { IntValue = 123 };
@@ -82,7 +81,7 @@ public sealed partial class OneOfTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void IntValueIsNotOneOfHasErrors()
 	{
 		var instance = new IntRecord { IntValue = 124 };
@@ -101,7 +100,7 @@ public sealed partial class OneOfTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void IntFieldValueIsOneOfNoErrors()
 	{
 		var instance = new IntFieldRecord { IntValue = 123 };
@@ -111,7 +110,7 @@ public sealed partial class OneOfTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void IntFieldValueIsNotOneOfHasErrors()
 	{
 		var instance = new IntFieldRecord { IntValue = 124 };
@@ -130,7 +129,7 @@ public sealed partial class OneOfTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void EnumValueIsOneOfNoErrors()
 	{
 		var instance = new EnumRecord { EnumValue = Dummy.Value1 };
@@ -140,7 +139,7 @@ public sealed partial class OneOfTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void EnumValueIsNotOneOfHasErrors()
 	{
 		var instance = new EnumRecord { EnumValue = Dummy.Value3 };

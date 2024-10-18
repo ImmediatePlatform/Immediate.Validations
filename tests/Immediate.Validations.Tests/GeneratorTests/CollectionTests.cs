@@ -2,7 +2,7 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public sealed class CollectionTests
 {
-	[Fact]
+	[Test]
 	public async Task ListString()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -30,7 +30,7 @@ public sealed class CollectionTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ListListString()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -58,7 +58,7 @@ public sealed class CollectionTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ListListStringNotEmpty()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -87,7 +87,7 @@ public sealed class CollectionTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ArrayString()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -114,7 +114,7 @@ public sealed class CollectionTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ArrayArrayString()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -141,7 +141,7 @@ public sealed class CollectionTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ArrayArrayStringNotEmpty()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -169,7 +169,7 @@ public sealed class CollectionTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ArrayValidationTarget()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -203,7 +203,7 @@ public sealed class CollectionTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ArrayArrayValidationTarget()
 	{
 		var result = GeneratorTestHelper.RunGenerator(

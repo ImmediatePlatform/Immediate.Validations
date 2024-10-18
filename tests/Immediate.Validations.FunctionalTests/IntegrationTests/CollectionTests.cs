@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
@@ -18,7 +17,7 @@ public sealed partial class CollectionTests
 		public required IReadOnlyList<IReadOnlyList<string>> Strings { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void ValidRecordNoErrors()
 	{
 		var record = new ListStringRecord { Strings = [["Hello World!"]] };
@@ -28,7 +27,7 @@ public sealed partial class CollectionTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidRecordNullProperty()
 	{
 		var record = new ListStringRecord { Strings = null! };
@@ -47,7 +46,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidRecordNullFirstLevel()
 	{
 		var record = new ListStringRecord
@@ -80,7 +79,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidRecordNullSecondLevel()
 	{
 		var record = new ListStringRecord
@@ -136,7 +135,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void ValidCommandNoErrors()
 	{
 		var record = new ListValidationTargetRecord { Commands = [[new() { Id = "ABC-123" }]] };
@@ -146,7 +145,7 @@ public sealed partial class CollectionTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidCommandNullProperty()
 	{
 		var record = new ListValidationTargetRecord { Commands = null! };
@@ -165,7 +164,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidCommandNullFirstLevel()
 	{
 		var record = new ListValidationTargetRecord
@@ -203,7 +202,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidCommandNullSecondLevel()
 	{
 		var record = new ListValidationTargetRecord

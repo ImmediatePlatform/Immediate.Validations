@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
@@ -18,7 +17,7 @@ public sealed partial class ReferenceTypeNullTests
 		public required string Id { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void ValidRecordAllNotNull()
 	{
 		var record = new Command
@@ -38,7 +37,7 @@ public sealed partial class ReferenceTypeNullTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void ValidRecordNullIsNull()
 	{
 		var record = new Command
@@ -55,7 +54,7 @@ public sealed partial class ReferenceTypeNullTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidRecordNotNullIsNull()
 	{
 		var record = new Command

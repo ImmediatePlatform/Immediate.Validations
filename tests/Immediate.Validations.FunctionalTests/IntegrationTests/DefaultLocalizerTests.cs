@@ -1,15 +1,11 @@
 using System.Globalization;
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
-[Collection(nameof(DefaultLocalizerTests))]
-[CollectionDefinition(nameof(DefaultLocalizerTests), DisableParallelization = true)]
-public sealed partial class DefaultLocalizerTests(DefaultLocalizerTestsFixture fixture) : IClassFixture<DefaultLocalizerTestsFixture>
+[NotInParallel]
+public sealed partial class DefaultLocalizerTests
 {
-	public DefaultLocalizerTestsFixture Fixture { get; } = fixture;
-
 	[Validate]
 	public sealed partial record ValidateRecord : IValidationTarget<ValidateRecord>
 	{
@@ -17,10 +13,10 @@ public sealed partial class DefaultLocalizerTests(DefaultLocalizerTestsFixture f
 		public required int Id { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void EnLocalizedMessage()
 	{
-		Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+		using var scope = new CultureScope("en-US");
 
 		var record = new ValidateRecord { Id = 0 };
 
@@ -38,10 +34,10 @@ public sealed partial class DefaultLocalizerTests(DefaultLocalizerTestsFixture f
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void FrLocalizedMessage()
 	{
-		Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-CA");
+		using var scope = new CultureScope("fr-CA");
 
 		var record = new ValidateRecord { Id = 0 };
 
@@ -60,13 +56,14 @@ public sealed partial class DefaultLocalizerTests(DefaultLocalizerTestsFixture f
 	}
 }
 
-public sealed class DefaultLocalizerTestsFixture : IDisposable
+public sealed class CultureScope : IDisposable
 {
 	private readonly CultureInfo _culture;
 
-	public DefaultLocalizerTestsFixture()
+	public CultureScope(string culture)
 	{
 		_culture = Thread.CurrentThread.CurrentUICulture;
+		Thread.CurrentThread.CurrentUICulture = new(culture);
 	}
 
 	public void Dispose()

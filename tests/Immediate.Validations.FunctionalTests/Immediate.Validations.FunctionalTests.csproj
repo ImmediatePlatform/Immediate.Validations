@@ -5,6 +5,10 @@
 	<NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
+  <ItemGroup Label="Usings">
+	<Using Include="Xunit" />
+  </ItemGroup>
+
   <ItemGroup>
 	<ProjectReference Include="../../src/Immediate.Validations.Shared/Immediate.Validations.Shared.csproj" />
 	<ProjectReference Include="../../src/Immediate.Validations.Generators/Immediate.Validations.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -19,9 +23,8 @@
 	<PackageReference Include="Immediate.Handlers" />
 	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 	<PackageReference Include="Microsoft.Extensions.Localization" />
-	<PackageReference Include="Microsoft.NET.Test.Sdk" />
-	<PackageReference Include="xunit" />
-	<PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+	<PackageReference Include="TUnit.Engine" />
+	<PackageReference Include="xunit.v3.assert" />
   </ItemGroup>
 
   <ItemGroup>

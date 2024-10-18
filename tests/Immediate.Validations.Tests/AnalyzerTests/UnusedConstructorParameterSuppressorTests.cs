@@ -12,7 +12,7 @@ public sealed class UnusedConstructorParameterSuppressorTests
 	public static readonly DiagnosticResult CA1019 =
 		DiagnosticResult.CompilerWarning("CA1019");
 
-	[Fact]
+	[Test]
 	public async Task WarningsInValidatorAreSuppressed() =>
 		await AnalyzerTestHelpers
 			.CreateSuppressorTest<UnusedConstructorParameterSuppressor>(
@@ -34,7 +34,7 @@ public sealed class UnusedConstructorParameterSuppressorTests
 			])
 			.RunAsync();
 
-	[Fact]
+	[Test]
 	public async Task WarningsAllowedElsewhere() =>
 		await AnalyzerTestHelpers
 			.CreateSuppressorTest<UnusedConstructorParameterSuppressor>(

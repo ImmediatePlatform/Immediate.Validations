@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
@@ -17,7 +16,7 @@ public sealed partial class SkipSelfTests
 		public required string IgnoredString { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void SkipSelfOperatesCorrectly()
 	{
 		var instance = new SubClass { BaseString = null!, IgnoredString = null!, };

@@ -2,7 +2,7 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public sealed class MiscellaneousTests
 {
-	[Fact]
+	[Test]
 	public async Task FilledDescriptionChangesName()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -29,7 +29,7 @@ public sealed class MiscellaneousTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task EmptyDescriptionDoesntChangeName()
 	{
 		var result = GeneratorTestHelper.RunGenerator(

@@ -1,12 +1,11 @@
 using Immediate.Validations.Shared;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
 public sealed class FullHandlerTests
 {
-	[Fact]
+	[Test]
 	public async Task FullTestWithValidData()
 	{
 		var services = new ServiceCollection();
@@ -29,7 +28,7 @@ public sealed class FullHandlerTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public async Task FullTestWithNullData()
 	{
 		var services = new ServiceCollection();
@@ -60,7 +59,7 @@ public sealed class FullHandlerTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public async Task FullTestWithNullName()
 	{
 		var services = new ServiceCollection();
@@ -96,7 +95,7 @@ public sealed class FullHandlerTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public async Task FullTestWithEmptyName()
 	{
 		var services = new ServiceCollection();
@@ -132,7 +131,7 @@ public sealed class FullHandlerTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public async Task FullTestWithInvalidStatus()
 	{
 		var services = new ServiceCollection();
@@ -168,7 +167,7 @@ public sealed class FullHandlerTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public async Task FullTestWithInvalidValue()
 	{
 		var services = new ServiceCollection();

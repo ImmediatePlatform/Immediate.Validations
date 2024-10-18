@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -32,7 +31,7 @@ public sealed partial class EnumValueTests
 		public required FlagsState ValidState { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void EnumValidValue()
 	{
 		var instance = new EnumRecord { ValidState = ValidState.Valid };
@@ -42,7 +41,7 @@ public sealed partial class EnumValueTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void EnumInvalidValue()
 	{
 		var instance = new EnumRecord { ValidState = (ValidState)3 };
@@ -61,7 +60,7 @@ public sealed partial class EnumValueTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void FlagsEnumValidValue()
 	{
 		var instance = new FlagsEnumRecord { ValidState = FlagsState.Valid };
@@ -71,7 +70,7 @@ public sealed partial class EnumValueTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void FlagsEnumValidFlags()
 	{
 		var instance = new FlagsEnumRecord { ValidState = FlagsState.Valid | FlagsState.Invalid };
@@ -81,7 +80,7 @@ public sealed partial class EnumValueTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void FlagsEnumInvalidValue()
 	{
 		var instance = new FlagsEnumRecord { ValidState = (FlagsState)4 };

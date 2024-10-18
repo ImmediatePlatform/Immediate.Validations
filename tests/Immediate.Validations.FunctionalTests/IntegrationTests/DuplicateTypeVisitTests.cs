@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
@@ -22,7 +21,7 @@ public partial class DuplicateTypeVisitTests
 	[Validate]
 	public sealed partial record ValidateRecord : IBaseInterface, ISubInterface, IValidationTarget<ValidateRecord>;
 
-	[Fact]
+	[Test]
 	public void TypeValidatorsAreVisitedAtMostOnce()
 	{
 		var record = new ValidateRecord();

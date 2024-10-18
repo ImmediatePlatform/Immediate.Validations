@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -12,7 +11,7 @@ public sealed partial class MinLengthTests
 		public required string StringValue { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void MinLengthWhenShort()
 	{
 		var instance = new StringRecord { StringValue = "Hello World! Hello World! Hello World!" };
@@ -22,7 +21,7 @@ public sealed partial class MinLengthTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void MinLengthWhenLong()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };

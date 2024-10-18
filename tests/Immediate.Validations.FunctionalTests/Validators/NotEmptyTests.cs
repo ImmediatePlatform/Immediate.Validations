@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -26,7 +25,7 @@ public sealed partial class NotEmptyTests
 		public required ICollection<int> CollectionValue { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void StringNotEmptyTestWhenNotEmpty()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };
@@ -36,7 +35,7 @@ public sealed partial class NotEmptyTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void StringNotEmptyTestWhenEmpty()
 	{
 		var instance = new StringRecord { StringValue = "  " };
@@ -55,7 +54,7 @@ public sealed partial class NotEmptyTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void IntNotEmptyTestWhenNotEmpty()
 	{
 		var instance = new IntRecord { IntValue = 5 };
@@ -65,7 +64,7 @@ public sealed partial class NotEmptyTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void IntNotEmptyTestWhenEmpty()
 	{
 		var instance = new IntRecord { IntValue = 0 };
@@ -84,7 +83,7 @@ public sealed partial class NotEmptyTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void CollectionNotEmptyTestWhenNotEmpty()
 	{
 		var instance = new CollectionRecord { CollectionValue = [1, 2, 3, 4] };
@@ -94,7 +93,7 @@ public sealed partial class NotEmptyTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void CollectionNotEmptyTestWhenEmpty()
 	{
 		var instance = new CollectionRecord { CollectionValue = [] };

@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -20,7 +19,7 @@ public sealed partial class NotEqualTests
 		public required string KeyValue { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void IntEqualRecordWhenZero()
 	{
 		var instance = new IntEqualRecord { IntValue = 1 };
@@ -30,7 +29,7 @@ public sealed partial class NotEqualTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void IntEqualRecordWhenNotZero()
 	{
 		var instance = new IntEqualRecord { IntValue = 0 };
@@ -49,7 +48,7 @@ public sealed partial class NotEqualTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void StringEqualRecordWhenEqual()
 	{
 		var instance = new StringEqualRecord { StringValue = "asdf", KeyValue = "Test" };
@@ -59,7 +58,7 @@ public sealed partial class NotEqualTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void StringEqualRecordWhenNotEqual()
 	{
 		var instance = new StringEqualRecord { StringValue = "Test", KeyValue = "Test" };

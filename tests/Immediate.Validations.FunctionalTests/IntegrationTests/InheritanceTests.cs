@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
@@ -25,7 +24,7 @@ public sealed partial class InheritanceTests
 		public required string Description { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void ValidClassHasNoErrors()
 	{
 		var @class = new Class
@@ -39,7 +38,7 @@ public sealed partial class InheritanceTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void ShortIdHasErrors()
 	{
 		var @class = new Class
@@ -62,7 +61,7 @@ public sealed partial class InheritanceTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void EmptyDescriptionHasErrors()
 	{
 		var @class = new Class
