@@ -122,7 +122,12 @@ partial {{ class.type }} {{ class.name }}
 			{{~ if p.validate_not_null ~}}
 			errors.Add(
 				$"{{ get_prop_name(p.property_name, depth) }}",
-				$"'{{ get_prop_name(p.name, depth) }}' must not be null."
+				{{ if string.empty p.validate_not_null.message; p.validate_not_null.validator_name + ".DefaultMessage"; else; p.validate_not_null.message; end }},
+				new()
+				{
+					["PropertyName"] = $"{{ get_prop_name(p.name, depth) }}",
+					["PropertyValue"] = null,
+				}
 			);
 			{{~ end ~}}
 

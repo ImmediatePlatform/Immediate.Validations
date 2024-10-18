@@ -49,7 +49,12 @@ partial record Target
 		{
 			errors.Add(
 				$"Id",
-				$"'Id' must not be null."
+				global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
+				new()
+				{
+					["PropertyName"] = $"Id",
+					["PropertyValue"] = null,
+				}
 			);
 
 			return;
@@ -100,7 +105,12 @@ partial record Target
 		{
 			errors.Add(
 				$"FirstValue",
-				$"'First Value' must not be null."
+				global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
+				new()
+				{
+					["PropertyName"] = $"First Value",
+					["PropertyValue"] = null,
+				}
 			);
 
 			return;

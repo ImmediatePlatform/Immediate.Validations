@@ -13,6 +13,12 @@ public sealed partial class DefaultLocalizerTests
 		public required int Id { get; init; }
 	}
 
+	[Validate]
+	public sealed partial record NotNullRecord : IValidationTarget<NotNullRecord>
+	{
+		public required string Value { get; init; }
+	}
+
 	[Test]
 	public void EnLocalizedMessage()
 	{
@@ -49,6 +55,48 @@ public sealed partial class DefaultLocalizerTests
 				{
 					PropertyName = "Id",
 					ErrorMessage = "'Id' doit être supérieur à '0'.",
+				},
+			],
+			errors
+		);
+	}
+
+	[Test]
+	public void EnLocalizedNotNullMessage()
+	{
+		using var scope = new CultureScope("en-US");
+
+		var record = new NotNullRecord { Value = null! };
+
+		var errors = NotNullRecord.Validate(record);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = "Value",
+					ErrorMessage =  "'Value' must not be null.",
+				},
+			],
+			errors
+		);
+	}
+
+	[Test]
+	public void FrLocalizedNotNullMessage()
+	{
+		using var scope = new CultureScope("fr-CA");
+
+		var record = new NotNullRecord { Value = null! };
+
+		var errors = NotNullRecord.Validate(record);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = "Value",
+					ErrorMessage =  "'Value' ne doit pas être nul.",
 				},
 			],
 			errors

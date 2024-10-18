@@ -48,7 +48,12 @@ partial class ValidateClass
 		{
 			errors.Add(
 				$"StringProperty[{counter0}][{counter1}]",
-				$"'String Property[{counter0}][{counter1}]' must not be null."
+				global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
+				new()
+				{
+					["PropertyName"] = $"String Property[{counter0}][{counter1}]",
+					["PropertyValue"] = null,
+				}
 			);
 
 			return;
@@ -67,7 +72,12 @@ partial class ValidateClass
 		{
 			errors.Add(
 				$"StringProperty[{counter0}]",
-				$"'String Property[{counter0}]' must not be null."
+				global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
+				new()
+				{
+					["PropertyName"] = $"String Property[{counter0}]",
+					["PropertyValue"] = null,
+				}
 			);
 
 			return;
@@ -94,7 +104,12 @@ partial class ValidateClass
 		{
 			errors.Add(
 				$"StringProperty",
-				$"'String Property' must not be null."
+				global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
+				new()
+				{
+					["PropertyName"] = $"String Property",
+					["PropertyValue"] = null,
+				}
 			);
 
 			return;

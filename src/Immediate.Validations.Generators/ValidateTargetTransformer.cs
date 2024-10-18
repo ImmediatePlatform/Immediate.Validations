@@ -191,6 +191,12 @@ public sealed class ValidateTargetTransformer
 			: propertyType.IsNullableType();
 
 		var validateNotNull = !isNullable || attributes.Any(a => a.AttributeClass.IsNotNullAttribute());
+		var validateMessage = attributes
+			.FirstOrDefault(a => a.AttributeClass.IsNotNullAttribute())
+			?.NamedArguments
+			.FirstOrDefault(a => a.Key == "Message") is { Value: { Value: { } } value }
+			? value.ToCSharpString()
+			: null;
 
 		var baseType = propertyType.IsNullableType()
 			? ((INamedTypeSymbol)propertyType).TypeArguments[0]
@@ -280,7 +286,17 @@ public sealed class ValidateTargetTransformer
 			TypeFullName = propertyType.ToDisplayString(s_fullyQualifiedPlusNullable),
 			IsReferenceType = isReferenceType,
 			IsNullable = isNullable,
-			ValidateNotNull = validateNotNull,
+
+			ValidateNotNull = validateNotNull
+				? new()
+				{
+					Message = validateMessage,
+					IsNullable = true,
+					Arguments = [],
+					IsGenericMethod = false,
+					ValidatorName = "global::Immediate.Validations.Shared.NotNullAttribute",
+				}
+				: null,
 
 			IsValidationProperty = isValidationProperty,
 			ValidationTypeFullName = isValidationProperty

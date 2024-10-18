@@ -48,7 +48,12 @@ partial class ValidateClass
 		{
 			errors.Add(
 				$"StringProperty",
-				$"'String Property' must not be null."
+				global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
+				new()
+				{
+					["PropertyName"] = $"String Property",
+					["PropertyValue"] = null,
+				}
 			);
 
 			return;
