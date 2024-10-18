@@ -2,7 +2,7 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public sealed class ClassLocationTests
 {
-	[Fact]
+	[Test]
 	public async Task NoNamespaceTest()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -24,7 +24,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NamespaceTest()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -48,7 +48,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NestedClassesTest()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -75,7 +75,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NestedRecordsTest()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -102,7 +102,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NestedRecordStructsTest()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -129,7 +129,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NestedInterfacesTest()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -156,7 +156,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NestedStructsTest()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -183,7 +183,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task InheritBaseValidationTarget()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -211,7 +211,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ImplementBaseValidationInterface()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -239,7 +239,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task InheritedClassesTest()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -277,7 +277,7 @@ public sealed class ClassLocationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task InheritedInterfacesTest()
 	{
 		var result = GeneratorTestHelper.RunGenerator(

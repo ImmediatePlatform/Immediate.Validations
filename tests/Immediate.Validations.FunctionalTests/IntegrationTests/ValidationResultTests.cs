@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
@@ -30,7 +29,7 @@ public sealed class ValidationResultTests
 			Value = 123,
 		};
 
-	[Fact]
+	[Test]
 	public void BinaryExpressionTest1()
 	{
 		var results = new ValidationResult();
@@ -46,7 +45,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void BinaryExpressionTest2()
 	{
 		var results = new ValidationResult();
@@ -64,7 +63,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void BinaryExpressionTest3()
 	{
 		var results = new ValidationResult();
@@ -82,7 +81,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void ConditionalExpressionTest1()
 	{
 		var results = new ValidationResult();
@@ -98,7 +97,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void ConditionalExpressionTest2()
 	{
 		var results = new ValidationResult();
@@ -114,7 +113,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void ConstantExpressionTest()
 	{
 		var results = new ValidationResult();
@@ -130,7 +129,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void MemberExpressionTest()
 	{
 		var results = new ValidationResult();
@@ -145,7 +144,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void MethodCallExpressionTest1()
 	{
 		var results = new ValidationResult();
@@ -161,7 +160,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void MethodCallExpressionTest2()
 	{
 		var results = new ValidationResult();
@@ -179,7 +178,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void NewExpressionTest1()
 	{
 		var results = new ValidationResult();
@@ -195,7 +194,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void NewArrayExpressionTest1()
 	{
 		var results = new ValidationResult();
@@ -212,7 +211,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void UnaryExpressionTest1()
 	{
 		var results = new ValidationResult();
@@ -228,7 +227,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void UnaryExpressionTest2()
 	{
 		var results = new ValidationResult();
@@ -245,7 +244,7 @@ public sealed class ValidationResultTests
 		Assert.Equal([], results);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidExpressionTest1()
 	{
 		var results = new ValidationResult();
@@ -259,7 +258,7 @@ public sealed class ValidationResultTests
 		Assert.Equal("Invalid Validation Expression", ex.Message);
 	}
 
-	[Fact]
+	[Test]
 	public void PropertyNameTest1()
 	{
 		var results = new ValidationResult();
@@ -283,7 +282,7 @@ public sealed class ValidationResultTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void PropertyNameTest2()
 	{
 		var results = new ValidationResult();
@@ -324,7 +323,7 @@ public sealed class ValidationResultTests
 			SomeDictionary = new() { [123] = 123 },
 		};
 
-	[Fact]
+	[Test]
 	public void PropertyNameTest3()
 	{
 		var results = new ValidationResult();
@@ -348,7 +347,7 @@ public sealed class ValidationResultTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void PropertyNameTest4()
 	{
 		var results = new ValidationResult();
@@ -372,7 +371,7 @@ public sealed class ValidationResultTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void PropertyNameTest5()
 	{
 		var results = new ValidationResult();
@@ -396,7 +395,7 @@ public sealed class ValidationResultTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void PropertyNameTest6()
 	{
 		var results = new ValidationResult();
@@ -422,7 +421,7 @@ public sealed class ValidationResultTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void PropertyNameTest7()
 	{
 		var results = new ValidationResult();
@@ -448,7 +447,7 @@ public sealed class ValidationResultTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void PropertyNameTest8()
 	{
 		var results = new ValidationResult();

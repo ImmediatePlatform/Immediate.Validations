@@ -5,7 +5,7 @@ namespace Immediate.Validations.Tests.CodeFixTests;
 
 public sealed class AddValidateMethodCodefixProviderTests
 {
-	[Fact]
+	[Test]
 	public async Task AddValidateMethod() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, AddValidateMethodCodefixProvider>(
 			$$"""

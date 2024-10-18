@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
@@ -17,7 +16,7 @@ public sealed partial class StructTests
 		public required string StringProperty { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void ValidRecordStruct()
 	{
 		var rs = new RecordStructTarget { StringProperty = "Hello World!" };
@@ -27,7 +26,7 @@ public sealed partial class StructTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidRecordStructNullProperty()
 	{
 		var rs = new RecordStructTarget { StringProperty = null! };
@@ -46,7 +45,7 @@ public sealed partial class StructTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void ValidStruct()
 	{
 		var rs = new StructTarget { StringProperty = "Hello World!" };
@@ -56,7 +55,7 @@ public sealed partial class StructTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidStructNullProperty()
 	{
 		var rs = new StructTarget { StringProperty = null! };

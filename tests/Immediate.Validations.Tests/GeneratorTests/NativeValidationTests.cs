@@ -2,7 +2,7 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public sealed class NativeValidationTests
 {
-	[Fact]
+	[Test]
 	public async Task NotNullValidation()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -29,7 +29,7 @@ public sealed class NativeValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NullDoesNotUseNotNullValidation()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -56,7 +56,7 @@ public sealed class NativeValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task EnumValidation()
 	{
 		var result = GeneratorTestHelper.RunGenerator(

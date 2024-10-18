@@ -2,7 +2,7 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public sealed class CustomValidationTests
 {
-	[Fact]
+	[Test]
 	public async Task NotEmptyOnString()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -30,7 +30,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NotEmptyOnInt()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -58,7 +58,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NotNullOnInt()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -86,7 +86,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NotNullOnNullableInt()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -114,7 +114,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NotNullOnString()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -142,7 +142,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task CustomValidationOnProperType()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -178,7 +178,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task CustomValidationOnInvalidType()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -214,7 +214,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task CustomValidationMissingValidateMethod()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -246,7 +246,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NotNullAsCustomValidationOnGenericType()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -274,7 +274,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task NotNullAsCustomValidationOnInvalidGenericType()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -311,7 +311,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task EnumAsCustomValidationOnGenericType()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -340,7 +340,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task CustomValidatorWithParameters()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -376,7 +376,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ComplexValidator()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -422,7 +422,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task ParamsConstructor()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -480,7 +480,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task AdditionalValidations()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -508,7 +508,7 @@ public sealed class CustomValidationTests
 		_ = await Verify(result);
 	}
 
-	[Fact]
+	[Test]
 	public async Task AdditionalValidationsInherited()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -539,7 +539,7 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
-	[Fact]
+	[Test]
 	public async Task OneOfWithArrayField()
 	{
 		var result = GeneratorTestHelper.RunGenerator(

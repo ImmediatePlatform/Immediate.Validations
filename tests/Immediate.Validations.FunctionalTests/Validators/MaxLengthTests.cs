@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -12,7 +11,7 @@ public sealed partial class MaxLengthTests
 		public required string StringValue { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void MaxLengthWhenShort()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };
@@ -22,7 +21,7 @@ public sealed partial class MaxLengthTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void MaxLengthWhenLong()
 	{
 		var instance = new StringRecord { StringValue = "Hello World! Hello World! Hello World!" };

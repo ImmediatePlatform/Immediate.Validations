@@ -5,7 +5,7 @@ namespace Immediate.Validations.Tests.CodeFixTests;
 
 public sealed class MakeValidatePropertyMethodStaticCodefixProviderTests
 {
-	[Fact]
+	[Test]
 	public async Task MakeValidatePropertyMethodStatic() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, MakeValidatePropertyMethodStaticCodefixProvider>(
 			$$"""

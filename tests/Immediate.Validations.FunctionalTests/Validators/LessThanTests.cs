@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -20,7 +19,7 @@ public sealed partial class LessThanTests
 		public required string KeyValue { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void IntLessThanRecordWhenZero()
 	{
 		var instance = new IntLessThanRecord { IntValue = -1 };
@@ -30,7 +29,7 @@ public sealed partial class LessThanTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void IntLessThanRecordWhenNotZero()
 	{
 		var instance = new IntLessThanRecord { IntValue = 0 };
@@ -49,7 +48,7 @@ public sealed partial class LessThanTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void StringLessThanRecordWhenLessThan()
 	{
 		var instance = new StringLessThanRecord { StringValue = "Bar", KeyValue = "Foo" };
@@ -59,7 +58,7 @@ public sealed partial class LessThanTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void StringLessThanRecordWhenNotLessThan()
 	{
 		var instance = new StringLessThanRecord { StringValue = "Foo", KeyValue = "Foo" };

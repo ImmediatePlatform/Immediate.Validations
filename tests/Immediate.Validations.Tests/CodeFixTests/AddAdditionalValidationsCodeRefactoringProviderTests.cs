@@ -4,7 +4,7 @@ namespace Immediate.Validations.Tests.CodeFixTests;
 
 public sealed class AddAdditionalValidationsCodeRefactoringProviderTests
 {
-	[Fact]
+	[Test]
 	public async Task RefactorOnValidatedClass() =>
 		await CodeRefactoringTestHelper.CreateCodeRefactoringTest<AddAdditionalValidationsCodeRefactoringProvider>(
 			$$"""
@@ -28,7 +28,7 @@ public sealed class AddAdditionalValidationsCodeRefactoringProviderTests
 			"""
 		).RunAsync();
 
-	[Fact]
+	[Test]
 	public async Task NoRefactorOnNonValidatedClass() =>
 		await CodeRefactoringTestHelper.CreateCodeRefactoringTest<AddAdditionalValidationsCodeRefactoringProvider>(
 			$$"""

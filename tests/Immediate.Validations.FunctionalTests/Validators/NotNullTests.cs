@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -19,7 +18,7 @@ public sealed partial class NotNullTests
 		public required string StringValue { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void StringNotNullTestWhenNotNull()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };
@@ -29,7 +28,7 @@ public sealed partial class NotNullTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void StringNotNullTestWhenNull()
 	{
 		var instance = new StringRecord { StringValue = null! };
@@ -48,7 +47,7 @@ public sealed partial class NotNullTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void StringAllowedNullTestWhenNotNull()
 	{
 		var instance = new AllowNullRecord { StringValue = "Hello World!" };
@@ -58,7 +57,7 @@ public sealed partial class NotNullTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void StringAllowedNullTestWhenNull()
 	{
 		var instance = new AllowNullRecord { StringValue = null };

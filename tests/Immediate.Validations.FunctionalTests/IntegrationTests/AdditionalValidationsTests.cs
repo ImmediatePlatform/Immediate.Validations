@@ -1,5 +1,4 @@
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
@@ -28,7 +27,7 @@ public sealed partial class AdditionalValidationsTests
 		}
 	}
 
-	[Fact]
+	[Test]
 	public void EvenIdNoErrors()
 	{
 		var record = new ValidateRecord { Id = 2 };
@@ -38,7 +37,7 @@ public sealed partial class AdditionalValidationsTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void OddIdWithErrors()
 	{
 		var record = new ValidateRecord { Id = 1 };
@@ -57,7 +56,7 @@ public sealed partial class AdditionalValidationsTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void ZeroWithErrors()
 	{
 		var record = new ValidateRecord { Id = 0 };

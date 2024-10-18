@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using Immediate.Validations.Shared;
-using Xunit;
 
 namespace Immediate.Validations.FunctionalTests.Validators;
 
@@ -37,7 +36,7 @@ public sealed partial class MatchTests
 		public required string UnusualRegexValue { get; init; }
 	}
 
-	[Fact]
+	[Test]
 	public void InvalidMatchThrows()
 	{
 		var record = new InvalidMatchAttributeRecord { StringValue = "", };
@@ -47,7 +46,7 @@ public sealed partial class MatchTests
 		Assert.Equal("Both `regex` and `expr` are `null`. At least one must be provided.", ex.Message);
 	}
 
-	[Fact]
+	[Test]
 	public void MatchExprWhenValid()
 	{
 		var record = new ExprMatchRecord { StringValue = "123" };
@@ -57,7 +56,7 @@ public sealed partial class MatchTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void MatchExprWhenInvalid()
 	{
 		var record = new ExprMatchRecord { StringValue = "asdf" };
@@ -76,7 +75,7 @@ public sealed partial class MatchTests
 		);
 	}
 
-	[Fact]
+	[Test]
 	public void MatchRegexWhenValid()
 	{
 		var record = new RegexMatchRecord { StringValue = "123", };
@@ -86,7 +85,7 @@ public sealed partial class MatchTests
 		Assert.Empty(errors);
 	}
 
-	[Fact]
+	[Test]
 	public void MatchRegexWhenInvalid()
 	{
 		var record = new RegexMatchRecord { StringValue = "asdf", };

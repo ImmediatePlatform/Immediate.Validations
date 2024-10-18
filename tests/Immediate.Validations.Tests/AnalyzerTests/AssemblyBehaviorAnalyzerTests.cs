@@ -4,7 +4,7 @@ namespace Immediate.Validations.Tests.AnalyzerTests;
 
 public sealed class AssemblyBehaviorAnalyzerTests
 {
-	[Fact]
+	[Test]
 	public async Task BehaviorsAttributeHasValidationShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<AssemblyBehaviorAnalyzer>(
 			"""
@@ -17,7 +17,7 @@ public sealed class AssemblyBehaviorAnalyzerTests
 			"""
 		).RunAsync();
 
-	[Fact]
+	[Test]
 	public async Task BehaviorsAttributeWithoutValidationShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<AssemblyBehaviorAnalyzer>(
 			"""
@@ -41,7 +41,7 @@ public sealed class AssemblyBehaviorAnalyzerTests
 			"""
 		).RunAsync();
 
-	[Fact]
+	[Test]
 	public async Task ClassBehaviorsAttributeWithoutValidationShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<AssemblyBehaviorAnalyzer>(
 			"""
