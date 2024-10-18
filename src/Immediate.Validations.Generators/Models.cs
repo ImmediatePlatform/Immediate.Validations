@@ -25,7 +25,7 @@ public sealed record ValidationTargetProperty
 	public required string TypeFullName { get; init; }
 	public required bool IsReferenceType { get; init; }
 	public required bool IsNullable { get; init; }
-	public required bool ValidateNotNull { get; init; }
+	public required PropertyValidation? ValidateNotNull { get; init; }
 	public required bool IsValidationProperty { get; init; }
 	public required string? ValidationTypeFullName { get; init; }
 	public required ValidationTargetProperty? CollectionPropertyDetails { get; init; }

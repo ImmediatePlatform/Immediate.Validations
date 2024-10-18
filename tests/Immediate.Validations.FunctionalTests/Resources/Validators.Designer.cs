@@ -61,11 +61,20 @@ namespace Immediate.Validations.FunctionalTests.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &apos;{PropertyName}&apos; must not be empty..
+        ///   Looks up a localized string similar to &apos;{PropertyName}&apos; must be greater than &apos;{ComparisonValue}&apos;. - resx.
         /// </summary>
         internal static string GreaterThanAttribute {
             get {
                 return ResourceManager.GetString("GreaterThanAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{PropertyName}&apos; must not be null. - resx.
+        /// </summary>
+        internal static string NotNullAttribute {
+            get {
+                return ResourceManager.GetString("NotNullAttribute", resourceCulture);
             }
         }
     }

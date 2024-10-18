@@ -14,6 +14,12 @@ public sealed partial class CustomLocalizerTests
 		public required int Id { get; init; }
 	}
 
+	[Validate]
+	public sealed partial record NotNullRecord : IValidationTarget<NotNullRecord>
+	{
+		public required string Value { get; init; }
+	}
+
 	[Test]
 	public void EnLocalizedMessage()
 	{
@@ -28,7 +34,7 @@ public sealed partial class CustomLocalizerTests
 				new()
 				{
 					PropertyName = "Id",
-					ErrorMessage = "'Id' must not be empty.",
+					ErrorMessage = "'Id' must be greater than '0'. - resx",
 				},
 			],
 			errors
@@ -49,7 +55,49 @@ public sealed partial class CustomLocalizerTests
 				new()
 				{
 					PropertyName = "Id",
-					ErrorMessage = "'Id' ne doit pas être vide.",
+					ErrorMessage = "'Id' doit être supérieur à '0'. - resx",
+				},
+			],
+			errors
+		);
+	}
+
+	[Test]
+	public void EnLocalizedNotNullMessage()
+	{
+		using var scope = new LocalizerScope("en-US");
+
+		var record = new NotNullRecord { Value = null! };
+
+		var errors = NotNullRecord.Validate(record);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = "Value",
+					ErrorMessage =  "'Value' must not be null. - resx",
+				},
+			],
+			errors
+		);
+	}
+
+	[Test]
+	public void FrLocalizedNotNullMessage()
+	{
+		using var scope = new LocalizerScope("fr-CA");
+
+		var record = new NotNullRecord { Value = null! };
+
+		var errors = NotNullRecord.Validate(record);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = "Value",
+					ErrorMessage =  "'Value' ne doit pas être nul. - resx",
 				},
 			],
 			errors

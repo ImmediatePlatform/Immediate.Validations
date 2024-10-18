@@ -48,7 +48,12 @@ partial class ValidateClass
 		{
 			errors.Add(
 				$"ValidationTargets[{counter0}]",
-				$"'Validation Targets[{counter0}]' must not be null."
+				global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
+				new()
+				{
+					["PropertyName"] = $"Validation Targets[{counter0}]",
+					["PropertyValue"] = null,
+				}
 			);
 
 			return;
@@ -76,7 +81,12 @@ partial class ValidateClass
 		{
 			errors.Add(
 				$"ValidationTargets",
-				$"'Validation Targets' must not be null."
+				global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
+				new()
+				{
+					["PropertyName"] = $"Validation Targets",
+					["PropertyValue"] = null,
+				}
 			);
 
 			return;
