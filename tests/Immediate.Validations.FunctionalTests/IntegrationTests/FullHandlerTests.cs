@@ -11,8 +11,8 @@ public sealed class FullHandlerTests
 		var services = new ServiceCollection();
 
 		_ = services
-			.AddHandlers()
-			.AddBehaviors();
+			.AddImmediateValidationsFunctionalTestsHandlers()
+			.AddImmediateValidationsFunctionalTestsBehaviors();
 
 		var provider = services.BuildServiceProvider();
 		using var scope = provider.CreateScope();
@@ -34,8 +34,8 @@ public sealed class FullHandlerTests
 		var services = new ServiceCollection();
 
 		_ = services
-			.AddHandlers()
-			.AddBehaviors();
+			.AddImmediateValidationsFunctionalTestsHandlers()
+			.AddImmediateValidationsFunctionalTestsBehaviors();
 
 		var provider = services.BuildServiceProvider();
 		using var scope = provider.CreateScope();
@@ -65,8 +65,8 @@ public sealed class FullHandlerTests
 		var services = new ServiceCollection();
 
 		_ = services
-			.AddHandlers()
-			.AddBehaviors();
+			.AddImmediateValidationsFunctionalTestsHandlers()
+			.AddImmediateValidationsFunctionalTestsBehaviors();
 
 		var provider = services.BuildServiceProvider();
 		using var scope = provider.CreateScope();
@@ -101,8 +101,8 @@ public sealed class FullHandlerTests
 		var services = new ServiceCollection();
 
 		_ = services
-			.AddHandlers()
-			.AddBehaviors();
+			.AddImmediateValidationsFunctionalTestsHandlers()
+			.AddImmediateValidationsFunctionalTestsBehaviors();
 
 		var provider = services.BuildServiceProvider();
 		using var scope = provider.CreateScope();
@@ -137,8 +137,8 @@ public sealed class FullHandlerTests
 		var services = new ServiceCollection();
 
 		_ = services
-			.AddHandlers()
-			.AddBehaviors();
+			.AddImmediateValidationsFunctionalTestsHandlers()
+			.AddImmediateValidationsFunctionalTestsBehaviors();
 
 		var provider = services.BuildServiceProvider();
 		using var scope = provider.CreateScope();
@@ -173,8 +173,8 @@ public sealed class FullHandlerTests
 		var services = new ServiceCollection();
 
 		_ = services
-			.AddHandlers()
-			.AddBehaviors();
+			.AddImmediateValidationsFunctionalTestsHandlers()
+			.AddImmediateValidationsFunctionalTestsBehaviors();
 
 		var provider = services.BuildServiceProvider();
 		using var scope = provider.CreateScope();
