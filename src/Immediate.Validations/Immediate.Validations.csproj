@@ -11,9 +11,11 @@
 	<Description>Source generated validations for Immediate.Handlers parameters.</Description>
 
 	<Authors>Immediate.Validations Developers</Authors>
+	<Copyright>© 2024 Immediate.Validations Developers</Copyright>
 
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
+	<PackageTags>csharp-sourcegenerator;mediator;mediator-pattern;validation</PackageTags>
 
 	<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	<RepositoryUrl>https://github.com/ImmediatePlatform/Immediate.Validations</RepositoryUrl>
@@ -38,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+	<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="All" />
 	<PackageReference Include="MinVer" PrivateAssets="all" />
 	<PackageReference Include="Scriban" PrivateAssets="all" GeneratePathProperty="true" />
   </ItemGroup>
