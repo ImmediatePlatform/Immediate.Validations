@@ -10,6 +10,12 @@ namespace Namespace;
 
 partial interface BaseInterface
 {
+	ValidationResult IValidationTarget.Validate() =>
+		Validate(this, []);
+
+	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+		Validate(this, errors);
+
 	static ValidationResult IValidationTarget<BaseInterface>.Validate(BaseInterface? target) =>
 		Validate(target, []);
 

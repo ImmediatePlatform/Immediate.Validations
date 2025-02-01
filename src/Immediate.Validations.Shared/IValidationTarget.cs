@@ -3,12 +3,37 @@ using System.Diagnostics.CodeAnalysis;
 namespace Immediate.Validations.Shared;
 
 /// <summary>
+///	    This represents a class that has a <see cref="Validate()"/> method to validate instances of that class.
+/// </summary>
+public interface IValidationTarget
+{
+	/// <summary>
+	///	    A method which can be used to validate this instance.
+	/// </summary>
+	/// <returns>
+	///	    A <see cref="ValidationResult" /> containing the result of the validation on <see langword="this" />.
+	/// </returns>
+	ValidationResult Validate();
+
+	/// <summary>
+	///	    A method which can be used to validate this instance.
+	/// </summary>
+	/// <param name="errors">
+	///		The operating <see cref="ValidationResult" /> to add validation entries to.
+	/// </param>
+	/// <returns>
+	///	    A <see cref="ValidationResult" /> containing the result of the validation on <see langword="this" />.
+	/// </returns>
+	ValidationResult Validate(ValidationResult errors);
+}
+
+/// <summary>
 ///	    This represents a class that has a <see cref="Validate(T)"/> method to validate instances of that class.
 /// </summary>
 /// <typeparam name="T">
 ///		The type which should be validated.
 /// </typeparam>
-public interface IValidationTarget<T>
+public interface IValidationTarget<T> : IValidationTarget
 {
 	/// <summary>
 	///	    A method which can be used to validate instances of the type <typeparamref name="T"/>.

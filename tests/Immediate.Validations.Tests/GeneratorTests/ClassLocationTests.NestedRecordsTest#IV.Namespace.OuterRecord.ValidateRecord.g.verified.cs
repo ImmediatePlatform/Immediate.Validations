@@ -12,6 +12,12 @@ partial record OuterRecord
 
 partial record ValidateRecord
 {
+	ValidationResult IValidationTarget.Validate() =>
+		Validate(this, []);
+
+	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+		Validate(this, errors);
+
 	static ValidationResult IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target) =>
 		Validate(target, []);
 

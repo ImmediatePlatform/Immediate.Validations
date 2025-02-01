@@ -44,6 +44,8 @@ public sealed class ValidateClassAnalyzerTests
 			{
 				public required int Unrelated { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -59,6 +61,8 @@ public sealed class ValidateClassAnalyzerTests
 			
 			public sealed partial record {|IV0012:Target|} : IValidationTarget<Target>
 			{
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -75,6 +79,8 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record {|IV0013:Target|}
 			{
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -94,6 +100,8 @@ public sealed class ValidateClassAnalyzerTests
 				[NotNull]
 				public required string Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -122,6 +130,8 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:NotNullClass|}]
 				public required int Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -143,6 +153,8 @@ public sealed class ValidateClassAnalyzerTests
 				[EnumValue]
 				public required ExampleEnum Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -162,6 +174,8 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:EnumValue|}]
 				public required int Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -181,6 +195,8 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength(3)]
 				public required string Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -200,6 +216,8 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:MaxLength(3)|}]
 				public required int Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -219,6 +237,8 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength(3)]
 				public required List<string> Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -238,6 +258,8 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:MaxLength(3)|}]
 				public required List<int> Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -259,6 +281,8 @@ public sealed class ValidateClassAnalyzerTests
 				[EnumValue]
 				public required List<ExampleEnum> Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -278,6 +302,8 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:EnumValue|}]
 				public required List<int> Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -297,6 +323,8 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength(3)]
 				public required string[] Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -316,6 +344,8 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0014:MaxLength(3)|}]
 				public required int[] Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -335,6 +365,8 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal(0)]
 				public required int Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -354,6 +386,8 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal({|IV0015:"test"|})]
 				public required int Id { get; init; }
 			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -374,6 +408,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required int Id { get; init; }
 				public required int KeyValue { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -394,6 +430,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required int Id { get; init; }
 				public required string KeyValue { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -413,6 +451,8 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength(0)]
 				public required string Id { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -432,6 +472,8 @@ public sealed class ValidateClassAnalyzerTests
 				[MaxLength({|IV0015:"test"|})]
 				public required string Id { get; init; }
 			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -452,6 +494,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required int KeyValue { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -472,6 +516,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required string KeyValue { get; init; }
 						
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -511,6 +557,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required string FirstValue { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -556,6 +604,8 @@ public sealed class ValidateClassAnalyzerTests
 
 				public required int FirstValue { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -589,6 +639,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required string FirstValue { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -622,6 +674,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required int FirstValue { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -655,6 +709,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required string FirstValue { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -688,6 +744,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public required int FirstValue { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -721,6 +779,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public string FirstValue() => "Hello World!";
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -754,6 +814,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public int FirstValue() => 123;
 			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -787,6 +849,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public static string FirstValue() => "Hello World!";
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -820,6 +884,8 @@ public sealed class ValidateClassAnalyzerTests
 				public required string Id { get; init; }
 				public static int FirstValue() => 123;
 			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -841,6 +907,8 @@ public sealed class ValidateClassAnalyzerTests
 
 				private static readonly string[] Values = ["123", "456", "789"];
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -862,6 +930,8 @@ public sealed class ValidateClassAnalyzerTests
 
 				private static readonly string[] Values = ["123", "456", "789"];
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -882,6 +952,8 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal({|IV0017:nameof(DateTime)|})]
 				public required string Id { get; init; }
 			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -901,6 +973,8 @@ public sealed class ValidateClassAnalyzerTests
 			{
 				public required int ValueA { get; init; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(BaseClass target) => [];
 				public static ValidationResult Validate(BaseClass target, ValidationResult errors) => [];
 			}
@@ -911,6 +985,8 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal(nameof(ValueA))]
 				public required int ValueB { get; init; }
 		
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(SubClass target) => [];
 				public static ValidationResult Validate(SubClass target, ValidationResult errors) => [];
 			}
@@ -930,10 +1006,10 @@ public sealed class ValidateClassAnalyzerTests
 			{
 				int ValueA { get; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				static ValidationResult IValidationTarget<IBaseInterface>.Validate(IBaseInterface target) => [];
 				static ValidationResult IValidationTarget<IBaseInterface>.Validate(IBaseInterface target, ValidationResult errors) => [];
-				public static ValidationResult Validate(IBaseInterface target) => [];
-				public static ValidationResult Validate(IBaseInterface target, ValidationResult errors) => [];
 			}
 
 			[Validate]
@@ -942,10 +1018,10 @@ public sealed class ValidateClassAnalyzerTests
 				[Equal(nameof(ValueA))]
 				int ValueB { get; }
 
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				static ValidationResult IValidationTarget<IInterface>.Validate(IInterface target) => [];
 				static ValidationResult IValidationTarget<IInterface>.Validate(IInterface target, ValidationResult errors) => [];
-				public static ValidationResult Validate(IInterface target) => [];
-				public static ValidationResult Validate(IInterface target, ValidationResult errors) => [];
 			}
 			"""
 		).RunAsync();
@@ -964,6 +1040,8 @@ public sealed class ValidateClassAnalyzerTests
 				[{|IV0018:NotNull|}]
 				public required int IntProperty { get; init; }
 			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -984,6 +1062,8 @@ public sealed class ValidateClassAnalyzerTests
 				[NotNull]
 				public required int? IntProperty { get; init; }
 			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
@@ -1004,6 +1084,8 @@ public sealed class ValidateClassAnalyzerTests
 				[NotNull]
 				public required string StringProperty { get; init; }
 			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
 				public static ValidationResult Validate(Target target) => [];
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
