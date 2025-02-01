@@ -12,6 +12,12 @@ partial struct OuterStruct
 
 partial struct ValidateStruct
 {
+	ValidationResult IValidationTarget.Validate() =>
+		Validate(this, []);
+
+	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+		Validate(this, errors);
+
 	static ValidationResult IValidationTarget<ValidateStruct>.Validate(ValidateStruct target) =>
 		Validate(target, []);
 

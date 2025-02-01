@@ -10,6 +10,12 @@ namespace Namespace;
 
 partial class BaseClass
 {
+	ValidationResult IValidationTarget.Validate() =>
+		Validate(this, []);
+
+	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+		Validate(this, errors);
+
 	static ValidationResult IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
 		Validate(target, []);
 

@@ -8,6 +8,12 @@ using Immediate.Validations.Shared;
 
 partial record Target
 {
+	ValidationResult IValidationTarget.Validate() =>
+		Validate(this, []);
+
+	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+		Validate(this, errors);
+
 	static ValidationResult IValidationTarget<Target>.Validate(Target? target) =>
 		Validate(target, []);
 

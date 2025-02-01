@@ -15,6 +15,12 @@ partial {{ c.type }} {{ c.name }}
 
 partial {{ class.type }} {{ class.name }}
 {
+	ValidationResult IValidationTarget.Validate() =>
+		Validate(this, []);
+
+	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+		Validate(this, errors);
+
 	static ValidationResult IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
 		Validate(target, []);
 

@@ -8,7 +8,7 @@ public sealed class AddIValidationTargetCodefixProviderTests
 	[Test]
 	public async Task AddIValidationTargetNoBaseTypes() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidateClassAnalyzer, AddIValidationTargetCodefixProvider>(
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 
 			[Validate]
@@ -16,11 +16,11 @@ public sealed class AddIValidationTargetCodefixProviderTests
 			{
 			}
 			""",
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 
 			[Validate]
-			public sealed record Data : {|CS0535:{|CS0535:IValidationTarget<Data>|}|}
+			public sealed record Data : {|CS0535:{|CS0535:{|CS0535:{|CS0535:IValidationTarget<Data>|}|}|}|}
 			{
 			}
 			"""
@@ -29,7 +29,7 @@ public sealed class AddIValidationTargetCodefixProviderTests
 	[Test]
 	public async Task AddIValidationTargetWithBaseType() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidateClassAnalyzer, AddIValidationTargetCodefixProvider>(
-			$$"""
+			"""
 			using System;
 
 			namespace Immediate.Validations.Shared;
@@ -40,13 +40,13 @@ public sealed class AddIValidationTargetCodefixProviderTests
 				public void Dispose() { }
 			}
 			""",
-			$$"""
+			"""
 			using System;
 
 			namespace Immediate.Validations.Shared;
 
 			[Validate]
-			public sealed record Data : IDisposable, {|CS0535:{|CS0535:IValidationTarget<Data>|}|}
+			public sealed record Data : IDisposable, {|CS0535:{|CS0535:{|CS0535:{|CS0535:IValidationTarget<Data>|}|}|}|}
 			{
 				public void Dispose() { }
 			}

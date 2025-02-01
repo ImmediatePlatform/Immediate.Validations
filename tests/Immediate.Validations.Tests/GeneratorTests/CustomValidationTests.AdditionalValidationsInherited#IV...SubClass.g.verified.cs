@@ -8,6 +8,12 @@ using Immediate.Validations.Shared;
 
 partial class SubClass
 {
+	ValidationResult IValidationTarget.Validate() =>
+		Validate(this, []);
+
+	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+		Validate(this, errors);
+
 	static ValidationResult IValidationTarget<SubClass>.Validate(SubClass? target) =>
 		Validate(target, []);
 

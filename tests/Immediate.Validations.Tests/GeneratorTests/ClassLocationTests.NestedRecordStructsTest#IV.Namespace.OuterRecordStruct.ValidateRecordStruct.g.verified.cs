@@ -12,6 +12,12 @@ partial record struct OuterRecordStruct
 
 partial record struct ValidateRecordStruct
 {
+	ValidationResult IValidationTarget.Validate() =>
+		Validate(this, []);
+
+	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+		Validate(this, errors);
+
 	static ValidationResult IValidationTarget<ValidateRecordStruct>.Validate(ValidateRecordStruct target) =>
 		Validate(target, []);
 
