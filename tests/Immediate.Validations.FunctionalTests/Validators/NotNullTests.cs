@@ -41,7 +41,7 @@ public sealed partial class NotNullTests
 				{
 					PropertyName = nameof(StringRecord.StringValue),
 					ErrorMessage = "'String Value' must not be null.",
-				}
+				},
 			],
 			errors
 		);

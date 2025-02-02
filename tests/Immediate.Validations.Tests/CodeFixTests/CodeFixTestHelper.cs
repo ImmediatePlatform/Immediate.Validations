@@ -39,9 +39,9 @@ public static class CodeFixTestHelper
 					new PackageIdentity(
 						"Microsoft.NETCore.App.Ref",
 						"8.0.0"),
-					Path.Combine("ref", "net8.0"))
+					Path.Combine("ref", "net8.0")),
 			},
-			FixedState = { MarkupHandling = MarkupMode.IgnoreFixable, Sources = { fixedSource } }
+			FixedState = { MarkupHandling = MarkupMode.IgnoreFixable, Sources = { fixedSource } },
 		};
 
 		csTest.TestState.AdditionalReferences

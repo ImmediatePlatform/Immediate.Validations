@@ -276,7 +276,7 @@ public sealed class ValidationResultTests
 				{
 					PropertyName = "Value",
 					ErrorMessage = "'Value' must be empty.",
-				}
+				},
 			],
 			results
 		);
@@ -300,7 +300,7 @@ public sealed class ValidationResultTests
 				{
 					PropertyName = "HelloWorld",
 					ErrorMessage = "'Hello World' must be empty.",
-				}
+				},
 			],
 			results
 		);
@@ -341,7 +341,7 @@ public sealed class ValidationResultTests
 				{
 					PropertyName = "SomeArray[0]",
 					ErrorMessage = "'Some Array[0]' must be empty.",
-				}
+				},
 			],
 			results
 		);
@@ -365,7 +365,7 @@ public sealed class ValidationResultTests
 				{
 					PropertyName = "SomeList[0]",
 					ErrorMessage = "'Some List[0]' must be empty.",
-				}
+				},
 			],
 			results
 		);
@@ -389,7 +389,7 @@ public sealed class ValidationResultTests
 				{
 					PropertyName = "SomeDictionary[123]",
 					ErrorMessage = "'Some Dictionary[123]' must be empty.",
-				}
+				},
 			],
 			results
 		);
@@ -415,7 +415,7 @@ public sealed class ValidationResultTests
 				{
 					PropertyName = "Value",
 					ErrorMessage = "'DoSomethingInstance()'",
-				}
+				},
 			],
 			results
 		);
@@ -441,7 +441,7 @@ public sealed class ValidationResultTests
 				{
 					PropertyName = "HelloWorld",
 					ErrorMessage = "'DoSomething()'",
-				}
+				},
 			],
 			results
 		);
@@ -467,7 +467,7 @@ public sealed class ValidationResultTests
 				{
 					PropertyName = "Value",
 					ErrorMessage = "'Max Value'",
-				}
+				},
 			],
 			results
 		);

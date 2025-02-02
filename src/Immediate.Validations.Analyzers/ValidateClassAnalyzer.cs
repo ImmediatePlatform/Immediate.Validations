@@ -352,7 +352,9 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 					attributeProperties ??= attribute.AttributeClass!.GetMembers()
 						.OfType<IPropertySymbol>()
 						.ToList();
-					var property = attributeProperties.First(a => a.Name == name);
+
+					var property = attributeProperties
+						.First(a => string.Equals(a.Name, name, StringComparison.Ordinal));
 
 					ValidateArgument(
 						context,
@@ -370,7 +372,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				{
 					for (var j = 0; j < attributeParameters.Length; j++)
 					{
-						if (attributeParameters[j].Name == name)
+						if (string.Equals(attributeParameters[j].Name, name, StringComparison.Ordinal))
 						{
 							ValidateArgument(
 								context,
@@ -422,12 +424,13 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		if (!parameter.IsTargetTypeSymbol())
 			return;
 
-		var validateParameter = validateParameterSymbols.First(p => p.Name == parameter.Name);
+		var validateParameter = validateParameterSymbols
+			.First(p => string.Equals(p.Name, parameter.Name, StringComparison.Ordinal));
 
 		if (syntax.Expression.IsNameOfExpression(out var propertyName))
 		{
 			var member = members
-				.FirstOrDefault(p => p.Name == propertyName);
+				.Find(p => string.Equals(p.Name, propertyName, StringComparison.Ordinal));
 
 			if (member is null)
 			{

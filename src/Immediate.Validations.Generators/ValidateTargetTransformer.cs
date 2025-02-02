@@ -194,7 +194,7 @@ public sealed class ValidateTargetTransformer
 		var validateMessage = attributes
 			.FirstOrDefault(a => a.AttributeClass.IsNotNullAttribute())
 			?.NamedArguments
-			.FirstOrDefault(a => a.Key == "Message") is { Value: { Value: { } } value }
+			.FirstOrDefault(a => a.Key is "Message") is { Value: { Value: { } } value }
 			? value.ToCSharpString()
 			: null;
 
@@ -424,7 +424,8 @@ public sealed class ValidateTargetTransformer
 					attributeProperties ??= attribute.AttributeClass!.GetMembers()
 						.OfType<IPropertySymbol>()
 						.ToList();
-					var property = attributeProperties.First(a => a.Name == name);
+					var property = attributeProperties
+						.First(a => string.Equals(a.Name, name, StringComparison.Ordinal));
 
 					var parameterValue = BuildArgumentValue(
 						syntax,
@@ -441,7 +442,7 @@ public sealed class ValidateTargetTransformer
 				{
 					for (var j = 0; j < attributeParameters.Length; j++)
 					{
-						if (attributeParameters[j].Name == name)
+						if (string.Equals(attributeParameters[j].Name, name, StringComparison.Ordinal))
 						{
 							var parameterValue = BuildArgumentValue(
 								syntax,

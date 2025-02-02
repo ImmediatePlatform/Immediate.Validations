@@ -24,7 +24,7 @@ public sealed partial class LengthTests
 				{
 					PropertyName = nameof(StringRecord.StringValue),
 					ErrorMessage = "'String Value' must be between 12 and 12 characters.",
-				}
+				},
 			],
 			errors
 		);
@@ -53,7 +53,7 @@ public sealed partial class LengthTests
 				{
 					PropertyName = nameof(StringRecord.StringValue),
 					ErrorMessage = "'String Value' must be between 12 and 12 characters.",
-				}
+				},
 			],
 			errors
 		);

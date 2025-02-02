@@ -1,3 +1,6 @@
 [*.cs]
 
 dotnet_diagnostic.CA1822.severity = none                # CA1822: Mark members as static
+
+dotnet_diagnostic.MA0009.severity = none
+dotnet_diagnostic.MA0016.severity = none

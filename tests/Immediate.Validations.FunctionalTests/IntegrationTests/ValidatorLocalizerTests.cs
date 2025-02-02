@@ -1,10 +1,10 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Immediate.Validations.Shared;
 using Immediate.Validations.Shared.Localization;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
-public class ValidatorLocalizerTests
+public sealed class ValidatorLocalizerTests
 {
 	[Test]
 	public void GetAllStringsReturnsCorrectLocalizationsForCurrentCulture()
@@ -12,11 +12,14 @@ public class ValidatorLocalizerTests
 		var localizer = new ValidatorLocalizer();
 		CultureInfo.CurrentUICulture = new CultureInfo("en");
 
-		var strings = localizer.GetAllStrings(false).ToList();
+		var strings = localizer.GetAllStrings(includeParentCultures: false).ToList();
 
 		Assert.NotNull(strings);
 		Assert.Equal(15, strings.Count);
-		Assert.Contains(strings, s => s.Name == nameof(EmptyAttribute) && s.Value == "'{PropertyName}' must be empty.");
+		Assert.Contains(
+			strings,
+			s => string.Equals(s.Name, nameof(EmptyAttribute), StringComparison.Ordinal)
+				&& string.Equals(s.Value, "'{PropertyName}' must be empty.", StringComparison.Ordinal));
 	}
 
 	[Test]

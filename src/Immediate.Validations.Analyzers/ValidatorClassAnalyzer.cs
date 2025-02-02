@@ -283,8 +283,7 @@ public sealed class ValidatorClassAnalyzer : DiagnosticAnalyzer
 			.GetMembers()
 			.OfType<IPropertySymbol>()
 			.Where(p =>
-				p.Name != "Message"
-				&& !p.IsStatic
+				p is { Name: not "Message", IsStatic: false }
 			)
 			.Cast<ISymbol>()
 			.ToList();

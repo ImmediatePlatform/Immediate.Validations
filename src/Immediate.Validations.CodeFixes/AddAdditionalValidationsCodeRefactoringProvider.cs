@@ -9,7 +9,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Immediate.Validations.CodeFixes;
 
 [ExportCodeRefactoringProvider(LanguageNames.CSharp, Name = "Add AdditionalValidations Method")]
-public class AddAdditionalValidationsCodeRefactoringProvider : CodeRefactoringProvider
+public sealed class AddAdditionalValidationsCodeRefactoringProvider : CodeRefactoringProvider
 {
 	public override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
 	{

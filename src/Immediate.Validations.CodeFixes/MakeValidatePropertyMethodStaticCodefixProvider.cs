@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Immediate.Validations.CodeFixes;
 
 [ExportCodeFixProvider(LanguageNames.CSharp)]
-public class MakeValidatePropertyMethodStaticCodefixProvider : CodeFixProvider
+public sealed class MakeValidatePropertyMethodStaticCodefixProvider : CodeFixProvider
 {
 	public sealed override ImmutableArray<string> FixableDiagnosticIds { get; } =
 		ImmutableArray.Create([DiagnosticIds.IV0002ValidateMethodMustBeStatic]);

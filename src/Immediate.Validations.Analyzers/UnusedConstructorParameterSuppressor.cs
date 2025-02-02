@@ -36,7 +36,8 @@ public sealed class UnusedConstructorParameterSuppressor : DiagnosticSuppressor
 
 			if (symbol.BaseType.IsValidatorAttribute())
 			{
-				var suppression = SupportedSuppressions.First(s => s.SuppressedDiagnosticId == diagnostic.Id);
+				var suppression = SupportedSuppressions
+					.First(s => string.Equals(s.SuppressedDiagnosticId, diagnostic.Id, StringComparison.Ordinal));
 
 				context.ReportSuppression(
 					Suppression.Create(

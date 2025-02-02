@@ -55,7 +55,7 @@ public sealed partial class InheritanceTests
 				{
 					PropertyName = "Id",
 					ErrorMessage = "'Id' must be more than 4 characters.",
-				}
+				},
 			],
 			errors
 		);
@@ -78,7 +78,7 @@ public sealed partial class InheritanceTests
 				{
 					PropertyName = "Description",
 					ErrorMessage = "'Description' must not be empty.",
-				}
+				},
 			],
 			errors
 		);

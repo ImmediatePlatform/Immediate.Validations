@@ -42,13 +42,14 @@ public sealed class MatchAttribute(
 			if (expr is null)
 				ThrowInvalidArgumentsException();
 
-			regex = new Regex(expr);
+			regex = new Regex(expr, RegexOptions.None, TimeSpan.FromMilliseconds(100));
 		}
 
 		return regex.IsMatch(target);
 	}
 
 	[DoesNotReturn]
+	[SuppressMessage("Usage", "MA0015:Specify the parameter name in ArgumentException", Justification = "Argument Exception applies to multiple properties")]
 	private static void ThrowInvalidArgumentsException() =>
 		throw new ArgumentException("Both `regex` and `expr` are `null`. At least one must be provided.");
 

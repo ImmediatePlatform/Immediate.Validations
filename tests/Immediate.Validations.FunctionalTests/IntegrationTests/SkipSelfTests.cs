@@ -29,7 +29,7 @@ public sealed partial class SkipSelfTests
 				{
 					PropertyName = nameof(BaseClass.BaseString),
 					ErrorMessage = "'Base String' must not be null.",
-				}
+				},
 			],
 			errors
 		);
