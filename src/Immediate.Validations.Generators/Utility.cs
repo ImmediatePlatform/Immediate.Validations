@@ -18,7 +18,12 @@ internal static partial class Utility
 		return Template.Parse(reader.ReadToEnd());
 	}
 
-	private static readonly Regex s_toTitleCaseRegex = new(@"(?<=[^A-Z])([A-Z])");
+	private static readonly Regex s_toTitleCaseRegex =
+		new(
+			@"(?<=[^A-Z])([A-Z])",
+			RegexOptions.Compiled,
+			matchTimeout: TimeSpan.FromMilliseconds(10)
+		);
 
 	public static string ToTitleCase(this string pascalCase) =>
 		s_toTitleCaseRegex

@@ -30,6 +30,6 @@ public sealed class EmptyAttribute : ValidatorAttribute
 			null => true,
 			string s when string.IsNullOrWhiteSpace(s) => true,
 			ICollection { Count: 0 } => true,
-			_ => EqualityComparer<T>.Default.Equals(value, default)
+			_ => EqualityComparer<T>.Default.Equals(value, default),
 		};
 }

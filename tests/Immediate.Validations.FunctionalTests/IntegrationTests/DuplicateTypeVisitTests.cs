@@ -2,7 +2,7 @@ using Immediate.Validations.Shared;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
-public partial class DuplicateTypeVisitTests
+public sealed partial class DuplicateTypeVisitTests
 {
 	[Validate]
 	public partial interface IBaseInterface : IValidationTarget<IBaseInterface>

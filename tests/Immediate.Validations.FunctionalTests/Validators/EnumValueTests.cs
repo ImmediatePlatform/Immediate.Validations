@@ -54,7 +54,7 @@ public sealed partial class EnumValueTests
 				{
 					PropertyName = nameof(EnumRecord.ValidState),
 					ErrorMessage = "'Valid State' has a range of values which does not include '3'.",
-				}
+				},
 			],
 			errors
 		);
@@ -93,7 +93,7 @@ public sealed partial class EnumValueTests
 				{
 					PropertyName = nameof(EnumRecord.ValidState),
 					ErrorMessage = "'Valid State' has a range of values which does not include '4'.",
-				}
+				},
 			],
 			errors
 		);

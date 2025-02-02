@@ -13,7 +13,7 @@ namespace Immediate.Validations.Shared;
 /// </summary>
 public sealed partial class ValidationResult : IEnumerable<ValidationError>
 {
-	[GeneratedRegex("{([^{}:]+)(?::([^{}]+))?}")]
+	[GeneratedRegex("{([^{}:]+)(?::([^{}]+))?}", RegexOptions.None, matchTimeoutMilliseconds: 50)]
 	private static partial Regex FormatRegex();
 
 	private List<ValidationError>? _errors;
@@ -81,6 +81,7 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 	/// <param name="arguments">
 	///	    The values which can be used with <paramref name="messageTemplate"/> to build the final validation message.
 	/// </param>
+	[SuppressMessage("Design", "MA0016:Prefer using collection abstraction instead of implementation")]
 	public void Add(
 		string propertyName,
 		string messageTemplate,
@@ -162,7 +163,7 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 
 		var message = overrideMessage ?? GetValidationMessage(method.DeclaringType);
 
-		var arguments = new Dictionary<string, object?>
+		var arguments = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
 		{
 			["PropertyValue"] = argumentValues[0],
 			["PropertyName"] = GetMemberName(targetPropertyExpression, targetObject),
@@ -243,7 +244,7 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 			_ => null,
 		};
 
-	[GeneratedRegex(@"(?<=[^A-Z])([A-Z])")]
+	[GeneratedRegex(@"(?<=[^A-Z])([A-Z])", RegexOptions.None, matchTimeoutMilliseconds: 10)]
 	private static partial Regex FirstCharInWord();
 
 	private static string GetMemberName(MemberInfo member)

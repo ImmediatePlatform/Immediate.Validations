@@ -10,7 +10,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Immediate.Validations.CodeFixes;
 
 [ExportCodeFixProvider(LanguageNames.CSharp)]
-public class CorrectValidatePropertyReturnTypeCodefixProvider : CodeFixProvider
+public sealed class CorrectValidatePropertyReturnTypeCodefixProvider : CodeFixProvider
 {
 	public sealed override ImmutableArray<string> FixableDiagnosticIds { get; } =
 		ImmutableArray.Create([DiagnosticIds.IV0004ValidateMethodMustReturnValueTuple]);

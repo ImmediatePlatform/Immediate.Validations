@@ -19,7 +19,7 @@ internal static class ExpressionEvaluator
 			NewArrayExpression nae => GetValueFromNewArray(nae),
 			UnaryExpression ue => GetValueFromUnary(ue),
 			null => null,
-			_ => throw new NotSupportedException(/* TODO: Error Message */),
+			_ => throw new NotSupportedException("Unknown ExpressionType. Report an issue on the Immediate.Validations repository."),
 		};
 
 	[SuppressMessage(
@@ -35,7 +35,7 @@ internal static class ExpressionEvaluator
 				null,
 				parameters: [
 					GetValue(be.Left),
-					GetValue(be.Right)
+					GetValue(be.Right),
 				]
 			);
 		}

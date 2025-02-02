@@ -40,7 +40,7 @@ public sealed partial class CollectionTests
 				{
 					PropertyName = "Strings",
 					ErrorMessage = "'Strings' must not be null.",
-				}
+				},
 			],
 			errors
 		);
@@ -158,7 +158,7 @@ public sealed partial class CollectionTests
 				{
 					PropertyName = "Commands",
 					ErrorMessage = "'Commands' must not be null.",
-				}
+				},
 			],
 			errors
 		);

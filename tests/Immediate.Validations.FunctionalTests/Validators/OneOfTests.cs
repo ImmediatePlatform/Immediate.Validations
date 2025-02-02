@@ -65,7 +65,7 @@ public sealed partial class OneOfTests
 				{
 					PropertyName = nameof(StringRecord.StringValue),
 					ErrorMessage = "'String Value' was not one of the specified values: 123, 456, 789.",
-				}
+				},
 			],
 			errors
 		);
@@ -94,7 +94,7 @@ public sealed partial class OneOfTests
 				{
 					PropertyName = nameof(IntRecord.IntValue),
 					ErrorMessage = "'Int Value' was not one of the specified values: 123, 456, 789.",
-				}
+				},
 			],
 			errors
 		);
@@ -123,7 +123,7 @@ public sealed partial class OneOfTests
 				{
 					PropertyName = nameof(IntFieldRecord.IntValue),
 					ErrorMessage = "'Int Value' was not one of the specified values: 123, 456, 789.",
-				}
+				},
 			],
 			errors
 		);
@@ -152,7 +152,7 @@ public sealed partial class OneOfTests
 				{
 					PropertyName = nameof(EnumRecord.EnumValue),
 					ErrorMessage = "'Enum Value' was not one of the specified values: Value1, Value2.",
-				}
+				},
 			],
 			errors
 		);

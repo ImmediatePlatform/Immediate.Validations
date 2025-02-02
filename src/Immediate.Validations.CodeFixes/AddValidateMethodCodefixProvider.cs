@@ -11,7 +11,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace Immediate.Validations.CodeFixes;
 
 [ExportCodeFixProvider(LanguageNames.CSharp)]
-public class AddValidateMethodCodefixProvider : CodeFixProvider
+public sealed class AddValidateMethodCodefixProvider : CodeFixProvider
 {
 	public sealed override ImmutableArray<string> FixableDiagnosticIds { get; } =
 		ImmutableArray.Create([DiagnosticIds.IV0001ValidateMethodMustExist]);

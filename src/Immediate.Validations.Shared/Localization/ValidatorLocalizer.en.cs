@@ -7,7 +7,7 @@ internal sealed partial class ValidatorLocalizer : IStringLocalizer
 {
 	[ExcludeFromCodeCoverage]
 	private static Dictionary<string, LocalizedString> En() =>
-		new LocalizationDictionary(new()
+		new LocalizationDictionary(new(StringComparer.Ordinal)
 		{
 			[nameof(EmptyAttribute)] = "'{PropertyName}' must be empty.",
 			[nameof(EnumValueAttribute)] = "'{PropertyName}' has a range of values which does not include '{PropertyValue}'.",

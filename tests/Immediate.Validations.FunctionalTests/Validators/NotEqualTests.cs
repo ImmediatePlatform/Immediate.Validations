@@ -42,7 +42,7 @@ public sealed partial class NotEqualTests
 				{
 					PropertyName = nameof(IntEqualRecord.IntValue),
 					ErrorMessage = "'Int Value' must not be equal to '0'.",
-				}
+				},
 			],
 			errors
 		);
@@ -71,7 +71,7 @@ public sealed partial class NotEqualTests
 				{
 					PropertyName = nameof(StringEqualRecord.StringValue),
 					ErrorMessage = "'String Value' must not be equal to 'Test'.",
-				}
+				},
 			],
 			errors
 		);

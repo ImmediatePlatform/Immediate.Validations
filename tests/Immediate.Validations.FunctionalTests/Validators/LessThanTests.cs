@@ -42,7 +42,7 @@ public sealed partial class LessThanTests
 				{
 					PropertyName = nameof(IntLessThanRecord.IntValue),
 					ErrorMessage = "'Int Value' must be less than '0'.",
-				}
+				},
 			],
 			errors
 		);
@@ -71,7 +71,7 @@ public sealed partial class LessThanTests
 				{
 					PropertyName = nameof(StringLessThanRecord.StringValue),
 					ErrorMessage = "'String Value' must be less than 'Foo'.",
-				}
+				},
 			],
 			errors
 		);
