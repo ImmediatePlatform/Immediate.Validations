@@ -1,4 +1,5 @@
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Scriban;
 
 namespace Immediate.Validations.Generators;
@@ -11,8 +12,8 @@ public sealed partial class ImmediateValidationsGenerator : IIncrementalGenerato
 		var validations = context.SyntaxProvider
 			.ForAttributeWithMetadataName(
 				"Immediate.Validations.Shared.ValidateAttribute",
-				(_, _) => true,
-				(ctx, ct) => new ValidateTargetTransformer(ctx, ct).Transform()
+				predicate: (node, _) => node is TypeDeclarationSyntax,
+				transform: (ctx, ct) => new ValidateTargetTransformer(ctx, ct).Transform()
 			)
 			.Where(m => m != null);
 
