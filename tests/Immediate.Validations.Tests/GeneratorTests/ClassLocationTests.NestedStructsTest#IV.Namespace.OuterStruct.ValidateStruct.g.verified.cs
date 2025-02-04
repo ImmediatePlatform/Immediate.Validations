@@ -10,7 +10,7 @@ namespace Namespace;
 partial struct OuterStruct
 {
 
-partial struct ValidateStruct
+partial struct ValidateStruct : IValidationTarget
 {
 	ValidationResult IValidationTarget.Validate() =>
 		Validate(this, []);

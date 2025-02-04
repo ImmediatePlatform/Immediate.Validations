@@ -12,12 +12,6 @@ partial interface OuterInterface
 
 partial interface ValidateClass
 {
-	ValidationResult IValidationTarget.Validate() =>
-		Validate(this, []);
-
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
-		Validate(this, errors);
-
 	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
 		Validate(target, []);
 

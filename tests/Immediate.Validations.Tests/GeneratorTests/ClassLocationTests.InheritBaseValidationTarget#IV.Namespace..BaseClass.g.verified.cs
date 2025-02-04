@@ -8,7 +8,7 @@ using Immediate.Validations.Shared;
 namespace Namespace;
 
 
-partial class BaseClass
+partial class BaseClass : IValidationTarget
 {
 	ValidationResult IValidationTarget.Validate() =>
 		Validate(this, []);

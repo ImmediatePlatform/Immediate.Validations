@@ -10,7 +10,7 @@ namespace Namespace;
 partial class OuterClass
 {
 
-partial class BaseClass
+partial class BaseClass : IValidationTarget
 {
 	ValidationResult IValidationTarget.Validate() =>
 		Validate(this, []);

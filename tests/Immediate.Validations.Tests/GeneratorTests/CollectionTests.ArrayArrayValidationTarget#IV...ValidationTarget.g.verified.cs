@@ -6,7 +6,7 @@ using Immediate.Validations.Shared;
 #pragma warning disable CS1591
 
 
-partial class ValidationTarget
+partial class ValidationTarget : IValidationTarget
 {
 	ValidationResult IValidationTarget.Validate() =>
 		Validate(this, []);
