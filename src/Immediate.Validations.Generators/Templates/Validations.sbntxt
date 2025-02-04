@@ -13,14 +13,16 @@ partial {{ c.type }} {{ c.name }}
 {
 {{~ end ~}}
 
-partial {{ class.type }} {{ class.name }}
+partial {{ class.type }} {{ class.name }}{{ if class.type != "interface" }} : IValidationTarget{{ end }}
 {
+	{{~ if class.type != "interface" ~}}
 	ValidationResult IValidationTarget.Validate() =>
 		Validate(this, []);
 
 	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
 		Validate(this, errors);
 
+	{{~ end ~}}
 	static ValidationResult IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
 		Validate(target, []);
 

@@ -33,7 +33,7 @@ public interface IValidationTarget
 /// <typeparam name="T">
 ///		The type which should be validated.
 /// </typeparam>
-public interface IValidationTarget<T> : IValidationTarget
+public interface IValidationTarget<T>
 {
 	/// <summary>
 	///	    A method which can be used to validate instances of the type <typeparamref name="T"/>.

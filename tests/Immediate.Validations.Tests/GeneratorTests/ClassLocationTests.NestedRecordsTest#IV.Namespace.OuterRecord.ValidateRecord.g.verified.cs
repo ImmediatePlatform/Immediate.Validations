@@ -10,7 +10,7 @@ namespace Namespace;
 partial record OuterRecord
 {
 
-partial record ValidateRecord
+partial record ValidateRecord : IValidationTarget
 {
 	ValidationResult IValidationTarget.Validate() =>
 		Validate(this, []);

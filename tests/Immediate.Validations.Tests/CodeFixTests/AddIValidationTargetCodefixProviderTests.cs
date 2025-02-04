@@ -20,7 +20,7 @@ public sealed class AddIValidationTargetCodefixProviderTests
 			namespace Immediate.Validations.Shared;
 
 			[Validate]
-			public sealed record Data : {|CS0535:{|CS0535:{|CS0535:{|CS0535:IValidationTarget<Data>|}|}|}|}
+			public sealed record Data : {|CS0535:{|CS0535:IValidationTarget<Data>|}|}
 			{
 			}
 			"""
@@ -46,7 +46,7 @@ public sealed class AddIValidationTargetCodefixProviderTests
 			namespace Immediate.Validations.Shared;
 
 			[Validate]
-			public sealed record Data : IDisposable, {|CS0535:{|CS0535:{|CS0535:{|CS0535:IValidationTarget<Data>|}|}|}|}
+			public sealed record Data : IDisposable, {|CS0535:{|CS0535:IValidationTarget<Data>|}|}
 			{
 				public void Dispose() { }
 			}

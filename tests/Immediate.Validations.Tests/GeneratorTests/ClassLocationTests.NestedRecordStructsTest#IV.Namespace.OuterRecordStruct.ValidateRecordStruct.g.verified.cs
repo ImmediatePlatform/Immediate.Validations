@@ -10,7 +10,7 @@ namespace Namespace;
 partial record struct OuterRecordStruct
 {
 
-partial record struct ValidateRecordStruct
+partial record struct ValidateRecordStruct : IValidationTarget
 {
 	ValidationResult IValidationTarget.Validate() =>
 		Validate(this, []);
