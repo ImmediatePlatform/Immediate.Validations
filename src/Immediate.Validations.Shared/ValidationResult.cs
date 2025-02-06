@@ -11,9 +11,10 @@ namespace Immediate.Validations.Shared;
 /// <summary>
 ///		Represents the result of an in-progress or completed validation.
 /// </summary>
+[SuppressMessage("Security", "MA0009:Add regex evaluation timeout", Justification = "Limited danger scope (property names and message templates)")]
 public sealed partial class ValidationResult : IEnumerable<ValidationError>
 {
-	[GeneratedRegex("{(?<name>[^{}:]+)(?::(?<format>[^{}]+))?}", RegexOptions.ExplicitCapture, matchTimeoutMilliseconds: 50)]
+	[GeneratedRegex("{(?<name>[^{}:]+)(?::(?<format>[^{}]+))?}", RegexOptions.ExplicitCapture)]
 	private static partial Regex FormatRegex();
 
 	private List<ValidationError>? _errors;
@@ -244,7 +245,7 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 			_ => null,
 		};
 
-	[GeneratedRegex(@"(?<=[^A-Z])([A-Z])", RegexOptions.None, matchTimeoutMilliseconds: 10)]
+	[GeneratedRegex(@"(?<=[^A-Z])([A-Z])", RegexOptions.None)]
 	private static partial Regex FirstCharInWord();
 
 	private static string GetMemberName(MemberInfo member)
