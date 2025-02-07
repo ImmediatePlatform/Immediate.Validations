@@ -13,7 +13,7 @@ namespace Immediate.Validations.Shared;
 /// </summary>
 public sealed partial class ValidationResult : IEnumerable<ValidationError>
 {
-	[GeneratedRegex("{([^{}:]+)(?::([^{}]+))?}", RegexOptions.None, matchTimeoutMilliseconds: 50)]
+	[GeneratedRegex("{(?<name>[^{}:]+)(?::(?<format>[^{}]+))?}", RegexOptions.ExplicitCapture, matchTimeoutMilliseconds: 50)]
 	private static partial Regex FormatRegex();
 
 	private List<ValidationError>? _errors;
@@ -98,13 +98,13 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 					messageTemplate,
 					m =>
 					{
-						var key = m.Groups[1].Value;
+						var key = m.Groups["name"].Value;
 
 						if (!arguments.TryGetValue(key, out var value))
 							return m.Value;
 
-						if (m.Groups[2].Success)
-							return string.Format(provider: null, $"{{0:{m.Groups[2].Value}}}", value);
+						if (m.Groups["format"] is { Success: true, Value: var formatSpecifier })
+							return string.Format(provider: null, $"{{0:{formatSpecifier}}}", value);
 
 						return value?.ToString()!;
 					}

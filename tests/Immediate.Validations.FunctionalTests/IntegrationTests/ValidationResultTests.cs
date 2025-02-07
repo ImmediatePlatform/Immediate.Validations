@@ -3,7 +3,7 @@ using Immediate.Validations.Shared;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
-public sealed class ValidationResultTests
+public sealed partial class ValidationResultTests
 {
 	public sealed partial record Command
 	{
@@ -467,6 +467,57 @@ public sealed class ValidationResultTests
 				{
 					PropertyName = "Value",
 					ErrorMessage = "'Max Value'",
+				},
+			],
+			results
+		);
+	}
+
+	[Validate]
+	public sealed partial class MessageFormatCommand : IValidationTarget<MessageFormatCommand>
+	{
+		[LessThan(0.0d, Message = "{PropertyValue:N2}")]
+		public required double Value { get; init; }
+	}
+
+	[Test]
+	public void MessageFormatTest1()
+	{
+		var command = new MessageFormatCommand()
+		{
+			Value = 1,
+		};
+
+		var results = MessageFormatCommand.Validate(command);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = "Value",
+					ErrorMessage = "1.00",
+				},
+			],
+			results
+		);
+	}
+
+	[Test]
+	public void MessageFormatTest2()
+	{
+		var command = new MessageFormatCommand()
+		{
+			Value = 1.2345,
+		};
+
+		var results = MessageFormatCommand.Validate(command);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = "Value",
+					ErrorMessage = "1.23",
 				},
 			],
 			results
