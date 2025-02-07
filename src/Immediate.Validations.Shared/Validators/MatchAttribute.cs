@@ -42,7 +42,7 @@ public sealed class MatchAttribute(
 			if (expr is null)
 				ThrowInvalidArgumentsException();
 
-			regex = new Regex(expr, RegexOptions.None, TimeSpan.FromMilliseconds(100));
+			regex = new Regex(expr, RegexOptions.None, TimeSpan.FromSeconds(1));
 		}
 
 		return regex.IsMatch(target);
