@@ -477,7 +477,9 @@ public sealed partial class ValidationResultTests
 	public sealed partial class MessageFormatCommand : IValidationTarget<MessageFormatCommand>
 	{
 		[LessThan(0.0d, Message = "{PropertyValue:N2}")]
-		public required double Value { get; init; }
+		public required double Value1 { get; init; }
+		[LessThan(0.0d, Message = "{Invalid}")]
+		public required double Value2 { get; init; }
 	}
 
 	[Test]
@@ -485,7 +487,8 @@ public sealed partial class ValidationResultTests
 	{
 		var command = new MessageFormatCommand()
 		{
-			Value = 1,
+			Value1 = 1,
+			Value2 = 1,
 		};
 
 		var results = MessageFormatCommand.Validate(command);
@@ -494,8 +497,13 @@ public sealed partial class ValidationResultTests
 			[
 				new()
 				{
-					PropertyName = "Value",
+					PropertyName = "Value1",
 					ErrorMessage = "1.00",
+				},
+				new()
+				{
+					PropertyName = "Value2",
+					ErrorMessage = "{Invalid}",
 				},
 			],
 			results
@@ -507,7 +515,8 @@ public sealed partial class ValidationResultTests
 	{
 		var command = new MessageFormatCommand()
 		{
-			Value = 1.2345,
+			Value1 = 1.2345,
+			Value2 = 1.2345,
 		};
 
 		var results = MessageFormatCommand.Validate(command);
@@ -516,8 +525,13 @@ public sealed partial class ValidationResultTests
 			[
 				new()
 				{
-					PropertyName = "Value",
+					PropertyName = "Value1",
 					ErrorMessage = "1.23",
+				},
+				new()
+				{
+					PropertyName = "Value2",
+					ErrorMessage = "{Invalid}",
 				},
 			],
 			results
