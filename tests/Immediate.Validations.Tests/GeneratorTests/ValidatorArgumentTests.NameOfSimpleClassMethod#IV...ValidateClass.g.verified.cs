@@ -70,7 +70,7 @@ partial class ValidateClass : IValidationTarget
 		{
 			if (!global::Immediate.Validations.Shared.EqualAttribute.ValidateProperty(
 					t
-					, comparison: global::TestClass.Test
+					, comparison: global::TestClass.Test()
 				)
 			)
 			{
@@ -82,7 +82,7 @@ partial class ValidateClass : IValidationTarget
 						["PropertyName"] = $"Dummy Value",
 						["PropertyValue"] = t,
 						["ComparisonName"] = "Test Class Test",
-						["ComparisonValue"] = global::TestClass.Test,
+						["ComparisonValue"] = global::TestClass.Test(),
 					}
 				);
 			}

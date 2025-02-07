@@ -603,7 +603,7 @@ public sealed class ValidateTargetTransformer
 		{
 			if (argumentExpression is SimpleNameSyntax { Identifier.ValueText: { } name })
 			{
-				var member = _members.FirstOrDefault(m => m.Name.Equals(name, StringComparison.Ordinal));
+				var member = _members.Find(m => m.Name.Equals(name, StringComparison.Ordinal));
 
 				return (
 					member.GetDescription(),
@@ -625,11 +625,20 @@ public sealed class ValidateTargetTransformer
 			}
 			else
 			{
-				var symbol = _semanticModel.GetSymbolInfo(argumentExpression);
+				var symbolInfo = _semanticModel.GetSymbolInfo(argumentExpression);
+
+				var symbol = symbolInfo.Symbol
+					?? symbolInfo.CandidateSymbols
+						.FirstOrDefault(
+							ims => ims is IMethodSymbol
+							{
+								Parameters: []
+							}
+						);
 
 				return (
-					"",
-					symbol.Symbol?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? "",
+					argumentExpression.ToString().Replace(".", "").ToTitleCase() ?? "",
+					symbol?.ToDisplayString(DisplayNameFormatters.FullyQualifiedForMembers) ?? "",
 					false
 				);
 			}

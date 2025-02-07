@@ -411,7 +411,7 @@ public sealed class ValidatorArgumentTests
 	}
 
 	[Test]
-	public async Task NameOfSimpleClassProperty()
+	public async Task NameOfSimpleClassConst()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
 			"""
@@ -422,6 +422,105 @@ public sealed class ValidatorArgumentTests
 			public static class TestClass
 			{
 				public const string Test = "";
+			}
+			
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				[Equal(nameof(TestClass.Test))]
+				public required string DummyValue { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
+
+	[Test]
+	public async Task NameOfSimpleClassField()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			public static class TestClass
+			{
+				public static readonly string Test = "";
+			}
+			
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				[Equal(nameof(TestClass.Test))]
+				public required string DummyValue { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
+
+	[Test]
+	public async Task NameOfSimpleClassProperty()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			public static class TestClass
+			{
+				public static string Test { get; } = "";
+			}
+			
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				[Equal(nameof(TestClass.Test))]
+				public required string DummyValue { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
+
+	[Test]
+	public async Task NameOfSimpleClassMethod()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			public static class TestClass
+			{
+				public static string Test() => "";
 			}
 			
 			[Validate]
