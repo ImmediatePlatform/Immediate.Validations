@@ -426,7 +426,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[Equal({|IV0016:nameof(KeyValue)|})]
+				[Equal({|IV0015:nameof(KeyValue)|})]
 				public required int Id { get; init; }
 				public required string KeyValue { get; init; }
 
@@ -512,7 +512,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[MaxLength({|IV0016:nameof(KeyValue)|})]
+				[MaxLength({|IV0015:nameof(KeyValue)|})]
 				public required string Id { get; init; }
 				public required string KeyValue { get; init; }
 						
@@ -595,7 +595,7 @@ public sealed class ValidateClassAnalyzerTests
 			public sealed partial record Target : IValidationTarget<Target>
 			{
 				[Dummy(
-					{|IV0016:first: nameof(FirstValue)|}, 
+					{|IV0015:first: nameof(FirstValue)|}, 
 					"Hello World", 
 					Third = "Value", 
 					Message = "What's going on?"
@@ -670,7 +670,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[Dummy("123", {|IV0015:456|}, {|IV0016:nameof(FirstValue)|}, Message = "What's going on?")]
+				[Dummy("123", {|IV0015:456|}, {|IV0015:nameof(FirstValue)|}, Message = "What's going on?")]
 				public required string Id { get; init; }
 				public required int FirstValue { get; init; }
 
@@ -740,7 +740,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[Dummy("123", {|IV0015:456|}, {|IV0016:nameof(FirstValue)|}, Message = "What's going on?")]
+				[Dummy("123", {|IV0015:456|}, {|IV0015:nameof(FirstValue)|}, Message = "What's going on?")]
 				public required string Id { get; init; }
 				public required int FirstValue { get; init; }
 
@@ -810,7 +810,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[Dummy("123", {|IV0015:456|}, {|IV0016:nameof(FirstValue)|}, Message = "What's going on?")]
+				[Dummy("123", {|IV0015:456|}, {|IV0015:nameof(FirstValue)|}, Message = "What's going on?")]
 				public required string Id { get; init; }
 				public int FirstValue() => 123;
 			
@@ -880,7 +880,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[Dummy("123", {|IV0015:456|}, {|IV0016:nameof(FirstValue)|}, Message = "What's going on?")]
+				[Dummy("123", {|IV0015:456|}, {|IV0015:nameof(FirstValue)|}, Message = "What's going on?")]
 				public required string Id { get; init; }
 				public static int FirstValue() => 123;
 			
@@ -925,7 +925,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[OneOf({|IV0016:nameof(Values)|})]
+				[OneOf({|IV0015:nameof(Values)|})]
 				public required int Id { get; init; }
 
 				private static readonly string[] Values = ["123", "456", "789"];
@@ -939,7 +939,7 @@ public sealed class ValidateClassAnalyzerTests
 		).RunAsync();
 
 	[Test]
-	public async Task InvalidNameofShouldWarn() =>
+	public async Task NameofUsingTypeShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
 			using System;
@@ -950,6 +950,165 @@ public sealed class ValidateClassAnalyzerTests
 			public sealed partial record Target : IValidationTarget<Target>
 			{
 				[Equal({|IV0017:nameof(DateTime)|})]
+				public required string Id { get; init; }
+			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task NameofUsingInnerTypeShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				private static class InnerClass;
+
+				[Equal({|IV0017:nameof(Target.InnerClass)|})]
+				public required string Id { get; init; }
+			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task NameofUsingInstanceMemberShouldWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed record Dummy
+			{
+				public string Value { get; } = "Test";
+			}
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal({|IV0017:nameof(Dummy.Value)|})]
+				public required string Id { get; init; }
+			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task NameofUsingConstValueShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed record Dummy
+			{
+				public const string Value = "Test";
+			}
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal(nameof(Dummy.Value))]
+				public required string Id { get; init; }
+			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task NameofUsingStaticFieldShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed record Dummy
+			{
+				public static readonly string Value = "Test";
+			}
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal(nameof(Dummy.Value))]
+				public required string Id { get; init; }
+			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task NameofUsingStaticPropertyShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed record Dummy
+			{
+				public static string Value { get; } = "Test";
+			}
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal(nameof(Dummy.Value))]
+				public required string Id { get; init; }
+			
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task NameofUsingStaticMethodShouldNotWarn() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System;
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed record Dummy
+			{
+				public static string Value() => "Test";
+			}
+
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Equal(nameof(Dummy.Value))]
 				public required string Id { get; init; }
 			
 				public ValidationResult Validate() => [];

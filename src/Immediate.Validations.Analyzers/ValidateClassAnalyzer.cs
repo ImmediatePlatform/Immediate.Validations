@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -54,22 +55,11 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			description: "Incompatible types will lead to incorrect validation code."
 		);
 
-	public static readonly DiagnosticDescriptor ValidateParameterPropertyIncompatibleType =
-		new(
-			id: DiagnosticIds.IV0016ValidateParameterPropertyIncompatibleType,
-			title: "Parameter is incompatible type",
-			messageFormat: "Property/parameter `{0}` is marked `[TargetType]`, but property `{1}` is not of type `{2}`",
-			category: "ImmediateValidations",
-			defaultSeverity: DiagnosticSeverity.Warning,
-			isEnabledByDefault: true,
-			description: "Incompatible types will lead to incorrect validation code."
-		);
-
 	public static readonly DiagnosticDescriptor ValidateParameterNameofInvalid =
 		new(
 			id: DiagnosticIds.IV0017ValidateParameterNameofInvalid,
 			title: "nameof() target is invalid",
-			messageFormat: "nameof({0}) must refer to a property or method on the class `{1}`",
+			messageFormat: "nameof({0}) must refer to {1}",
 			category: "ImmediateValidations",
 			defaultSeverity: DiagnosticSeverity.Error,
 			isEnabledByDefault: true,
@@ -94,7 +84,6 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			IValidationTargetMissing,
 			ValidatePropertyIncompatibleType,
 			ValidateParameterIncompatibleType,
-			ValidateParameterPropertyIncompatibleType,
 			ValidateParameterNameofInvalid,
 			ValidateNotNullWhenInvalid,
 		]);
@@ -427,26 +416,47 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		var validateParameter = validateParameterSymbols
 			.First(p => string.Equals(p.Name, parameter.Name, StringComparison.Ordinal));
 
-		if (syntax.Expression.IsNameOfExpression(out var propertyName))
+		var argumentType = GetArgumentType(
+			context,
+			syntax,
+			members
+		);
+
+		if (argumentType is null)
+			return;
+
+		if (ValidateArgumentType(context.Compilation, validateParameter, argumentType, typeArgumentType, out var targetType))
+			return;
+
+		context.ReportDiagnostic(
+			Diagnostic.Create(
+				ValidateParameterIncompatibleType,
+				syntax.GetLocation(),
+				parameter.Name,
+				targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
+			)
+		);
+	}
+
+	private static ITypeSymbol? GetArgumentType(
+		SyntaxNodeAnalysisContext context,
+		AttributeArgumentSyntax syntax,
+		List<ISymbol> members
+	)
+	{
+		if (syntax.Expression.IsNameOfExpression(out var argumentExpression))
 		{
-			var member = members
-				.Find(p => string.Equals(p.Name, propertyName, StringComparison.Ordinal));
+			var argumentSymbol = GetArgumentSymbol(
+				context,
+				syntax,
+				argumentExpression,
+				members
+			);
 
-			if (member is null)
-			{
-				context.ReportDiagnostic(
-					Diagnostic.Create(
-						ValidateParameterNameofInvalid,
-						syntax.GetLocation(),
-						propertyName,
-						context.ContainingSymbol!.Name
-					)
-				);
+			if (argumentSymbol is null)
+				return null;
 
-				return;
-			}
-
-			var memberType = member switch
+			var argumentType = argumentSymbol switch
 			{
 				IMethodSymbol { ReturnType: { } t } => t,
 				IPropertySymbol { Type: { } t } => t,
@@ -454,35 +464,90 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				_ => throw new InvalidOperationException(),
 			};
 
-			if (!ValidateArgumentType(context.Compilation, validateParameter, memberType, typeArgumentType, out var targetType))
-			{
-				context.ReportDiagnostic(
-					Diagnostic.Create(
-						ValidateParameterPropertyIncompatibleType,
-						syntax.GetLocation(),
-						parameter.Name,
-						member.Name,
-						targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
-					)
-				);
-			}
+			return argumentType;
 		}
 		else
 		{
 			if (context.SemanticModel.GetOperation(syntax.Expression)?.Type is not ITypeSymbol argumentType)
-				return;
+				return null;
 
-			if (!ValidateArgumentType(context.Compilation, validateParameter, argumentType, typeArgumentType, out var targetType))
+			return argumentType;
+		}
+	}
+
+	private static ISymbol? GetArgumentSymbol(
+		SyntaxNodeAnalysisContext context,
+		AttributeArgumentSyntax syntax,
+		ExpressionSyntax argumentExpression,
+		List<ISymbol> members
+	)
+	{
+		if (argumentExpression is SimpleNameSyntax { Identifier.ValueText: { } name })
+		{
+			var member = members
+				.Find(p => string.Equals(p.Name, name, StringComparison.Ordinal));
+
+			if (member is null)
 			{
 				context.ReportDiagnostic(
 					Diagnostic.Create(
-						ValidateParameterIncompatibleType,
+						ValidateParameterNameofInvalid,
 						syntax.GetLocation(),
-						parameter.Name,
-						targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
+						name,
+						FormattableString.Invariant($"a property or method on the class `{context.ContainingSymbol!.Name}`")
 					)
 				);
+
+				return null;
 			}
+
+			return member;
+		}
+		else
+		{
+			var symbolInfo = context.SemanticModel.GetSymbolInfo(argumentExpression);
+
+			var symbol = symbolInfo.Symbol
+				?? symbolInfo.CandidateSymbols
+					.FirstOrDefault(
+						ims => ims is IMethodSymbol
+						{
+							Parameters: []
+						}
+					);
+
+			if (symbol is null)
+				return null;
+
+			if (symbol is not { Kind: SymbolKind.Field or SymbolKind.Method or SymbolKind.Property })
+			{
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateParameterNameofInvalid,
+						syntax.GetLocation(),
+						symbol.Name,
+						FormattableString.Invariant($"a property or method on the class `{context.ContainingSymbol!.Name}` or a static member of another class")
+					)
+				);
+
+				return null;
+			}
+
+			if (symbol is not { IsStatic: true })
+			{
+				context.ReportDiagnostic(
+					Diagnostic.Create(
+						ValidateParameterNameofInvalid,
+						syntax.GetLocation(),
+						symbol.Name,
+						FormattableString.Invariant($"a static member of the class `{symbol.ContainingType.Name}`")
+					)
+				);
+
+				return null;
+			}
+
+			return symbol;
 		}
 	}
 
@@ -527,21 +592,21 @@ file static class Extensions
 	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
 		symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
 
-	public static bool IsNameOfExpression(this ExpressionSyntax syntax, out string? name)
+	public static bool IsNameOfExpression(this ExpressionSyntax syntax, [NotNullWhen(returnValue: true)] out ExpressionSyntax? argumentExpression)
 	{
 		if (syntax is InvocationExpressionSyntax
 			{
 				Expression: SimpleNameSyntax { Identifier.ValueText: "nameof" },
-				ArgumentList.Arguments: [{ Expression: SimpleNameSyntax { Identifier.ValueText: var n } }],
+				ArgumentList.Arguments: [{ Expression: { } expr }],
 			}
 		)
 		{
-			name = n;
+			argumentExpression = expr;
 			return true;
 		}
 		else
 		{
-			name = null;
+			argumentExpression = null;
 			return false;
 		}
 	}

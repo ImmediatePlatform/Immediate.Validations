@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -598,55 +599,79 @@ public sealed class ValidateTargetTransformer
 	)
 	{
 		if (parameterSymbol.IsTargetTypeSymbol()
-			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var name))
+			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var argumentExpression))
 		{
-			var member = _members.FirstOrDefault(m => m.Name.Equals(name, StringComparison.Ordinal));
+			if (argumentExpression is SimpleNameSyntax { Identifier.ValueText: { } name })
+			{
+				var member = _members.Find(m => m.Name.Equals(name, StringComparison.Ordinal));
+
+				return (
+					member.GetDescription(),
+					member switch
+					{
+						IMethodSymbol { IsStatic: true } => $"{name}()",
+						IMethodSymbol => $"instance.{name}()",
+						{ IsStatic: true } => $"{name}",
+						_ => $"instance.{name}",
+					},
+					member switch
+					{
+						IMethodSymbol { ReturnType: var type } => type,
+						IFieldSymbol { Type: var type } => type,
+						IPropertySymbol { Type: var type } => type,
+						_ => null,
+					} is IArrayTypeSymbol
+				);
+			}
+			else
+			{
+				var symbolInfo = _semanticModel.GetSymbolInfo(argumentExpression);
+
+				var symbol = symbolInfo.Symbol
+					?? symbolInfo.CandidateSymbols
+						.FirstOrDefault(
+							ims => ims is IMethodSymbol
+							{
+								Parameters: []
+							}
+						);
+
+				return (
+					argumentExpression.ToString().Replace(".", "").ToTitleCase() ?? "",
+					symbol?.ToDisplayString(DisplayNameFormatters.FullyQualifiedForMembers) ?? "",
+					false
+				);
+			}
+		}
+		else
+		{
+			var operation = _semanticModel
+				.GetOperation(attributeArgumentSyntax.Expression);
+
+			if (operation?.Type is INamedTypeSymbol { TypeKind: TypeKind.Enum })
+			{
+				var symbolInfo = _semanticModel.GetSymbolInfo(attributeArgumentSyntax.Expression);
+				var symbol = (IFieldSymbol)symbolInfo.Symbol!;
+				var reference = $"{symbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{symbol.Name}";
+
+				return ("", reference, false);
+			}
 
 			return (
-				member.GetDescription(),
-				member switch
+				"",
+				operation?.ConstantValue switch
 				{
-					IMethodSymbol { IsStatic: true } => $"{name}()",
-					IMethodSymbol => $"instance.{name}()",
-					{ IsStatic: true } => $"{name}",
-					_ => $"instance.{name}",
+					{ HasValue: true, Value: string s } =>
+						SymbolDisplay.FormatLiteral(s, quote: true),
+
+					{ HasValue: true, Value: { } o } =>
+						SymbolDisplay.FormatPrimitive(o, quoteStrings: false, useHexadecimalNumbers: false),
+
+					_ => "",
 				},
-				member switch
-				{
-					IMethodSymbol { ReturnType: var type } => type,
-					IFieldSymbol { Type: var type } => type,
-					IPropertySymbol { Type: var type } => type,
-					_ => null,
-				} is IArrayTypeSymbol
+				false
 			);
 		}
-
-		var operation = _semanticModel
-			.GetOperation(attributeArgumentSyntax.Expression);
-
-		if (operation?.Type is INamedTypeSymbol { TypeKind: TypeKind.Enum })
-		{
-			var symbolInfo = _semanticModel.GetSymbolInfo(attributeArgumentSyntax.Expression);
-			var symbol = (IFieldSymbol)symbolInfo.Symbol!;
-			var reference = $"{symbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{symbol.Name}";
-
-			return ("", reference, false);
-		}
-
-		return (
-			"",
-			operation?.ConstantValue switch
-			{
-				{ HasValue: true, Value: string s } =>
-					SymbolDisplay.FormatLiteral(s, quote: true),
-
-				{ HasValue: true, Value: { } o } =>
-					SymbolDisplay.FormatPrimitive(o, quoteStrings: false, useHexadecimalNumbers: false),
-
-				_ => "",
-			},
-			false
-		);
 	}
 }
 
@@ -665,21 +690,21 @@ file static class Extensions
 		typeSymbol is { SpecialType: SpecialType.System_Object or SpecialType.System_String }
 			or IArrayTypeSymbol { ElementType.SpecialType: SpecialType.System_Object or SpecialType.System_String };
 
-	public static bool IsNameOfExpression(this ExpressionSyntax syntax, out string? name)
+	public static bool IsNameOfExpression(this ExpressionSyntax syntax, [NotNullWhen(returnValue: true)] out ExpressionSyntax? argumentExpression)
 	{
 		if (syntax is InvocationExpressionSyntax
 			{
 				Expression: SimpleNameSyntax { Identifier.ValueText: "nameof" },
-				ArgumentList.Arguments: [{ Expression: SimpleNameSyntax { Identifier.ValueText: var n } }],
+				ArgumentList.Arguments: [{ Expression: { } expr }],
 			}
 		)
 		{
-			name = n;
+			argumentExpression = expr;
 			return true;
 		}
 		else
 		{
-			name = null;
+			argumentExpression = null;
 			return false;
 		}
 	}

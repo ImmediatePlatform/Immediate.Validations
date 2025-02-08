@@ -29,3 +29,11 @@ IV0017 | ImmediateValidations | Error | ValidateClassAnalyzer
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 IV0018 | ImmediateValidations | Warning | ValidateClassAnalyzer
+
+## Release 2.3
+
+### Removed Rules
+
+Rule ID | Category | Severity | Notes
+--------|----------|----------|-------
+IV0016 | ImmediateValidations | Warning | ValidateClassAnalyzer

@@ -22,7 +22,7 @@ internal static partial class Utility
 		new(
 			@"(?<=[^A-Z])([A-Z])",
 			RegexOptions.Compiled,
-			matchTimeout: TimeSpan.FromMilliseconds(10)
+			matchTimeout: TimeSpan.FromSeconds(1)
 		);
 
 	public static string ToTitleCase(this string pascalCase) =>
