@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFramework>net8.0</TargetFramework>
+	<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 	<IsPackable>true</IsPackable>
 	<IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
@@ -31,12 +31,25 @@
 	-->
   <ItemGroup>
 	<None Include="../../readme.md" Pack="true" PackagePath="/" />
-	<None Include="$(PkgScriban)/lib/netstandard2.0/Scriban.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="false" />
 	<None Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Analyzers.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="true" />
 	<None Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/netstandard2.0/Immediate.Validations.CodeFixes.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="true" />
 	<None Include="../Immediate.Validations.Generators/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Generators.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="true" />
-	<None Include="../Immediate.Validations.Shared/bin/$(Configuration)/net8.0/Immediate.Validations.Shared.dll" Pack="true" PackagePath="lib/net8.0" Visible="true" />
-	<None Include="../Immediate.Validations.Shared/bin/$(Configuration)/net8.0/Immediate.Validations.Shared.xml" Pack="true" PackagePath="lib/net8.0" Visible="true" />
+
+	<TfmSpecificPackageFile
+	  Include="$(PkgScriban)/lib/netstandard2.0/Scriban.dll"
+	  Pack="true"
+	  PackagePath="analyzers/roslyn4.8/dotnet/cs"
+	  Condition=" '$(TargetFramework)' == 'net8.0' " />
+
+	<TfmSpecificPackageFile
+	  Include="../Immediate.Validations.Shared/bin/$(Configuration)/$(TargetFramework)/Immediate.Validations.Shared.dll"
+	  Pack="true"
+	  PackagePath="lib/$(TargetFramework)" />
+
+	<TfmSpecificPackageFile
+	  Include="../Immediate.Validations.Shared/bin/$(Configuration)/$(TargetFramework)/Immediate.Validations.Shared.xml"
+	  Pack="true"
+	  PackagePath="lib/$(TargetFramework)" />
   </ItemGroup>
 
   <ItemGroup>
