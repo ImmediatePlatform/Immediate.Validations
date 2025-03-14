@@ -7,7 +7,7 @@ public sealed partial class DuplicateTypeVisitTests
 	[Validate]
 	public partial interface IBaseInterface : IValidationTarget<IBaseInterface>
 	{
-		public static int VisitCount { get; set; }
+		static int VisitCount { get; set; }
 
 		private static void AdditionalValidations(ValidationResult _, IBaseInterface __)
 		{

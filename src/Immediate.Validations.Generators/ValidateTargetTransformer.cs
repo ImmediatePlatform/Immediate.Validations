@@ -33,17 +33,19 @@ public sealed class ValidateTargetTransformer
 		_symbol = (INamedTypeSymbol)context.TargetSymbol;
 
 		_token.ThrowIfCancellationRequested();
-		_members = ((INamedTypeSymbol)context.TargetSymbol)
-			.GetAllMembers()
-			.Where(m =>
-				m is IPropertySymbol or IFieldSymbol
-					or IMethodSymbol
-				{
-					Parameters: [],
-					MethodKind: MethodKind.Ordinary,
-				}
-			)
-			.ToList();
+		_members =
+		[
+			.. ((INamedTypeSymbol)context.TargetSymbol)
+				.GetAllMembers()
+				.Where(m =>
+					m is IPropertySymbol or IFieldSymbol
+						or IMethodSymbol
+					{
+						Parameters: [],
+						MethodKind: MethodKind.Ordinary,
+					}
+				),
+		];
 
 		_token.ThrowIfCancellationRequested();
 	}
@@ -364,7 +366,7 @@ public sealed class ValidateTargetTransformer
 			attribute,
 			validateMethod.Parameters,
 			propertyType
-		);
+		) ?? [];
 
 		_token.ThrowIfCancellationRequested();
 
@@ -422,9 +424,8 @@ public sealed class ValidateTargetTransformer
 					if (name is "Message")
 						break;
 
-					attributeProperties ??= attribute.AttributeClass!.GetMembers()
-						.OfType<IPropertySymbol>()
-						.ToList();
+					attributeProperties ??= [.. attribute.AttributeClass!.GetMembers().OfType<IPropertySymbol>()];
+
 					var property = attributeProperties
 						.First(a => string.Equals(a.Name, name, StringComparison.Ordinal));
 
