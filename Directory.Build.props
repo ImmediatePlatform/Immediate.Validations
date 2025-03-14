@@ -15,6 +15,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
 	<IsPackable>false</IsPackable>
+	<WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
   </PropertyGroup>
 
   <ItemGroup>
