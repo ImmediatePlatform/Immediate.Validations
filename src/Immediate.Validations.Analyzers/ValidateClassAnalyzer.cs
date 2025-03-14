@@ -338,9 +338,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 					if (name is "Message")
 						break;
 
-					attributeProperties ??= attribute.AttributeClass!.GetMembers()
-						.OfType<IPropertySymbol>()
-						.ToList();
+					attributeProperties ??= [.. attribute.AttributeClass!.GetMembers().OfType<IPropertySymbol>()];
 
 					var property = attributeProperties
 						.First(a => string.Equals(a.Name, name, StringComparison.Ordinal));
