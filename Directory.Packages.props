@@ -26,15 +26,15 @@
 	<PackageVersion Include="PolySharp" Version="1.15.0" />
 	<PackageVersion Include="Scriban" Version="6.0.0" />
 	<PackageVersion Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
-	<PackageVersion Include="TUnit.Engine" Version="0.18.26" />
+	<PackageVersion Include="TUnit.Engine" Version="0.19.74" />
 	<PackageVersion Include="Verify.SourceGenerators" Version="2.5.0" />
 	<PackageVersion Include="Verify.TUnit" Version="28.15.0" />
 	<PackageVersion Include="xunit.v3.assert" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
-	<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
-	<PackageVersion Include="Microsoft.Extensions.Localization" Version="8.0.14" />
+	<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+	<PackageVersion Include="Microsoft.Extensions.Localization" Version="9.0.3" />
 	<PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.14" />
   </ItemGroup>
 
