@@ -259,7 +259,10 @@ public sealed class ValidateTargetTransformer
 				IsGenericType: true,
 				TypeArguments: [{ } type],
 				TypeArgumentNullableAnnotations: [{ } annotation],
-			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
+			} nts when
+				nts.IsICollection1()
+				|| nts.IsIReadOnlyCollection1()
+				|| nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
 				GetPropertyValidations(
 					name,
 					propertyName,
