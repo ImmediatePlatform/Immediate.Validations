@@ -7,7 +7,7 @@ public sealed partial class CollectionTests
 	[Validate]
 	public sealed partial record ListValidationTargetRecord : IValidationTarget<ListValidationTargetRecord>
 	{
-		public required IReadOnlyList<IReadOnlyList<ReferenceTypeNullTests.CommandObject?>> Commands { get; init; }
+		public required IReadOnlyCollection<IReadOnlyCollection<ReferenceTypeNullTests.CommandObject?>> Commands { get; init; }
 	}
 
 	[Validate]

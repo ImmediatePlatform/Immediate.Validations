@@ -96,7 +96,7 @@ public sealed partial class EmptyTests
 	[Test]
 	public void CollectionEmptyTestWhenNotEmpty()
 	{
-		var instance = new CollectionRecord { CollectionValue = [1, 2, 3, 4] };
+		var instance = new CollectionRecord { CollectionValue = [0, 0, 0, 0] };
 
 		var errors = CollectionRecord.Validate(instance);
 
