@@ -20,7 +20,11 @@ public static class GeneratorTestHelper
 				.. Utility.GetMetadataReferences(),
 			],
 			options: new(
-				outputKind: OutputKind.DynamicallyLinkedLibrary
+				outputKind: OutputKind.DynamicallyLinkedLibrary,
+				specificDiagnosticOptions:
+				[
+					KeyValuePair.Create("CS0658", ReportDiagnostic.Suppress), // 'element' is not a recognized attribute location. Valid attribute locations for this declaration are 'field, property'. All attributes in this block will be ignored.
+				]
 			)
 		);
 

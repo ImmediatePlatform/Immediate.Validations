@@ -67,23 +67,6 @@ partial class ValidateClass : IValidationTarget
 
 
 
-		{
-			if (!global::Immediate.Validations.Shared.NotEmptyAttribute.ValidateProperty(
-					t
-				)
-			)
-			{
-				errors.Add(
-					$"StringProperty[{counter0}][{counter1}]",
-					global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
-					new()
-					{
-						["PropertyName"] = $"String Property[{counter0}][{counter1}]",
-						["PropertyValue"] = t,
-					}
-				);
-			}
-		}
 	}
 
 	private static void __ValidateStringProperty0(

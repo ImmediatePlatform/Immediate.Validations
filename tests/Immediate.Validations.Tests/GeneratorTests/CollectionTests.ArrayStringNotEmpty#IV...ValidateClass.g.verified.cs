@@ -45,32 +45,8 @@ partial class ValidateClass : IValidationTarget
 
 
 
-	private static void __ValidateStringProperty00(
-		ValidationResult errors, ValidateClass instance, string target, int counter0, int counter1
-	)
-	{
-
-		if (target is not { } t)
-		{
-			errors.Add(
-				$"StringProperty[{counter0}][{counter1}]",
-				global::Immediate.Validations.Shared.NotNullAttribute.DefaultMessage,
-				new()
-				{
-					["PropertyName"] = $"String Property[{counter0}][{counter1}]",
-					["PropertyValue"] = null,
-				}
-			);
-
-			return;
-		}
-
-
-
-	}
-
 	private static void __ValidateStringProperty0(
-		ValidationResult errors, ValidateClass instance, string[] target, int counter0
+		ValidationResult errors, ValidateClass instance, string target, int counter0
 	)
 	{
 
@@ -90,36 +66,11 @@ partial class ValidateClass : IValidationTarget
 		}
 
 
-		var counter1 = 0;
-		foreach (var item1 in t)
-		{
-			__ValidateStringProperty00(
-				errors, instance, item1, counter0, counter1
-			);
-			counter1++;
-		}
 
-		{
-			if (!global::Immediate.Validations.Shared.NotEmptyAttribute.ValidateProperty(
-					t
-				)
-			)
-			{
-				errors.Add(
-					$"StringProperty[{counter0}]",
-					global::Immediate.Validations.Shared.NotEmptyAttribute.DefaultMessage,
-					new()
-					{
-						["PropertyName"] = $"String Property[{counter0}]",
-						["PropertyValue"] = t,
-					}
-				);
-			}
-		}
 	}
 
 	private static void __ValidateStringProperty(
-		ValidationResult errors, ValidateClass instance, string[][] target
+		ValidationResult errors, ValidateClass instance, string[] target
 	)
 	{
 

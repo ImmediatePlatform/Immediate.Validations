@@ -132,7 +132,7 @@ public sealed class ValidateTargetTransformer
 
 		var skipSelf = attribute.NamedArguments
 			.Where(na => na.Key is "SkipSelf")
-			.Select(na => na.Value.Value is bool b && b)
+			.Select(na => na.Value.Value is true)
 			.FirstOrDefault();
 
 		return skipSelf;
@@ -182,7 +182,8 @@ public sealed class ValidateTargetTransformer
 		string propertyName,
 		ITypeSymbol propertyType,
 		NullableAnnotation nullableAnnotation,
-		ImmutableArray<AttributeData> attributes
+		ImmutableArray<AttributeData> attributes,
+		bool isCollection = false
 	)
 	{
 		_token.ThrowIfCancellationRequested();
@@ -212,7 +213,64 @@ public sealed class ValidateTargetTransformer
 
 		_token.ThrowIfCancellationRequested();
 
-		var validations = new List<PropertyValidation>();
+		var (collectionPropertyDetails, validations) = propertyType switch
+		{
+			IArrayTypeSymbol ats =>
+				(
+					GetPropertyValidations(
+						name,
+						propertyName,
+						ats.ElementType,
+						ats.ElementNullableAnnotation,
+						attributes,
+						isCollection: true
+					),
+					ProcessAttributes(
+						propertyType,
+						baseType,
+						attributes
+					)
+				),
+
+			INamedTypeSymbol
+			{
+				IsGenericType: true,
+				TypeArguments: [{ } type],
+				TypeArgumentNullableAnnotations: [{ } annotation],
+			} nts when
+				nts.IsICollection1()
+				|| nts.IsIReadOnlyCollection1()
+				|| nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
+				(
+					GetPropertyValidations(
+						name,
+						propertyName,
+						type,
+						annotation,
+						attributes,
+						isCollection: true
+					),
+					ProcessAttributes(
+						propertyType,
+						baseType,
+						attributes
+					)
+				),
+
+			_ when !isCollection =>
+				(
+					null,
+					ProcessAttributes(
+						propertyType,
+						baseType,
+						attributes
+					)
+				),
+
+			_ => (null, []),
+		};
+
+		_token.ThrowIfCancellationRequested();
 
 		if (baseType.TypeKind is TypeKind.Enum)
 		{
@@ -229,50 +287,6 @@ public sealed class ValidateTargetTransformer
 		}
 
 		_token.ThrowIfCancellationRequested();
-
-		foreach (var attribute in attributes)
-		{
-			if (ProcessAttribute(
-					propertyType,
-					baseType,
-					attribute
-				) is { } validation
-			)
-			{
-				validations.Add(validation);
-			}
-		}
-
-		var collectionPropertyDetails = propertyType switch
-		{
-			IArrayTypeSymbol ats =>
-				GetPropertyValidations(
-					name,
-					propertyName,
-					ats.ElementType,
-					ats.ElementNullableAnnotation,
-					attributes
-				),
-
-			INamedTypeSymbol
-			{
-				IsGenericType: true,
-				TypeArguments: [{ } type],
-				TypeArgumentNullableAnnotations: [{ } annotation],
-			} nts when
-				nts.IsICollection1()
-				|| nts.IsIReadOnlyCollection1()
-				|| nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
-				GetPropertyValidations(
-					name,
-					propertyName,
-					type,
-					annotation,
-					attributes
-				),
-
-			_ => null,
-		};
 
 		if (
 			(!validateNotNull
@@ -318,6 +332,30 @@ public sealed class ValidateTargetTransformer
 				.Where(v => v.IsNullable)
 				.ToEquatableReadOnlyList(),
 		};
+	}
+
+	private List<PropertyValidation> ProcessAttributes(
+		ITypeSymbol propertyType,
+		ITypeSymbol baseType,
+		ImmutableArray<AttributeData> attributes
+	)
+	{
+		var list = new List<PropertyValidation>();
+
+		foreach (var attribute in attributes)
+		{
+			if (ProcessAttribute(
+					propertyType,
+					baseType,
+					attribute
+				) is { } validation
+			)
+			{
+				list.Add(validation);
+			}
+		}
+
+		return list;
 	}
 
 	private PropertyValidation? ProcessAttribute(

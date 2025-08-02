@@ -55,23 +55,6 @@ partial class ValidateClass : IValidationTarget
 
 
 		{
-			if (!global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
-					t
-				)
-			)
-			{
-				errors.Add(
-					$"DummyValue",
-					global::Immediate.Validations.Shared.EnumValueAttribute.DefaultMessage,
-					new()
-					{
-						["PropertyName"] = $"Dummy Value",
-						["PropertyValue"] = t,
-					}
-				);
-			}
-		}
-		{
 			if (!global::Immediate.Validations.Shared.OneOfAttribute.ValidateProperty(
 					t
 					, values: [global::Dummy.Dummy1]
@@ -87,6 +70,23 @@ partial class ValidateClass : IValidationTarget
 						["PropertyValue"] = t,
 						["ValuesName"] = "",
 						["ValuesValue"] = string.Join<global::Dummy>(", ", [global::Dummy.Dummy1]),
+					}
+				);
+			}
+		}
+		{
+			if (!global::Immediate.Validations.Shared.EnumValueAttribute.ValidateProperty(
+					t
+				)
+			)
+			{
+				errors.Add(
+					$"DummyValue",
+					global::Immediate.Validations.Shared.EnumValueAttribute.DefaultMessage,
+					new()
+					{
+						["PropertyName"] = $"Dummy Value",
+						["PropertyValue"] = t,
 					}
 				);
 			}
