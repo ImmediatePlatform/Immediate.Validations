@@ -47,6 +47,25 @@ public sealed partial class CollectionTests
 	}
 
 	[Test]
+	public void InvalidRecordEmptyProperty()
+	{
+		var record = new ListStringRecord { Strings = [] };
+
+		var errors = ListStringRecord.Validate(record);
+
+		Assert.Equal(
+			[
+				new()
+				{
+					PropertyName = "Strings",
+					ErrorMessage = "'Strings' must not be empty.",
+				},
+			],
+			errors
+		);
+	}
+
+	[Test]
 	public void InvalidRecordNullFirstLevel()
 	{
 		var record = new ListStringRecord
@@ -56,7 +75,7 @@ public sealed partial class CollectionTests
 				["Hello World!"],
 				null!,
 				["Test"],
-				null!,
+				[],
 			],
 		};
 
@@ -72,7 +91,7 @@ public sealed partial class CollectionTests
 				new()
 				{
 					PropertyName = "Strings[3]",
-					ErrorMessage = "'Strings[3]' must not be null.",
+					ErrorMessage = "'Strings[3]' must not be empty.",
 				},
 			],
 			errors
@@ -97,7 +116,7 @@ public sealed partial class CollectionTests
 					"Test",
 					null!,
 				],
-				null!,
+				[],
 			],
 		};
 
@@ -117,18 +136,13 @@ public sealed partial class CollectionTests
 				},
 				new()
 				{
-					PropertyName = "Strings[2][0]",
-					ErrorMessage = "'Strings[2][0]' must not be empty.",
-				},
-				new()
-				{
 					PropertyName = "Strings[2][2]",
 					ErrorMessage = "'Strings[2][2]' must not be null.",
 				},
 				new()
 				{
 					PropertyName = "Strings[3]",
-					ErrorMessage = "'Strings[3]' must not be null.",
+					ErrorMessage = "'Strings[3]' must not be empty.",
 				},
 			],
 			errors
