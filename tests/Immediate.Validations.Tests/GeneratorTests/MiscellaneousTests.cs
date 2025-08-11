@@ -82,4 +82,37 @@ public sealed class MiscellaneousTests
 
 		_ = await Verify(result);
 	}
+
+	[Test]
+	public async Task SkipSelfProperlySkipsSelf()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial interface IInterface1 : IValidationTarget<IInterface1>
+			{
+				[NotEmpty]
+				string Property { get; }
+			}
+			
+			[Validate(SkipSelf = true)]
+			public partial class Implementation : IInterface1, IValidationTarget<Implementation>
+			{
+				public required string Property { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...IInterface1.g.cs",
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...Implementation.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
 }
