@@ -539,6 +539,7 @@ public sealed class CustomValidationTests
 
 		_ = await Verify(result);
 	}
+
 	[Test]
 	public async Task OneOfWithArrayField()
 	{
@@ -555,6 +556,34 @@ public sealed class CustomValidationTests
 				public required string StringProperty { get; init; }
 
 				private static readonly string[] s_validStrings = ["123"];
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
+
+	[Test]
+	public async Task OneOfWithArrayValue()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				[OneOf(new object[] { "123" })]
+				public required string StringProperty { get; init; }
 			}
 			"""
 		);

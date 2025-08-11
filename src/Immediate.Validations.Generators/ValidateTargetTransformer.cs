@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Immediate.Validations.Generators;
 
@@ -167,7 +168,7 @@ public sealed class ValidateTargetTransformer
 					property.Name,
 					property.Type,
 					property.NullableAnnotation,
-					property.GetAttributes()
+					property.GetTargettedAttributes(_semanticModel)
 				) is { } prop)
 			{
 				properties.Add(prop);
@@ -182,38 +183,13 @@ public sealed class ValidateTargetTransformer
 		string propertyName,
 		ITypeSymbol propertyType,
 		NullableAnnotation nullableAnnotation,
-		ImmutableArray<AttributeData> attributes,
-		bool isCollection = false
+		IReadOnlyList<(string? Target, IObjectCreationOperation AttributeOperation)> targettedAttributes,
+		bool isCollectionElement = false
 	)
 	{
 		_token.ThrowIfCancellationRequested();
 
-		var isReferenceType = propertyType.IsReferenceType;
-		var isNullable = isReferenceType
-			? (nullableAnnotation is NullableAnnotation.Annotated
-				|| attributes.Any(a => a.AttributeClass.IsAllowNullAttribute()))
-			: propertyType.IsNullableType();
-
-		var validateNotNull = !isNullable || attributes.Any(a => a.AttributeClass.IsNotNullAttribute());
-		var validateMessage = attributes
-			.FirstOrDefault(a => a.AttributeClass.IsNotNullAttribute())
-			?.NamedArguments
-			.FirstOrDefault(a => a.Key is "Message") is { Value: { Value: { } } value }
-			? value.ToCSharpString()
-			: null;
-
-		var baseType = propertyType.IsNullableType()
-			? ((INamedTypeSymbol)propertyType).TypeArguments[0]
-			: propertyType;
-
-		_token.ThrowIfCancellationRequested();
-
-		var isValidationProperty = propertyType.GetAttributes()
-			.Any(v => v.AttributeClass.IsValidateAttribute());
-
-		_token.ThrowIfCancellationRequested();
-
-		var (collectionPropertyDetails, validations) = propertyType switch
+		var (collectionPropertyDetails, attributes) = propertyType switch
 		{
 			IArrayTypeSymbol ats =>
 				(
@@ -222,14 +198,10 @@ public sealed class ValidateTargetTransformer
 						propertyName,
 						ats.ElementType,
 						ats.ElementNullableAnnotation,
-						attributes,
-						isCollection: true
+						targettedAttributes,
+						isCollectionElement: true
 					),
-					ProcessAttributes(
-						propertyType,
-						baseType,
-						attributes
-					)
+					targettedAttributes.Where(a => a.Target is null).Select(a => a.AttributeOperation)
 				),
 
 			INamedTypeSymbol
@@ -247,30 +219,53 @@ public sealed class ValidateTargetTransformer
 						propertyName,
 						type,
 						annotation,
-						attributes,
-						isCollection: true
+						targettedAttributes,
+						isCollectionElement: true
 					),
-					ProcessAttributes(
-						propertyType,
-						baseType,
-						attributes
-					)
+					targettedAttributes.Where(a => a.Target is null).Select(a => a.AttributeOperation)
 				),
 
-			_ when !isCollection =>
+			_ when !isCollectionElement =>
 				(
 					null,
-					ProcessAttributes(
-						propertyType,
-						baseType,
-						attributes
-					)
+					targettedAttributes.Where(a => a.Target is null).Select(a => a.AttributeOperation)
 				),
 
-			_ => (null, []),
+			_ =>
+				(
+					null,
+					targettedAttributes.Where(a => a.Target is "element").Select(a => a.AttributeOperation)
+				),
 		};
 
 		_token.ThrowIfCancellationRequested();
+
+		var isReferenceType = propertyType.IsReferenceType;
+		var isNullable = isReferenceType
+			? (nullableAnnotation is NullableAnnotation.Annotated
+				|| attributes.Any(a => a.Type.IsAllowNullAttribute()))
+			: propertyType.IsNullableType();
+
+		var isNotNullAttribute = attributes.FirstOrDefault(a => a.Type.IsNotNullAttribute());
+		var validateNotNull = !isNullable || isNotNullAttribute is { };
+		var validateMessage = isNotNullAttribute?.GetMessage();
+
+		var baseType = propertyType.IsNullableType()
+			? ((INamedTypeSymbol)propertyType).TypeArguments[0]
+			: propertyType;
+
+		_token.ThrowIfCancellationRequested();
+
+		var isValidationProperty = propertyType.GetAttributes()
+			.Any(v => v.AttributeClass.IsValidateAttribute());
+
+		_token.ThrowIfCancellationRequested();
+
+		var validations = ProcessAttributes(
+			propertyType,
+			baseType,
+			attributes
+		);
 
 		if (baseType.TypeKind is TypeKind.Enum)
 		{
@@ -337,7 +332,7 @@ public sealed class ValidateTargetTransformer
 	private List<PropertyValidation> ProcessAttributes(
 		ITypeSymbol propertyType,
 		ITypeSymbol baseType,
-		ImmutableArray<AttributeData> attributes
+		IEnumerable<IObjectCreationOperation> attributes
 	)
 	{
 		var list = new List<PropertyValidation>();
@@ -361,12 +356,12 @@ public sealed class ValidateTargetTransformer
 	private PropertyValidation? ProcessAttribute(
 		ITypeSymbol propertyType,
 		ITypeSymbol baseType,
-		AttributeData attribute
+		IObjectCreationOperation attribute
 	)
 	{
 		_token.ThrowIfCancellationRequested();
 
-		var @class = attribute.AttributeClass;
+		var @class = (INamedTypeSymbol?)attribute.Type;
 		if (!@class.ImplementsValidatorAttribute() || @class.IsNotNullAttribute())
 			return null;
 
@@ -418,166 +413,121 @@ public sealed class ValidateTargetTransformer
 			IsNullable = targetParameterType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated }
 				or { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T },
 			Arguments = parameters.ToEquatableReadOnlyList()!,
-			Message = GetMessage(attribute),
+			Message = attribute.GetMessage(),
 		};
 	}
 
-	private static string? GetMessage(AttributeData attribute)
-	{
-		foreach (var p in attribute.NamedArguments)
-		{
-			if (p is { Key: "Message", Value.Value: string s })
-				return $"\"{s}\"";
-		}
-
-		return null;
-	}
-
 	private List<Argument>? BuildArgumentValues(
-		AttributeData attribute,
-		ImmutableArray<IParameterSymbol> parameters,
-		ITypeSymbol propertyType
+		IObjectCreationOperation attribute,
+		ImmutableArray<IParameterSymbol> validateMethodParameters,
+		ITypeSymbol targetPropertyType
 	)
 	{
-		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
-		var argumentListSyntax = attributeSyntax.ArgumentList?.Arguments ?? [];
-
-		if (argumentListSyntax.Count == 0)
+		if (attribute.Constructor is null)
 			return null;
 
-		if (attribute.AttributeConstructor is null)
-			return null;
+		var argumentValues = new List<Argument>(
+			attribute.Arguments.Length
+			+ (attribute.Initializer?.Initializers.Length ?? 0)
+		);
 
-		var attributeParameters = attribute.AttributeConstructor.Parameters;
-		List<IPropertySymbol>? attributeProperties = null;
-
-		var argumentValues = new List<Argument>(argumentListSyntax.Count);
-
-		for (var i = 0; i < argumentListSyntax.Count; i++)
+		foreach (var argument in attribute.Arguments)
 		{
 			_token.ThrowIfCancellationRequested();
 
-			switch (argumentListSyntax[i])
+			var constructorParameter = argument.Parameter!;
+			var validateMethodParameter = GetParameter(constructorParameter.Name, validateMethodParameters);
+
+			if (validateMethodParameter.Type is not IArrayTypeSymbol { ElementType: { } elementType })
 			{
-				// Message = "Value"
-				case { NameEquals.Name.Identifier.ValueText: var name } syntax:
+				if (argument.Syntax is AttributeArgumentSyntax aas)
 				{
-					if (name is "Message")
-						break;
-
-					attributeProperties ??= [.. attribute.AttributeClass!.GetMembers().OfType<IPropertySymbol>()];
-
-					var property = attributeProperties
-						.First(a => string.Equals(a.Name, name, StringComparison.Ordinal));
-
-					var parameterValue = BuildArgumentValue(
-						syntax,
-						property,
-						parameters
-					);
-					argumentValues.Add(parameterValue);
-
-					break;
-				}
-
-				// operand: "Value"
-				case { NameColon.Name.Identifier.ValueText: var name, Expression: { } expr } syntax:
-				{
-					for (var j = 0; j < attributeParameters.Length; j++)
-					{
-						if (string.Equals(attributeParameters[j].Name, name, StringComparison.Ordinal))
-						{
-							var parameterValue = BuildArgumentValue(
-								syntax,
-								attributeParameters[j],
-								parameters
-							);
-
-							argumentValues.Add(parameterValue);
-							break;
-						}
-					}
-
-					break;
-				}
-
-				// "Value"
-				case var syntax:
-				{
-					var attributeParameter = attributeParameters[i];
-					if (!attributeParameter.IsParams)
-					{
-						argumentValues.Add(
-							BuildArgumentValue(
-								syntax,
-								attributeParameter,
-								parameters
-							)
-						);
-
-						break;
-					}
-
-					var parameter = GetParameter(attributeParameter.Name, parameters);
-					if (parameter.Type is not IArrayTypeSymbol { ElementType: { } elementType })
-						break;
-
-					if (elementType is ITypeParameterSymbol tps)
-						elementType = propertyType;
-
-					var (argumentName, argumentValue, isArray) = GetArgumentValue(
-						attributeParameter,
-						syntax
-					);
-
-					if (isArray)
-					{
-						argumentValues.Add(
-							BuildArgumentValue(
-								attributeParameter,
-								parameters,
-								argumentName,
-								argumentValue,
-								arrayType: elementType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-							)
-						);
-
-						break;
-					}
-
-					var values = new List<string>()
-					{
-						argumentValue,
-					};
-
-					for (i++; i < argumentListSyntax.Count; i++)
-					{
-						if (argumentListSyntax[i] is { NameEquals: not null })
-						{
-							i--;
-							break;
-						}
-
-						(_, argumentValue, _) = GetArgumentValue(
-							attributeParameter,
-							argumentListSyntax[i]
-						);
-
-						values.Add(argumentValue);
-					}
-
 					argumentValues.Add(
 						BuildArgumentValue(
-							attributeParameter,
-							parameters,
-							"",
-							$"[{string.Join(", ", values)}]",
-							arrayType: elementType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+							aas,
+							constructorParameter,
+							validateMethodParameters
 						)
 					);
-
-					break;
 				}
+
+				continue;
+			}
+
+			if (argument.Value is not IArrayCreationOperation
+				{
+					Initializer.ElementValues: { } elements
+				})
+			{
+				return null;
+			}
+
+			if (elementType is ITypeParameterSymbol tps)
+				elementType = targetPropertyType;
+
+			if (elements.Length == 1
+				&& GetArgumentValue(
+					constructorParameter,
+					(ExpressionSyntax)elements[0].Syntax
+				) is (var name, var value, true))
+			{
+				argumentValues.Add(
+					BuildArgumentValue(
+						constructorParameter,
+						validateMethodParameters,
+						name,
+						value,
+						arrayType: elementType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+					)
+				);
+
+				continue;
+			}
+
+			var elementValues = elements
+				.Select(e =>
+					GetArgumentValue(
+						constructorParameter,
+						(ExpressionSyntax)e.Syntax
+					).Value
+				)
+				.ToList();
+
+			argumentValues.Add(
+				BuildArgumentValue(
+					constructorParameter,
+					validateMethodParameters,
+					"",
+					$"[{string.Join(", ", elementValues)}]",
+					arrayType: elementType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+				)
+			);
+		}
+
+		if (attribute.Initializer?.Initializers is { } initializers)
+		{
+			foreach (var initializer in initializers)
+			{
+				_token.ThrowIfCancellationRequested();
+
+				if (initializer is not ISimpleAssignmentOperation
+					{
+						Target: IPropertyReferenceOperation { Property: { } property }
+					})
+				{
+					return null;
+				}
+
+				if (property.Name is "Message")
+					continue;
+
+				argumentValues.Add(
+					BuildArgumentValue(
+						(AttributeArgumentSyntax)initializer.Syntax,
+						GetParameter(property.Name, validateMethodParameters),
+						validateMethodParameters
+					)
+				);
 			}
 		}
 
@@ -586,14 +536,17 @@ public sealed class ValidateTargetTransformer
 
 	private Argument BuildArgumentValue(
 		AttributeArgumentSyntax attributeArgumentSyntax,
-		ISymbol parameterSymbol,
+		ISymbol constructorParameterSymbol,
 		ImmutableArray<IParameterSymbol> parameters
 	)
 	{
-		var (argumentName, argumentValue, _) = GetArgumentValue(parameterSymbol, attributeArgumentSyntax);
+		var (argumentName, argumentValue, _) = GetArgumentValue(
+			constructorParameterSymbol,
+			attributeArgumentSyntax.Expression
+		);
 
 		return BuildArgumentValue(
-			parameterSymbol,
+			constructorParameterSymbol,
 			parameters,
 			argumentName,
 			argumentValue,
@@ -602,14 +555,14 @@ public sealed class ValidateTargetTransformer
 	}
 
 	private static Argument BuildArgumentValue(
-		ISymbol parameterSymbol,
+		ISymbol constructorParameterSymbol,
 		ImmutableArray<IParameterSymbol> parameters,
 		string argumentName,
 		string argumentValue,
 		string? arrayType
 	)
 	{
-		var parameterName = GetParameterName(parameterSymbol.Name, parameters);
+		var parameterName = GetParameterName(constructorParameterSymbol.Name, parameters);
 
 		return new()
 		{
@@ -624,9 +577,9 @@ public sealed class ValidateTargetTransformer
 	private static string GetParameterName(string name, ImmutableArray<IParameterSymbol> parameters) =>
 		GetParameter(name, parameters).Name;
 
-	private static IParameterSymbol GetParameter(string name, ImmutableArray<IParameterSymbol> parameters)
+	private static IParameterSymbol GetParameter(string name, ImmutableArray<IParameterSymbol> validateMethodParameters)
 	{
-		foreach (var p in parameters)
+		foreach (var p in validateMethodParameters)
 		{
 			if (p.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
 				return p;
@@ -636,12 +589,12 @@ public sealed class ValidateTargetTransformer
 	}
 
 	private (string Name, string Value, bool IsArray) GetArgumentValue(
-		ISymbol parameterSymbol,
-		AttributeArgumentSyntax attributeArgumentSyntax
+		ISymbol constructorParameterSymbol,
+		ExpressionSyntax argumentExpressionSyntax
 	)
 	{
-		if (parameterSymbol.IsTargetTypeSymbol()
-			&& attributeArgumentSyntax.Expression.IsNameOfExpression(out var argumentExpression))
+		if (constructorParameterSymbol.IsTargetTypeSymbol()
+			&& argumentExpressionSyntax.IsNameOfExpression(out var argumentExpression))
 		{
 			if (argumentExpression is SimpleNameSyntax { Identifier.ValueText: { } name })
 			{
@@ -687,12 +640,11 @@ public sealed class ValidateTargetTransformer
 		}
 		else
 		{
-			var operation = _semanticModel
-				.GetOperation(attributeArgumentSyntax.Expression);
+			var operation = _semanticModel.GetOperation(argumentExpressionSyntax, _token);
 
 			if (operation?.Type is INamedTypeSymbol { TypeKind: TypeKind.Enum })
 			{
-				var symbolInfo = _semanticModel.GetSymbolInfo(attributeArgumentSyntax.Expression);
+				var symbolInfo = _semanticModel.GetSymbolInfo(argumentExpressionSyntax);
 				var symbol = (IFieldSymbol)symbolInfo.Symbol!;
 				var reference = $"{symbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{symbol.Name}";
 
@@ -719,6 +671,26 @@ public sealed class ValidateTargetTransformer
 
 file static class Extensions
 {
+	public static string? GetMessage(this IObjectCreationOperation attribute)
+	{
+		return attribute
+			?.Initializer
+			?.Initializers
+			.OfType<ISimpleAssignmentOperation>()
+			.FirstOrDefault(
+				a =>
+					string.Equals(
+						((IPropertyReferenceOperation)a.Target).Property.Name,
+						"Message",
+						StringComparison.Ordinal
+					)
+			)
+			?.Value
+			.ConstantValue is { HasValue: true, Value: string s }
+			? SymbolDisplay.FormatLiteral(s, quote: true)
+			: null;
+	}
+
 	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
 		symbol switch
 		{
