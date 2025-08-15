@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -587,34 +586,11 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 file static class Extensions
 {
-	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
-		symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
-
-	public static bool IsNameOfExpression(this ExpressionSyntax syntax, [NotNullWhen(returnValue: true)] out ExpressionSyntax? argumentExpression)
-	{
-		if (syntax is InvocationExpressionSyntax
-			{
-				Expression: SimpleNameSyntax { Identifier.ValueText: "nameof" },
-				ArgumentList.Arguments: [{ Expression: { } expr }],
-			}
-		)
-		{
-			argumentExpression = expr;
-			return true;
-		}
-		else
-		{
-			argumentExpression = null;
-			return false;
-		}
-	}
-
 	public static bool HasValidatedProperties(this INamedTypeSymbol symbol) =>
 		symbol
 			.GetAllMembers()
 			.Any(
 				s => s is IPropertySymbol
-					&& s.GetAttributes()
-						.Any(a => a.AttributeClass.ImplementsValidatorAttribute())
+					&& s.GetAttributes().Any(a => a.AttributeClass.ImplementsValidatorAttribute())
 			);
 }

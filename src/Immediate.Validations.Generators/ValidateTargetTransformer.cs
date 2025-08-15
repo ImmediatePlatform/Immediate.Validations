@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -686,38 +685,6 @@ file static class Extensions
 			.ConstantValue is { HasValue: true, Value: string s }
 			? SymbolDisplay.FormatLiteral(s, quote: true)
 			: null;
-	}
-
-	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
-		symbol switch
-		{
-			IParameterSymbol { Type: var type } => type.IsValidTargetTypeType(),
-			IPropertySymbol { Type: var type } => type.IsValidTargetTypeType(),
-			_ => false,
-		}
-		&& symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
-
-	private static bool IsValidTargetTypeType(this ITypeSymbol? typeSymbol) =>
-		typeSymbol is { SpecialType: SpecialType.System_Object or SpecialType.System_String }
-			or IArrayTypeSymbol { ElementType.SpecialType: SpecialType.System_Object or SpecialType.System_String };
-
-	public static bool IsNameOfExpression(this ExpressionSyntax syntax, [NotNullWhen(returnValue: true)] out ExpressionSyntax? argumentExpression)
-	{
-		if (syntax is InvocationExpressionSyntax
-			{
-				Expression: SimpleNameSyntax { Identifier.ValueText: "nameof" },
-				ArgumentList.Arguments: [{ Expression: { } expr }],
-			}
-		)
-		{
-			argumentExpression = expr;
-			return true;
-		}
-		else
-		{
-			argumentExpression = null;
-			return false;
-		}
 	}
 
 	public static string GetDescription(this ISymbol symbol)

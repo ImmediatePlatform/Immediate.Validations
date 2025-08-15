@@ -320,4 +320,17 @@ internal static class ITypeSymbolExtensions
 
 		return list;
 	}
+
+	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
+		symbol switch
+		{
+			IParameterSymbol { Type: var type } => type.IsValidTargetTypeType(),
+			IPropertySymbol { Type: var type } => type.IsValidTargetTypeType(),
+			_ => false,
+		}
+		&& symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
+
+	private static bool IsValidTargetTypeType(this ITypeSymbol? typeSymbol) =>
+		typeSymbol is { SpecialType: SpecialType.System_Object or SpecialType.System_String }
+			or IArrayTypeSymbol { ElementType.SpecialType: SpecialType.System_Object or SpecialType.System_String };
 }
