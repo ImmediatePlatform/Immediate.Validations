@@ -234,7 +234,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[MaxLength(3)]
+				[element: MaxLength(3)]
 				public required List<string> Id { get; init; }
 
 				public ValidationResult Validate() => [];
@@ -255,7 +255,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0014:MaxLength(3)|}]
+				[element: {|IV0014:MaxLength(3)|}]
 				public required List<int> Id { get; init; }
 
 				public ValidationResult Validate() => [];
@@ -278,7 +278,7 @@ public sealed class ValidateClassAnalyzerTests
 			{
 				public enum ExampleEnum { None = 0, Value = 1 }
 
-				[EnumValue]
+				[element: EnumValue]
 				public required List<ExampleEnum> Id { get; init; }
 
 				public ValidationResult Validate() => [];
@@ -299,7 +299,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0014:EnumValue|}]
+				[element: {|IV0014:EnumValue|}]
 				public required List<int> Id { get; init; }
 
 				public ValidationResult Validate() => [];
@@ -320,7 +320,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[MaxLength(3)]
+				[element: MaxLength(3)]
 				public required string[] Id { get; init; }
 
 				public ValidationResult Validate() => [];
@@ -341,7 +341,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0014:MaxLength(3)|}]
+				[element: {|IV0014:MaxLength(3)|}]
 				public required int[] Id { get; init; }
 
 				public ValidationResult Validate() => [];
@@ -929,6 +929,48 @@ public sealed class ValidateClassAnalyzerTests
 				public required int Id { get; init; }
 
 				private static readonly string[] Values = ["123", "456", "789"];
+
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task ValidValidatorTypeShouldNotWarn17() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[MaxLength(3)]
+				public required List<int> Id { get; init; }
+
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task InvalidValidatorTypeShouldWarn17() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+			
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[{|IV0014:Equal(0)|}]
+				public required List<int> Id { get; init; }
 
 				public ValidationResult Validate() => [];
 				public ValidationResult Validate(ValidationResult errors) => [];

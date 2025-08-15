@@ -60,6 +60,35 @@ public sealed class CollectionTests
 	}
 
 	[Test]
+	public async Task ListStringElementNotEmpty()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				[element: NotEmpty]
+				public required List<string> StringProperty { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
+
+	[Test]
 	public async Task ListListString()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
