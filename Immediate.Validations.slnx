@@ -13,6 +13,7 @@
     <File Path=".github/workflows/release.yml" />
   </Folder>
   <Folder Name="/Source/">
+    <Project Path="src/Common/Common.shproj" />
     <Project Path="src/Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" />
     <Project Path="src/Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" />
     <Project Path="src/Immediate.Validations.Generators/Immediate.Validations.Generators.csproj" />
