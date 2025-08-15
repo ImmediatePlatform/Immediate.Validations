@@ -298,7 +298,7 @@ internal static class ITypeSymbolExtensions
 			}
 		};
 
-	public static IReadOnlyList<(string? Target, IObjectCreationOperation Attribute)> GetTargettedAttributes(
+	public static IReadOnlyList<(string? Target, IObjectCreationOperation Attribute)> GetTargetedAttributes(
 		this IPropertySymbol propertySymbol,
 		SemanticModel semanticModel
 	)

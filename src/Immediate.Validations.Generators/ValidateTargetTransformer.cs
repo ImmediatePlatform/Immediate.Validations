@@ -168,7 +168,7 @@ public sealed class ValidateTargetTransformer
 					property.Name,
 					property.Type,
 					property.NullableAnnotation,
-					property.GetTargettedAttributes(_semanticModel)
+					property.GetTargetedAttributes(_semanticModel)
 				) is { } prop)
 			{
 				properties.Add(prop);
@@ -562,7 +562,7 @@ public sealed class ValidateTargetTransformer
 		string? arrayType
 	)
 	{
-		var parameterName = GetParameterName(constructorParameterSymbol.Name, parameters);
+		var parameterName = GetParameter(constructorParameterSymbol.Name, parameters).Name;
 
 		return new()
 		{
@@ -573,9 +573,6 @@ public sealed class ValidateTargetTransformer
 			ArrayType = arrayType,
 		};
 	}
-
-	private static string GetParameterName(string name, ImmutableArray<IParameterSymbol> parameters) =>
-		GetParameter(name, parameters).Name;
 
 	private static IParameterSymbol GetParameter(string name, ImmutableArray<IParameterSymbol> validateMethodParameters)
 	{
@@ -620,7 +617,7 @@ public sealed class ValidateTargetTransformer
 			}
 			else
 			{
-				var symbolInfo = _semanticModel.GetSymbolInfo(argumentExpression);
+				var symbolInfo = _semanticModel.GetSymbolInfo(argumentExpression, _token);
 
 				var symbol = symbolInfo.Symbol
 					?? symbolInfo.CandidateSymbols
