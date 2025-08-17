@@ -595,7 +595,7 @@ public sealed class ValidateClassAnalyzerTests
 			public sealed partial record Target : IValidationTarget<Target>
 			{
 				[Dummy(
-					{|IV0015:first: nameof(FirstValue)|}, 
+					first: {|IV0015:nameof(FirstValue)|}, 
 					"Hello World", 
 					Third = "Value", 
 					Message = "What's going on?"
@@ -948,7 +948,7 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[MaxLength(3)]
+				[NotEmpty]
 				public required List<int> Id { get; init; }
 
 				public ValidationResult Validate() => [];
@@ -969,8 +969,104 @@ public sealed class ValidateClassAnalyzerTests
 			[Validate]
 			public sealed partial record Target : IValidationTarget<Target>
 			{
-				[{|IV0014:Equal(0)|}]
+				[Equal({|IV0015:0|})]
 				public required List<int> Id { get; init; }
+
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task ValidValidatorTypeShouldNotWarn18() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] object first,
+				string second
+			) : ValidatorAttribute
+			{
+				[TargetType]
+				public required object Third { get; init; }
+
+				public static bool ValidateProperty(
+					string target, 
+					string first,
+					string second,
+					string third,
+					string fourth = "fourth"
+				) =>
+					target == $"{first}-{second}-{third}-{fourth}";
+
+				public const string DefaultMessage = "";
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy(
+					first: "First", 
+					"Hello World", 
+					Third = nameof(ThirdValue), 
+					Message = "What's going on?"
+				)]
+				public required string Id { get; init; }
+
+				public required string ThirdValue { get; init; }
+
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync();
+
+	[Test]
+	public async Task InvalidValidatorTypeShouldWarn18() =>
+		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class DummyAttribute(
+				[TargetType] object first,
+				string second
+			) : ValidatorAttribute
+			{
+				[TargetType]
+				public required object Third { get; init; }
+
+				public static bool ValidateProperty(
+					string target, 
+					string first,
+					string second,
+					string third,
+					string fourth = "fourth"
+				) =>
+					target == $"{first}-{second}-{third}-{fourth}";
+
+				public const string DefaultMessage = "";
+			}
+						
+			[Validate]
+			public sealed partial record Target : IValidationTarget<Target>
+			{
+				[Dummy(
+					first: "First", 
+					"Hello World", 
+					Third = {|IV0015:nameof(ThirdValue)|}, 
+					Message = "What's going on?"
+				)]
+				public required string Id { get; init; }
+
+				public required int ThirdValue { get; init; }
 
 				public ValidationResult Validate() => [];
 				public ValidationResult Validate(ValidationResult errors) => [];
