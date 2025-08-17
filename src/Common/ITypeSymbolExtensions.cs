@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Immediate.Validations;
 
@@ -124,8 +126,8 @@ internal static class ITypeSymbolExtensions
 			},
 		};
 
-	public static bool IsNotNullAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
-		typeSymbol is
+	public static bool IsNotNullAttribute([NotNullWhen(returnValue: true)] this ITypeSymbol? typeSymbol) =>
+		typeSymbol is INamedTypeSymbol
 		{
 			Name: "NotNullAttribute",
 			ContainingNamespace:
@@ -295,4 +297,40 @@ internal static class ITypeSymbolExtensions
 				}
 			}
 		};
+
+	public static IReadOnlyList<(string? Target, IObjectCreationOperation Attribute)> GetTargetedAttributes(
+		this IPropertySymbol propertySymbol,
+		SemanticModel semanticModel
+	)
+	{
+		var propertySyntax = (PropertyDeclarationSyntax)propertySymbol.DeclaringSyntaxReferences.First().GetSyntax();
+
+		var list = new List<(string? Target, IObjectCreationOperation AttributeOperation)>();
+
+		foreach (var attributeList in propertySyntax.AttributeLists)
+		{
+			var target = attributeList.Target?.Identifier.ValueText;
+
+			foreach (var attribute in attributeList.Attributes)
+			{
+				if (semanticModel.GetOperation(attribute) is IAttributeOperation { Operation: IObjectCreationOperation operation })
+					list.Add((target, operation));
+			}
+		}
+
+		return list;
+	}
+
+	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
+		symbol switch
+		{
+			IParameterSymbol { Type: var type } => type.IsValidTargetTypeType(),
+			IPropertySymbol { Type: var type } => type.IsValidTargetTypeType(),
+			_ => false,
+		}
+		&& symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
+
+	private static bool IsValidTargetTypeType(this ITypeSymbol? typeSymbol) =>
+		typeSymbol is { SpecialType: SpecialType.System_Object or SpecialType.System_String }
+			or IArrayTypeSymbol { ElementType.SpecialType: SpecialType.System_Object or SpecialType.System_String };
 }

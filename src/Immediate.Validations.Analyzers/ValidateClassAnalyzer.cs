@@ -1,9 +1,9 @@
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Immediate.Validations.Analyzers;
 
@@ -162,20 +162,33 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 		foreach (var property in symbol.GetMembers().OfType<IPropertySymbol>())
 		{
+			token.ThrowIfCancellationRequested();
+
 			if (property is { IsStatic: true } or { DeclaredAccessibility: not Accessibility.Public })
 				continue;
 
-			foreach (var attribute in property.GetAttributes())
+			foreach (var (target, attribute) in property.GetTargetedAttributes(context.SemanticModel))
 			{
-				var status = ValidateAttribute(context.Compilation, property.Type, attribute.AttributeClass!, token);
+				var targetType = target switch
+				{
+					"element" => property.Type.GetElementType(),
+					_ => property.Type,
+				};
+
+				var status = ValidateAttribute(
+					context.Compilation,
+					targetType,
+					(INamedTypeSymbol)attribute.Type!,
+					token
+				);
 
 				if (status.IncompatibleType)
 				{
 					context.ReportDiagnostic(
 						Diagnostic.Create(
 							ValidatePropertyIncompatibleType,
-							attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation(),
-							attribute.AttributeClass!.Name,
+							attribute.Syntax.GetLocation(),
+							attribute.Type!.Name,
 							property.Name
 						)
 					);
@@ -185,9 +198,9 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 					context.ReportDiagnostic(
 						Diagnostic.Create(
 							ValidateNotNullWhenInvalid,
-							attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation(),
+							attribute.Syntax.GetLocation(),
 							property.Name,
-							property.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
+							targetType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
 						)
 					);
 				}
@@ -198,7 +211,8 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 						members,
 						attribute,
 						status.ValidateParameterSymbols,
-						property.Type
+						property.Type,
+						token
 					);
 				}
 			}
@@ -266,12 +280,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				? ((INamedTypeSymbol)propertyType).TypeArguments[0]
 				: propertyType;
 
-			var conversion = compilation.ClassifyConversion(baseType, targetParameterType);
-			if (conversion is { IsIdentity: true }
-					or { IsImplicit: true, IsReference: true }
-					or { IsImplicit: true, IsNullable: true }
-					or { IsBoxing: true }
-			)
+			if (compilation.ClassifyConversion(baseType, targetParameterType).IsValidConversion())
 			{
 				return new()
 				{
@@ -281,127 +290,100 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			}
 		}
 
-		token.ThrowIfCancellationRequested();
-
-		return propertyType switch
-		{
-			IArrayTypeSymbol ats =>
-				ValidateAttribute(
-					compilation,
-					ats.ElementType,
-					attributeSymbol,
-					token
-				),
-
-			INamedTypeSymbol
-			{
-				IsGenericType: true,
-				TypeArguments: [{ } type],
-				TypeArgumentNullableAnnotations: [{ } annotation],
-			} nts when nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
-				ValidateAttribute(
-					compilation,
-					type,
-					attributeSymbol,
-					token
-				),
-
-			_ => new() { IncompatibleType = true, },
-		};
+		return new() { IncompatibleType = true, };
 	}
 
 	private static void ValidateArguments(
 		SyntaxNodeAnalysisContext context,
 		List<ISymbol> members,
-		AttributeData attribute,
+		IObjectCreationOperation attribute,
 		ImmutableArray<IParameterSymbol> validateParameterSymbols,
-		ITypeSymbol typeArgumentType
+		ITypeSymbol typeArgumentType,
+		CancellationToken token
 	)
 	{
-		var attributeSyntax = (AttributeSyntax)attribute.ApplicationSyntaxReference!.GetSyntax();
-		var argumentListSyntax = attributeSyntax.ArgumentList?.Arguments ?? [];
-
-		if (argumentListSyntax.Count == 0)
+		if (attribute.Constructor is null)
 			return;
 
-		var attributeParameters = attribute.AttributeConstructor!.Parameters;
-		var attributeParameterIndex = 0;
-
-		List<IPropertySymbol>? attributeProperties = null;
-
-		for (var i = 0; i < argumentListSyntax.Count; i++)
+		foreach (var argument in attribute.Arguments)
 		{
-			switch (argumentListSyntax[i])
+			token.ThrowIfCancellationRequested();
+
+			var constructorParameter = argument.Parameter!;
+
+			if (constructorParameter.Type is not IArrayTypeSymbol { ElementType: { } })
 			{
-				case { NameEquals.Name.Identifier.ValueText: var name }:
+				if (argument.Syntax is AttributeArgumentSyntax aas)
 				{
-					if (name is "Message")
-						break;
-
-					attributeProperties ??= [.. attribute.AttributeClass!.GetMembers().OfType<IPropertySymbol>()];
-
-					var property = attributeProperties
-						.First(a => string.Equals(a.Name, name, StringComparison.Ordinal));
-
 					ValidateArgument(
 						context,
-						argumentListSyntax[i],
-						property,
+						aas.Expression,
+						constructorParameter,
 						validateParameterSymbols,
 						typeArgumentType,
 						members
 					);
-
-					break;
 				}
 
-				case { NameColon.Name.Identifier.ValueText: var name }:
+				continue;
+			}
+
+			if (argument.Value is not IArrayCreationOperation
 				{
-					for (var j = 0; j < attributeParameters.Length; j++)
+					Initializer.ElementValues: { } elements
+				})
+			{
+				return;
+			}
+
+			foreach (var element in elements)
+			{
+				ValidateArgument(
+					context,
+					(ExpressionSyntax)element.Syntax,
+					constructorParameter,
+					validateParameterSymbols,
+					typeArgumentType,
+					members
+				);
+			}
+		}
+
+		if (attribute.Initializer?.Initializers is { } initializers)
+		{
+			foreach (var initializer in initializers)
+			{
+				token.ThrowIfCancellationRequested();
+
+				if (initializer is not ISimpleAssignmentOperation
 					{
-						if (string.Equals(attributeParameters[j].Name, name, StringComparison.Ordinal))
-						{
-							ValidateArgument(
-								context,
-								argumentListSyntax[i],
-								attributeParameters[j],
-								validateParameterSymbols,
-								typeArgumentType,
-								members
-							);
-
-							break;
-						}
-					}
-
-					attributeParameterIndex++;
-					break;
-				}
-
-				default:
+						Target: IPropertyReferenceOperation { Property: { } property }
+					})
 				{
-					var attributeParameter = attributeParameters[attributeParameterIndex];
-					ValidateArgument(
-						context,
-						argumentListSyntax[i],
-						attributeParameter,
-						validateParameterSymbols,
-						typeArgumentType,
-						members
-					);
-
-					if (!attributeParameter.IsParams)
-						attributeParameterIndex++;
-
-					break;
+					return;
 				}
+
+				if (property.Name is "Message")
+					continue;
+
+				if (initializer.Syntax is not AttributeArgumentSyntax aas)
+					return;
+
+				ValidateArgument(
+					context,
+					aas.Expression,
+					property,
+					validateParameterSymbols,
+					typeArgumentType,
+					members
+				);
 			}
 		}
 	}
 
 	private static void ValidateArgument(
 		SyntaxNodeAnalysisContext context,
-		AttributeArgumentSyntax syntax,
+		ExpressionSyntax syntax,
 		ISymbol parameter,
 		ImmutableArray<IParameterSymbol> validateParameterSymbols,
 		ITypeSymbol typeArgumentType,
@@ -412,7 +394,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			return;
 
 		var validateParameter = validateParameterSymbols
-			.First(p => string.Equals(p.Name, parameter.Name, StringComparison.Ordinal));
+			.First(p => string.Equals(p.Name, parameter.Name, StringComparison.OrdinalIgnoreCase));
 
 		var argumentType = GetArgumentType(
 			context,
@@ -438,11 +420,11 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 	private static ITypeSymbol? GetArgumentType(
 		SyntaxNodeAnalysisContext context,
-		AttributeArgumentSyntax syntax,
+		ExpressionSyntax syntax,
 		List<ISymbol> members
 	)
 	{
-		if (syntax.Expression.IsNameOfExpression(out var argumentExpression))
+		if (syntax.IsNameOfExpression(out var argumentExpression))
 		{
 			var argumentSymbol = GetArgumentSymbol(
 				context,
@@ -466,21 +448,22 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		}
 		else
 		{
-			if (context.SemanticModel.GetOperation(syntax.Expression)?.Type is not ITypeSymbol argumentType)
-				return null;
-
-			return argumentType;
+			return context.SemanticModel.GetOperation(syntax, context.CancellationToken)?.Type switch
+			{
+				ITypeSymbol argumentType => argumentType,
+				_ => null,
+			};
 		}
 	}
 
 	private static ISymbol? GetArgumentSymbol(
 		SyntaxNodeAnalysisContext context,
-		AttributeArgumentSyntax syntax,
-		ExpressionSyntax argumentExpression,
+		ExpressionSyntax argumentExpressionSyntax,
+		ExpressionSyntax nameofExpression,
 		List<ISymbol> members
 	)
 	{
-		if (argumentExpression is SimpleNameSyntax { Identifier.ValueText: { } name })
+		if (nameofExpression is SimpleNameSyntax { Identifier.ValueText: { } name })
 		{
 			var member = members
 				.Find(p => string.Equals(p.Name, name, StringComparison.Ordinal));
@@ -490,7 +473,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				context.ReportDiagnostic(
 					Diagnostic.Create(
 						ValidateParameterNameofInvalid,
-						syntax.GetLocation(),
+						argumentExpressionSyntax.GetLocation(),
 						name,
 						FormattableString.Invariant($"a property or method on the class `{context.ContainingSymbol!.Name}`")
 					)
@@ -503,7 +486,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 		}
 		else
 		{
-			var symbolInfo = context.SemanticModel.GetSymbolInfo(argumentExpression);
+			var symbolInfo = context.SemanticModel.GetSymbolInfo(nameofExpression, context.CancellationToken);
 
 			var symbol = symbolInfo.Symbol
 				?? symbolInfo.CandidateSymbols
@@ -522,7 +505,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				context.ReportDiagnostic(
 					Diagnostic.Create(
 						ValidateParameterNameofInvalid,
-						syntax.GetLocation(),
+						argumentExpressionSyntax.GetLocation(),
 						symbol.Name,
 						FormattableString.Invariant($"a property or method on the class `{context.ContainingSymbol!.Name}` or a static member of another class")
 					)
@@ -536,7 +519,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 				context.ReportDiagnostic(
 					Diagnostic.Create(
 						ValidateParameterNameofInvalid,
-						syntax.GetLocation(),
+						argumentExpressionSyntax.GetLocation(),
 						symbol.Name,
 						FormattableString.Invariant($"a static member of the class `{symbol.ContainingType.Name}`")
 					)
@@ -587,34 +570,29 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 file static class Extensions
 {
-	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
-		symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
-
-	public static bool IsNameOfExpression(this ExpressionSyntax syntax, [NotNullWhen(returnValue: true)] out ExpressionSyntax? argumentExpression)
-	{
-		if (syntax is InvocationExpressionSyntax
-			{
-				Expression: SimpleNameSyntax { Identifier.ValueText: "nameof" },
-				ArgumentList.Arguments: [{ Expression: { } expr }],
-			}
-		)
-		{
-			argumentExpression = expr;
-			return true;
-		}
-		else
-		{
-			argumentExpression = null;
-			return false;
-		}
-	}
-
 	public static bool HasValidatedProperties(this INamedTypeSymbol symbol) =>
 		symbol
 			.GetAllMembers()
 			.Any(
 				s => s is IPropertySymbol
-					&& s.GetAttributes()
-						.Any(a => a.AttributeClass.ImplementsValidatorAttribute())
+					&& s.GetAttributes().Any(a => a.AttributeClass.ImplementsValidatorAttribute())
 			);
+
+	public static ITypeSymbol GetElementType(this ITypeSymbol typeSymbol) =>
+		typeSymbol switch
+		{
+			IArrayTypeSymbol { ElementType: { } elementType } => elementType.GetElementType(),
+
+			INamedTypeSymbol
+			{
+				IsGenericType: true,
+				TypeArguments: [{ } type],
+			} nts when
+				nts.IsICollection1()
+				|| nts.IsIReadOnlyCollection1()
+				|| nts.AllInterfaces.Any(i => i.IsICollection1() || i.IsIReadOnlyCollection1()) =>
+				type.GetElementType(),
+
+			_ => typeSymbol,
+		};
 }
