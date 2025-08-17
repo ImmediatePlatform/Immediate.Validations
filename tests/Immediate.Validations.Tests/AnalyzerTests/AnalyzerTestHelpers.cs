@@ -120,6 +120,12 @@ public static class AnalyzerTestHelpers
 					"8.0.0"),
 				Path.Combine("ref", "net8.0")
 			),
+			CompilerDiagnostics = CompilerDiagnostics.Warnings,
+			DisabledDiagnostics =
+			{
+				"CS1591",
+				"CS8767",
+			},
 		};
 
 		test.TestState.AdditionalReferences
