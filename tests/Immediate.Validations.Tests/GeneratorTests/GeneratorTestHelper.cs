@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using Immediate.Validations.Generators;
 using Microsoft.CodeAnalysis;
@@ -28,10 +29,28 @@ public static class GeneratorTestHelper
 			)
 		);
 
-		var generator = new ImmediateValidationsGenerator();
+		var clone = compilation.Clone().AddSyntaxTrees(CSharpSyntaxTree.ParseText("// dummy"));
 
-		var driver = CSharpGeneratorDriver
-			.Create(generator)
+		GeneratorDriver driver = CSharpGeneratorDriver.Create(
+			generators: [new ImmediateValidationsGenerator().AsSourceGenerator()],
+			driverOptions: new GeneratorDriverOptions(default, trackIncrementalGeneratorSteps: true)
+		);
+
+		var result1 = RunGenerator(ref driver, compilation);
+		var result2 = RunGenerator(ref driver, clone);
+
+		foreach (var (_, step) in result2.Results[0].TrackedOutputSteps)
+			AssertSteps(step);
+
+		return result1;
+	}
+
+	private static GeneratorDriverRunResult RunGenerator(
+		ref GeneratorDriver driver,
+		Compilation compilation
+	)
+	{
+		driver = driver
 			.RunGeneratorsAndUpdateCompilation(
 				compilation,
 				out var outputCompilation,
@@ -46,5 +65,14 @@ public static class GeneratorTestHelper
 
 		Assert.Empty(diagnostics);
 		return driver.GetRunResult();
+	}
+
+	private static void AssertSteps(
+		ImmutableArray<IncrementalGeneratorRunStep> steps
+	)
+	{
+		var outputs = steps.SelectMany(o => o.Outputs);
+
+		Assert.All(outputs, o => Assert.True(o.Reason is IncrementalStepRunReason.Unchanged or IncrementalStepRunReason.Cached));
 	}
 }
