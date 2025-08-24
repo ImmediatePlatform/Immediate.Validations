@@ -27,7 +27,7 @@ public sealed partial class AdditionalValidationsTests
 		}
 	}
 
-	[Test]
+	[Fact]
 	public void EvenIdNoErrors()
 	{
 		var record = new ValidateRecord { Id = 2 };
@@ -37,7 +37,7 @@ public sealed partial class AdditionalValidationsTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void OddIdWithErrors()
 	{
 		var record = new ValidateRecord { Id = 1 };
@@ -56,7 +56,7 @@ public sealed partial class AdditionalValidationsTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void ZeroWithErrors()
 	{
 		var record = new ValidateRecord { Id = 0 };

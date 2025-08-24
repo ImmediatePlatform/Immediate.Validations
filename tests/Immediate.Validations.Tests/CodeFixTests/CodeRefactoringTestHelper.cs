@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
@@ -18,8 +19,8 @@ public static class CodeRefactoringTestHelper
 	    """;
 
 	public static CSharpCodeRefactoringTest<TRefactoring, DefaultVerifier> CreateCodeRefactoringTest<TRefactoring>(
-		string inputSource,
-		string fixedSource,
+		[StringSyntax("c#-test")] string inputSource,
+		[StringSyntax("c#-test")] string fixedSource,
 		int codeActionIndex = 0
 	)
 		where TRefactoring : CodeRefactoringProvider, new()

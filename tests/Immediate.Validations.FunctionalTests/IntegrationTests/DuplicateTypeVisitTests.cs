@@ -21,7 +21,7 @@ public sealed partial class DuplicateTypeVisitTests
 	[Validate]
 	public sealed partial record ValidateRecord : IBaseInterface, ISubInterface, IValidationTarget<ValidateRecord>;
 
-	[Test]
+	[Fact]
 	public void TypeValidatorsAreVisitedAtMostOnce()
 	{
 		var record = new ValidateRecord();

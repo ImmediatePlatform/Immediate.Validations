@@ -6,7 +6,7 @@ namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
 public sealed class ValidatorLocalizerTests
 {
-	[Test]
+	[Fact]
 	public void GetAllStringsReturnsCorrectLocalizationsForCurrentCulture()
 	{
 		var localizer = new ValidatorLocalizer();
@@ -22,7 +22,7 @@ public sealed class ValidatorLocalizerTests
 				&& string.Equals(s.Value, "'{PropertyName}' must be empty.", StringComparison.Ordinal));
 	}
 
-	[Test]
+	[Fact]
 	public void IndexerReturnsCorrectLocalizedStringForCurrentCulture()
 	{
 		var localizer = new ValidatorLocalizer();
@@ -35,7 +35,7 @@ public sealed class ValidatorLocalizerTests
 		Assert.Equal("'{PropertyName}' doit être vide.", localizedString.Value);
 	}
 
-	[Test]
+	[Fact]
 	public void IndexerReturnsNameWhenLocalizationNotFound()
 	{
 		var localizer = new ValidatorLocalizer();
@@ -49,7 +49,7 @@ public sealed class ValidatorLocalizerTests
 		Assert.True(localizedString.ResourceNotFound);
 	}
 
-	[Test]
+	[Fact]
 	public void IndexerFallsBackToEnglishWhenCultureNotFound()
 	{
 		var localizer = new ValidatorLocalizer();
@@ -62,7 +62,7 @@ public sealed class ValidatorLocalizerTests
 		Assert.Equal("'{PropertyName}' must be empty.", localizedString.Value);
 	}
 
-	[Test]
+	[Fact]
 	public void IndexerWithArgumentsReturnsCorrectLocalizedString()
 	{
 		var localizer = new ValidatorLocalizer();

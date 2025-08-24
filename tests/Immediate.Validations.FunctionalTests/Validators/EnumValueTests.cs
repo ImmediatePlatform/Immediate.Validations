@@ -31,7 +31,7 @@ public sealed partial class EnumValueTests
 		public required FlagsState ValidState { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void EnumValidValue()
 	{
 		var instance = new EnumRecord { ValidState = ValidState.Valid };
@@ -41,7 +41,7 @@ public sealed partial class EnumValueTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void EnumInvalidValue()
 	{
 		var instance = new EnumRecord { ValidState = (ValidState)3 };
@@ -60,7 +60,7 @@ public sealed partial class EnumValueTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void FlagsEnumValidValue()
 	{
 		var instance = new FlagsEnumRecord { ValidState = FlagsState.Valid };
@@ -70,7 +70,7 @@ public sealed partial class EnumValueTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void FlagsEnumValidFlags()
 	{
 		var instance = new FlagsEnumRecord { ValidState = FlagsState.Valid | FlagsState.Invalid };
@@ -80,7 +80,7 @@ public sealed partial class EnumValueTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void FlagsEnumInvalidValue()
 	{
 		var instance = new FlagsEnumRecord { ValidState = (FlagsState)4 };

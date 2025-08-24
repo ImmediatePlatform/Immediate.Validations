@@ -5,7 +5,7 @@ namespace Immediate.Validations.Tests.CodeFixTests;
 
 public sealed class AddIValidationTargetCodefixProviderTests
 {
-	[Test]
+	[Fact]
 	public async Task AddIValidationTargetNoBaseTypes() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidateClassAnalyzer, AddIValidationTargetCodefixProvider>(
 			"""
@@ -24,9 +24,9 @@ public sealed class AddIValidationTargetCodefixProviderTests
 			{
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task AddIValidationTargetWithBaseType() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidateClassAnalyzer, AddIValidationTargetCodefixProvider>(
 			"""
@@ -51,5 +51,5 @@ public sealed class AddIValidationTargetCodefixProviderTests
 				public void Dispose() { }
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 }

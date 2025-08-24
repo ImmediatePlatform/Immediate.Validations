@@ -11,7 +11,7 @@ public sealed partial class MinLengthTests
 		public required string StringValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void MinLengthWhenShort()
 	{
 		var instance = new StringRecord { StringValue = "Hello World! Hello World! Hello World!" };
@@ -21,7 +21,7 @@ public sealed partial class MinLengthTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void MinLengthWhenLong()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };

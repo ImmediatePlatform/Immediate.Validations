@@ -18,7 +18,7 @@ public sealed partial class NotNullTests
 		public required string StringValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void StringNotNullTestWhenNotNull()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };
@@ -28,7 +28,7 @@ public sealed partial class NotNullTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void StringNotNullTestWhenNull()
 	{
 		var instance = new StringRecord { StringValue = null! };
@@ -47,7 +47,7 @@ public sealed partial class NotNullTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void StringAllowedNullTestWhenNotNull()
 	{
 		var instance = new AllowNullRecord { StringValue = "Hello World!" };
@@ -57,7 +57,7 @@ public sealed partial class NotNullTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void StringAllowedNullTestWhenNull()
 	{
 		var instance = new AllowNullRecord { StringValue = null };

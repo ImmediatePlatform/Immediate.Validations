@@ -19,7 +19,7 @@ public sealed partial class EqualTests
 		public required string KeyValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void IntEqualRecordWhenZero()
 	{
 		var instance = new IntEqualRecord { IntValue = 0 };
@@ -29,7 +29,7 @@ public sealed partial class EqualTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void IntEqualRecordWhenNotZero()
 	{
 		var instance = new IntEqualRecord { IntValue = 1 };
@@ -48,7 +48,7 @@ public sealed partial class EqualTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void StringEqualRecordWhenEqual()
 	{
 		var instance = new StringEqualRecord { StringValue = "Test", KeyValue = "Test" };
@@ -58,7 +58,7 @@ public sealed partial class EqualTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void StringEqualRecordWhenNotEqual()
 	{
 		var instance = new StringEqualRecord { StringValue = "asdf", KeyValue = "Test" };

@@ -5,7 +5,7 @@ namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
 public sealed class FullHandlerTests
 {
-	[Test]
+	[Fact]
 	public async Task FullTestWithValidData()
 	{
 		var services = new ServiceCollection();
@@ -24,11 +24,12 @@ public sealed class FullHandlerTests
 				Name = "Hello World!",
 				Status = SaveRecord.Status.Open,
 				Value = 3,
-			}
+			},
+			TestContext.Current.CancellationToken
 		);
 	}
 
-	[Test]
+	[Fact]
 	public async Task FullTestWithNullData()
 	{
 		var services = new ServiceCollection();
@@ -43,7 +44,8 @@ public sealed class FullHandlerTests
 
 		var ex = await Assert.ThrowsAsync<ValidationException>(async () =>
 			await handler.HandleAsync(
-				null!
+				null!,
+				TestContext.Current.CancellationToken
 			)
 		);
 
@@ -59,7 +61,7 @@ public sealed class FullHandlerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public async Task FullTestWithNullName()
 	{
 		var services = new ServiceCollection();
@@ -79,7 +81,8 @@ public sealed class FullHandlerTests
 					Name = null!,
 					Status = SaveRecord.Status.Open,
 					Value = 3,
-				}
+				},
+				TestContext.Current.CancellationToken
 			)
 		);
 
@@ -95,7 +98,7 @@ public sealed class FullHandlerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public async Task FullTestWithEmptyName()
 	{
 		var services = new ServiceCollection();
@@ -115,7 +118,8 @@ public sealed class FullHandlerTests
 					Name = "",
 					Status = SaveRecord.Status.Open,
 					Value = 3,
-				}
+				},
+				TestContext.Current.CancellationToken
 			)
 		);
 
@@ -131,7 +135,7 @@ public sealed class FullHandlerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public async Task FullTestWithInvalidStatus()
 	{
 		var services = new ServiceCollection();
@@ -151,7 +155,8 @@ public sealed class FullHandlerTests
 					Name = "Hello World!",
 					Status = (SaveRecord.Status)10,
 					Value = 3,
-				}
+				},
+				TestContext.Current.CancellationToken
 			)
 		);
 
@@ -167,7 +172,7 @@ public sealed class FullHandlerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public async Task FullTestWithInvalidValue()
 	{
 		var services = new ServiceCollection();
@@ -187,7 +192,8 @@ public sealed class FullHandlerTests
 					Name = "Hello World!",
 					Status = SaveRecord.Status.Open,
 					Value = -1,
-				}
+				},
+				TestContext.Current.CancellationToken
 			)
 		);
 

@@ -5,7 +5,7 @@ namespace Immediate.Validations.Tests.CodeFixTests;
 
 public sealed class MakeValidatePropertyMethodStaticCodefixProviderTests
 {
-	[Test]
+	[Fact]
 	public async Task MakeValidatePropertyMethodStatic() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, MakeValidatePropertyMethodStaticCodefixProvider>(
 			$$"""
@@ -28,5 +28,5 @@ public sealed class MakeValidatePropertyMethodStaticCodefixProviderTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 }

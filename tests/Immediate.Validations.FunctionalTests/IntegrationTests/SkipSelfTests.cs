@@ -16,7 +16,7 @@ public sealed partial class SkipSelfTests
 		public required string IgnoredString { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void SkipSelfOperatesCorrectly()
 	{
 		var instance = new SubClass { BaseString = null!, IgnoredString = null!, };
