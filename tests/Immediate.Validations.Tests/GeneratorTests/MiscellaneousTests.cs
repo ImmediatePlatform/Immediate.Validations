@@ -2,7 +2,7 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public sealed class MiscellaneousTests
 {
-	[Test]
+	[Fact]
 	public async Task FilledDescriptionChangesName()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -29,7 +29,7 @@ public sealed class MiscellaneousTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task EmptyDescriptionDoesntChangeName()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -56,7 +56,7 @@ public sealed class MiscellaneousTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task MultipleImplementedInterfacesBuildsCorrectly()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -83,7 +83,7 @@ public sealed class MiscellaneousTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task SkipSelfProperlySkipsSelf()
 	{
 		var result = GeneratorTestHelper.RunGenerator(

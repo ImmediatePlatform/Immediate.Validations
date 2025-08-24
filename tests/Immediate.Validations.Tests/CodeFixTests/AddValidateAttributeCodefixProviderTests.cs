@@ -5,7 +5,7 @@ namespace Immediate.Validations.Tests.CodeFixTests;
 
 public sealed class AddValidateAttributeCodefixProviderTests
 {
-	[Test]
+	[Fact]
 	public async Task AddValidateAttribute() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidateClassAnalyzer, AddValidateAttributeCodefixProvider>(
 			"""
@@ -31,5 +31,5 @@ public sealed class AddValidateAttributeCodefixProviderTests
 				public static ValidationResult Validate(Data target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 }

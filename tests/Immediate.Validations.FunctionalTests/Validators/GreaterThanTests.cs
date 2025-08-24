@@ -19,7 +19,7 @@ public sealed partial class GreaterThanTests
 		public required string KeyValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void IntGreaterThanRecordWhenZero()
 	{
 		var instance = new IntGreaterThanRecord { IntValue = 1 };
@@ -29,7 +29,7 @@ public sealed partial class GreaterThanTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void IntGreaterThanRecordWhenNotZero()
 	{
 		var instance = new IntGreaterThanRecord { IntValue = 0 };
@@ -48,7 +48,7 @@ public sealed partial class GreaterThanTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void StringGreaterThanRecordWhenGreaterThan()
 	{
 		var instance = new StringGreaterThanRecord { StringValue = "Qax", KeyValue = "Foo" };
@@ -58,7 +58,7 @@ public sealed partial class GreaterThanTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void StringGreaterThanRecordWhenNotGreaterThan()
 	{
 		var instance = new StringGreaterThanRecord { StringValue = "Foo", KeyValue = "Foo" };

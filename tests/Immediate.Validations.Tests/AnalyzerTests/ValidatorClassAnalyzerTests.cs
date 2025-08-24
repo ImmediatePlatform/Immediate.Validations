@@ -4,7 +4,7 @@ namespace Immediate.Validations.Tests.AnalyzerTests;
 
 public sealed class ValidatorClassAnalyzerTests
 {
-	[Test]
+	[Fact]
 	public async Task NonValidatorShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -17,9 +17,9 @@ public sealed class ValidatorClassAnalyzerTests
 				}
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task CorrectlyDefinedValidatorShouldNotWarn1() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -35,9 +35,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task CorrectlyDefinedValidatorShouldNotWarn2() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -53,9 +53,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public static string DefaultMessage => "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task CorrectlyDefinedValidatorShouldNotWarn3() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -73,9 +73,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task CorrectlyDefinedValidatorShouldNotWarn4() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -95,9 +95,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task CorrectlyDefinedValidatorShouldNotWarn5() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -117,9 +117,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task CorrectlyDefinedValidatorShouldNotWarn6() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -138,9 +138,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task CorrectlyDefinedValidatorShouldNotWarn7() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -160,9 +160,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task MissingValidateMethodShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -175,9 +175,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InstanceValidateMethodShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -193,9 +193,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task DuplicateValidateMethodsShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -218,9 +218,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodIncorrectReturnShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -238,9 +238,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodMissingParameterFromPropertyShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -258,9 +258,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodMissingParameterFromParameterShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -278,9 +278,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodExtraParameterShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -296,9 +296,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodGeneralParameterVarianceFromPropertyShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -323,9 +323,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodGeneralParameterVarianceFromParametersShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -350,9 +350,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodMismatchTypesShouldWarn1() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -370,9 +370,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodMismatchTypesShouldWarn2() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -390,9 +390,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodMismatchTypesShouldWarn3() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -408,9 +408,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodMismatchTypesShouldWarn4() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -426,9 +426,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidateMethodMismatchTypesShouldWarn5() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -444,9 +444,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidatePropertyMissingRequiredShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -464,9 +464,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidatorMultipleConstructors() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -485,9 +485,9 @@ public sealed class ValidatorClassAnalyzerTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidatorWithNoDefaultMessageShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidatorClassAnalyzer>(
 			"""
@@ -501,5 +501,5 @@ public sealed class ValidatorClassAnalyzerTests
 					value > operand;
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 }

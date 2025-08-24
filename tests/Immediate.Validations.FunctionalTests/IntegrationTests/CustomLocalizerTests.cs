@@ -4,7 +4,10 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
-[NotInParallel]
+[CollectionDefinition("CustomLocalizerTests", DisableParallelization = true)]
+public sealed class CustomLocalizer : ICollectionFixture<CustomLocalizer>;
+
+[Collection("CustomLocalizerTests")]
 public sealed partial class CustomLocalizerTests
 {
 	[Validate]
@@ -20,7 +23,7 @@ public sealed partial class CustomLocalizerTests
 		public required string Value { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void EnLocalizedMessage()
 	{
 		using var scope = new LocalizerScope("en-US");
@@ -41,7 +44,7 @@ public sealed partial class CustomLocalizerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void FrLocalizedMessage()
 	{
 		using var scope = new LocalizerScope("fr-CA");
@@ -62,7 +65,7 @@ public sealed partial class CustomLocalizerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void EnLocalizedNotNullMessage()
 	{
 		using var scope = new LocalizerScope("en-US");
@@ -83,7 +86,7 @@ public sealed partial class CustomLocalizerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void FrLocalizedNotNullMessage()
 	{
 		using var scope = new LocalizerScope("fr-CA");

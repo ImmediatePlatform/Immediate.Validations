@@ -42,7 +42,7 @@ public sealed partial class OneOfTests
 		public required Dummy EnumValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void StringValueIsOneOfNoErrors()
 	{
 		var instance = new StringRecord { StringValue = "123" };
@@ -52,7 +52,7 @@ public sealed partial class OneOfTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void StringValueIsNotOneOfHasErrors()
 	{
 		var instance = new StringRecord { StringValue = "124" };
@@ -71,7 +71,7 @@ public sealed partial class OneOfTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void IntValueIsOneOfNoErrors()
 	{
 		var instance = new IntRecord { IntValue = 123 };
@@ -81,7 +81,7 @@ public sealed partial class OneOfTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void IntValueIsNotOneOfHasErrors()
 	{
 		var instance = new IntRecord { IntValue = 124 };
@@ -100,7 +100,7 @@ public sealed partial class OneOfTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void IntFieldValueIsOneOfNoErrors()
 	{
 		var instance = new IntFieldRecord { IntValue = 123 };
@@ -110,7 +110,7 @@ public sealed partial class OneOfTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void IntFieldValueIsNotOneOfHasErrors()
 	{
 		var instance = new IntFieldRecord { IntValue = 124 };
@@ -129,7 +129,7 @@ public sealed partial class OneOfTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void EnumValueIsOneOfNoErrors()
 	{
 		var instance = new EnumRecord { EnumValue = Dummy.Value1 };
@@ -139,7 +139,7 @@ public sealed partial class OneOfTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void EnumValueIsNotOneOfHasErrors()
 	{
 		var instance = new EnumRecord { EnumValue = Dummy.Value3 };

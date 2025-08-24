@@ -8,7 +8,7 @@ public sealed class InvalidAttributeTargetSuppressorTests
 	public static readonly DiagnosticResult CS0658 =
 		DiagnosticResult.CompilerWarning("CS0658");
 
-	[Test]
+	[Fact]
 	public async Task ElementAttributeInValidatorListIsSuppressed() =>
 		await AnalyzerTestHelpers
 			.CreateSuppressorTest<InvalidAttributeTargetSuppressor>(
@@ -35,9 +35,9 @@ public sealed class InvalidAttributeTargetSuppressorTests
 			.WithExpectedDiagnosticsResults([
 				CS0658.WithLocation(0).WithIsSuppressed(true),
 			])
-			.RunAsync();
+			.RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ElementAttributeInValidatorArrayIsSuppressed() =>
 		await AnalyzerTestHelpers
 			.CreateSuppressorTest<InvalidAttributeTargetSuppressor>(
@@ -64,9 +64,9 @@ public sealed class InvalidAttributeTargetSuppressorTests
 			.WithExpectedDiagnosticsResults([
 				CS0658.WithLocation(0).WithIsSuppressed(true),
 			])
-			.RunAsync();
+			.RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ElementAttributeNotInValidatorIsNotSuppressed() =>
 		await AnalyzerTestHelpers
 			.CreateSuppressorTest<InvalidAttributeTargetSuppressor>(
@@ -92,9 +92,9 @@ public sealed class InvalidAttributeTargetSuppressorTests
 			.WithExpectedDiagnosticsResults([
 				CS0658.WithLocation(0).WithIsSuppressed(false),
 			])
-			.RunAsync();
+			.RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NonElementAttributeInValidatorIsNotSuppressed() =>
 		await AnalyzerTestHelpers
 			.CreateSuppressorTest<InvalidAttributeTargetSuppressor>(
@@ -121,9 +121,9 @@ public sealed class InvalidAttributeTargetSuppressorTests
 			.WithExpectedDiagnosticsResults([
 				CS0658.WithLocation(0).WithIsSuppressed(false),
 			])
-			.RunAsync();
+			.RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ElementAttributeInValidatorOnMethodIsNotSuppressed() =>
 		await AnalyzerTestHelpers
 			.CreateSuppressorTest<InvalidAttributeTargetSuppressor>(
@@ -150,9 +150,9 @@ public sealed class InvalidAttributeTargetSuppressorTests
 			.WithExpectedDiagnosticsResults([
 				CS0658.WithLocation(0).WithIsSuppressed(false),
 			])
-			.RunAsync();
+			.RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ElementAttributeInValidatorNonCollectionIsNotSuppressed() =>
 		await AnalyzerTestHelpers
 			.CreateSuppressorTest<InvalidAttributeTargetSuppressor>(
@@ -179,5 +179,5 @@ public sealed class InvalidAttributeTargetSuppressorTests
 			.WithExpectedDiagnosticsResults([
 				CS0658.WithLocation(0).WithIsSuppressed(false),
 			])
-			.RunAsync();
+			.RunAsync(TestContext.Current.CancellationToken);
 }

@@ -2,7 +2,7 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public sealed class ValidatorArgumentTests
 {
-	[Test]
+	[Fact]
 	public async Task ConstantAttributeArgument()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -32,7 +32,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task EqualValidatorSimple()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -60,7 +60,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task EqualValidatorMessage()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -88,7 +88,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task EqualValidatorNameof()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -117,7 +117,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task EqualValidatorNameofStatic()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -146,7 +146,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task MaxLengthValidatorSimple()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -174,7 +174,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task MaxLengthValidatorMessage()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -202,7 +202,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task MaxLengthValidatorNameof()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -231,7 +231,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task MaxLengthValidatorNameofStatic()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -260,7 +260,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task MethodAttributeArgument()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -290,7 +290,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task StaticMethodAttributeArgument()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -320,7 +320,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task FieldAttributeArgument()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -350,7 +350,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task StaticFieldAttributeArgument()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -380,7 +380,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task EnumAttributeArgument()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -410,7 +410,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task NameOfSimpleClassConst()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -443,7 +443,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task NameOfSimpleClassField()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -476,7 +476,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task NameOfSimpleClassProperty()
 	{
 		var result = GeneratorTestHelper.RunGenerator(
@@ -509,7 +509,7 @@ public sealed class ValidatorArgumentTests
 		_ = await Verify(result);
 	}
 
-	[Test]
+	[Fact]
 	public async Task NameOfSimpleClassMethod()
 	{
 		var result = GeneratorTestHelper.RunGenerator(

@@ -16,7 +16,7 @@ public sealed partial class StructTests
 		public required string StringProperty { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void ValidRecordStruct()
 	{
 		var rs = new RecordStructTarget { StringProperty = "Hello World!" };
@@ -26,7 +26,7 @@ public sealed partial class StructTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidRecordStructNullProperty()
 	{
 		var rs = new RecordStructTarget { StringProperty = null! };
@@ -45,7 +45,7 @@ public sealed partial class StructTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void ValidStruct()
 	{
 		var rs = new StructTarget { StringProperty = "Hello World!" };
@@ -55,7 +55,7 @@ public sealed partial class StructTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidStructNullProperty()
 	{
 		var rs = new StructTarget { StringProperty = null! };

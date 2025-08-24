@@ -18,7 +18,7 @@ public sealed partial class CollectionTests
 		public required IReadOnlyList<IReadOnlyList<string>> Strings { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void ValidRecordNoErrors()
 	{
 		var record = new ListStringRecord { Strings = [["Hello World!"]] };
@@ -28,7 +28,7 @@ public sealed partial class CollectionTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidRecordNullProperty()
 	{
 		var record = new ListStringRecord { Strings = null! };
@@ -47,7 +47,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidRecordEmptyProperty()
 	{
 		var record = new ListStringRecord { Strings = [] };
@@ -66,7 +66,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidRecordNullFirstLevel()
 	{
 		var record = new ListStringRecord
@@ -99,7 +99,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidRecordNullSecondLevel()
 	{
 		var record = new ListStringRecord
@@ -150,7 +150,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void ValidCommandNoErrors()
 	{
 		var record = new ListValidationTargetRecord { Commands = [[new() { Id = "ABC-123" }]] };
@@ -160,7 +160,7 @@ public sealed partial class CollectionTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidCommandNullProperty()
 	{
 		var record = new ListValidationTargetRecord { Commands = null! };
@@ -179,7 +179,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidCommandNullFirstLevel()
 	{
 		var record = new ListValidationTargetRecord
@@ -217,7 +217,7 @@ public sealed partial class CollectionTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidCommandNullSecondLevel()
 	{
 		var record = new ListValidationTargetRecord

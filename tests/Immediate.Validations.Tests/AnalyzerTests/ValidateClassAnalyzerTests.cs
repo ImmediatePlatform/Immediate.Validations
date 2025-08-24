@@ -4,7 +4,7 @@ namespace Immediate.Validations.Tests.AnalyzerTests;
 
 public sealed class ValidateClassAnalyzerTests
 {
-	[Test]
+	[Fact]
 	public async Task UnmarkedClassIsIgnored() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -15,9 +15,9 @@ public sealed class ValidateClassAnalyzerTests
 				public required int Id { get; init; }
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task UnmarkedClassWithValidatedPropertiesShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -29,9 +29,9 @@ public sealed class ValidateClassAnalyzerTests
 				public required int Id { get; init; }
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidTargetShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -50,9 +50,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task MissingValidateAttributeShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -67,9 +67,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task MissingIValidationTargetShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -85,9 +85,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn1() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -106,9 +106,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn1() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -136,9 +136,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn2() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -159,9 +159,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn2() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -180,9 +180,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn3() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -201,9 +201,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn3() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -222,9 +222,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn4() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -243,9 +243,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn4() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -264,9 +264,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn5() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -287,9 +287,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn5() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -308,9 +308,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn6() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -329,9 +329,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn6() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -350,9 +350,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn7() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -371,9 +371,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn7() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -392,9 +392,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn8() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -414,9 +414,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn8() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -436,9 +436,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn9() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -457,9 +457,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn9() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -478,9 +478,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn10() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -500,9 +500,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn10() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -522,9 +522,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn11() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -563,9 +563,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn11() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -610,9 +610,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn12() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -645,9 +645,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn12() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -680,9 +680,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn13() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -715,9 +715,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn13() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -750,9 +750,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn14() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -785,9 +785,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn14() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -820,9 +820,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn15() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -855,9 +855,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn15() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -890,9 +890,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn16() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -913,9 +913,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn16() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -936,9 +936,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn17() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -957,9 +957,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn17() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -978,9 +978,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidValidatorTypeShouldNotWarn18() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1026,9 +1026,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task InvalidValidatorTypeShouldWarn18() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1074,9 +1074,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NameofUsingTypeShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1096,9 +1096,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NameofUsingInnerTypeShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1120,9 +1120,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NameofUsingInstanceMemberShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1147,9 +1147,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NameofUsingConstValueShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1174,9 +1174,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NameofUsingStaticFieldShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1201,9 +1201,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NameofUsingStaticPropertyShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1228,9 +1228,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NameofUsingStaticMethodShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1255,9 +1255,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidNameofInheritedClassShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1288,9 +1288,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(SubClass target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task ValidNameofInheritedInterfaceShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1321,9 +1321,9 @@ public sealed class ValidateClassAnalyzerTests
 				static ValidationResult IValidationTarget<IInterface>.Validate(IInterface target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NotNullOnIntShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1343,9 +1343,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NotNullOnNullableIntShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1365,9 +1365,9 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NotNullOnStringShouldNotWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""
@@ -1387,5 +1387,5 @@ public sealed class ValidateClassAnalyzerTests
 				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 }

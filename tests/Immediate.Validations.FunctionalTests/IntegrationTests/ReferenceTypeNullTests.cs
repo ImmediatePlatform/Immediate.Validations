@@ -17,7 +17,7 @@ public sealed partial class ReferenceTypeNullTests
 		public required string Id { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void ValidRecordAllNotNull()
 	{
 		var record = new Command
@@ -37,7 +37,7 @@ public sealed partial class ReferenceTypeNullTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void ValidRecordNullIsNull()
 	{
 		var record = new Command
@@ -54,7 +54,7 @@ public sealed partial class ReferenceTypeNullTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidRecordNotNullIsNull()
 	{
 		var record = new Command

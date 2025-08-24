@@ -4,10 +4,10 @@ namespace Immediate.Validations.Tests.CodeFixTests;
 
 public sealed class AddAdditionalValidationsCodeRefactoringProviderTests
 {
-	[Test]
+	[Fact]
 	public async Task RefactorOnValidatedClass() =>
 		await CodeRefactoringTestHelper.CreateCodeRefactoringTest<AddAdditionalValidationsCodeRefactoringProvider>(
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 			
 			[Validate]
@@ -15,7 +15,7 @@ public sealed class AddAdditionalValidationsCodeRefactoringProviderTests
 			{
 			}
 			""",
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 			
 			[Validate]
@@ -26,9 +26,9 @@ public sealed class AddAdditionalValidationsCodeRefactoringProviderTests
 				}
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 
-	[Test]
+	[Fact]
 	public async Task NoRefactorOnNonValidatedClass() =>
 		await CodeRefactoringTestHelper.CreateCodeRefactoringTest<AddAdditionalValidationsCodeRefactoringProvider>(
 			$$"""
@@ -45,5 +45,5 @@ public sealed class AddAdditionalValidationsCodeRefactoringProviderTests
 			{
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 }

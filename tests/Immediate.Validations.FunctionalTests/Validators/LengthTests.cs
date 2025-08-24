@@ -11,7 +11,7 @@ public sealed partial class LengthTests
 		public required string StringValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void LengthWhenShort()
 	{
 		var instance = new StringRecord { StringValue = "Hello" };
@@ -30,7 +30,7 @@ public sealed partial class LengthTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void LengthWhenEqual()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };
@@ -40,7 +40,7 @@ public sealed partial class LengthTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void LengthWhenLong()
 	{
 		var instance = new StringRecord { StringValue = "Hello World! Hello World! Hello World!" };

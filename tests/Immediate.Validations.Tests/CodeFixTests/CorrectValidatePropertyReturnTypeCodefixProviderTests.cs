@@ -5,7 +5,7 @@ namespace Immediate.Validations.Tests.CodeFixTests;
 
 public sealed class CorrectValidatePropertyReturnTypeCodefixProviderTests
 {
-	[Test]
+	[Fact]
 	public async Task CorrectValidatePropertyReturnType() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, CorrectValidatePropertyReturnTypeCodefixProvider>(
 			$$"""
@@ -28,5 +28,5 @@ public sealed class CorrectValidatePropertyReturnTypeCodefixProviderTests
 				public const string DefaultMessage = "";
 			}
 			"""
-		).RunAsync();
+		).RunAsync(TestContext.Current.CancellationToken);
 }

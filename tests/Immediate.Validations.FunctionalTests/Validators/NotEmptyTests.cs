@@ -25,7 +25,7 @@ public sealed partial class NotEmptyTests
 		public required ICollection<int> CollectionValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void StringNotEmptyTestWhenNotEmpty()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };
@@ -35,7 +35,7 @@ public sealed partial class NotEmptyTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void StringNotEmptyTestWhenEmpty()
 	{
 		var instance = new StringRecord { StringValue = "  " };
@@ -54,7 +54,7 @@ public sealed partial class NotEmptyTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void IntNotEmptyTestWhenNotEmpty()
 	{
 		var instance = new IntRecord { IntValue = 5 };
@@ -64,7 +64,7 @@ public sealed partial class NotEmptyTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void IntNotEmptyTestWhenEmpty()
 	{
 		var instance = new IntRecord { IntValue = 0 };
@@ -83,7 +83,7 @@ public sealed partial class NotEmptyTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void CollectionNotEmptyTestWhenNotEmpty()
 	{
 		var instance = new CollectionRecord { CollectionValue = [1, 2, 3, 4] };
@@ -93,7 +93,7 @@ public sealed partial class NotEmptyTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void CollectionNotEmptyTestWhenEmpty()
 	{
 		var instance = new CollectionRecord { CollectionValue = [] };

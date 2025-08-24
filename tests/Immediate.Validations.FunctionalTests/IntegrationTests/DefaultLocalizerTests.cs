@@ -3,7 +3,10 @@ using Immediate.Validations.Shared;
 
 namespace Immediate.Validations.FunctionalTests.IntegrationTests;
 
-[NotInParallel]
+[CollectionDefinition("DefaultLocalizerTests", DisableParallelization = true)]
+public sealed class DefaultLocalizer : ICollectionFixture<DefaultLocalizer>;
+
+[Collection("DefaultLocalizerTests")]
 public sealed partial class DefaultLocalizerTests
 {
 	[Validate]
@@ -19,7 +22,7 @@ public sealed partial class DefaultLocalizerTests
 		public required string Value { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void EnLocalizedMessage()
 	{
 		using var scope = new CultureScope("en-US");
@@ -40,7 +43,7 @@ public sealed partial class DefaultLocalizerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void FrLocalizedMessage()
 	{
 		using var scope = new CultureScope("fr-CA");
@@ -61,7 +64,7 @@ public sealed partial class DefaultLocalizerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void EnLocalizedNotNullMessage()
 	{
 		using var scope = new CultureScope("en-US");
@@ -82,7 +85,7 @@ public sealed partial class DefaultLocalizerTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void FrLocalizedNotNullMessage()
 	{
 		using var scope = new CultureScope("fr-CA");

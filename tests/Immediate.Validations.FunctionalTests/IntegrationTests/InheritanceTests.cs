@@ -24,7 +24,7 @@ public sealed partial class InheritanceTests
 		public required string Description { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void ValidClassHasNoErrors()
 	{
 		var @class = new Class
@@ -38,7 +38,7 @@ public sealed partial class InheritanceTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void ShortIdHasErrors()
 	{
 		var @class = new Class
@@ -61,7 +61,7 @@ public sealed partial class InheritanceTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void EmptyDescriptionHasErrors()
 	{
 		var @class = new Class

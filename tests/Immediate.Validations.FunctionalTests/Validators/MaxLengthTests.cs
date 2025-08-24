@@ -11,7 +11,7 @@ public sealed partial class MaxLengthTests
 		public required string StringValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void MaxLengthWhenShort()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };
@@ -21,7 +21,7 @@ public sealed partial class MaxLengthTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void MaxLengthWhenLong()
 	{
 		var instance = new StringRecord { StringValue = "Hello World! Hello World! Hello World!" };

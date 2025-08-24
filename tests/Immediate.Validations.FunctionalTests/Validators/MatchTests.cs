@@ -36,7 +36,7 @@ public sealed partial class MatchTests
 		public required string UnusualRegexValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void InvalidMatchThrows()
 	{
 		var record = new InvalidMatchAttributeRecord { StringValue = "", };
@@ -46,7 +46,7 @@ public sealed partial class MatchTests
 		Assert.Equal("Both `regex` and `expr` are `null`. At least one must be provided.", ex.Message);
 	}
 
-	[Test]
+	[Fact]
 	public void MatchExprWhenValid()
 	{
 		var record = new ExprMatchRecord { StringValue = "123" };
@@ -56,7 +56,7 @@ public sealed partial class MatchTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void MatchExprWhenInvalid()
 	{
 		var record = new ExprMatchRecord { StringValue = "asdf" };
@@ -75,7 +75,7 @@ public sealed partial class MatchTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void MatchRegexWhenValid()
 	{
 		var record = new RegexMatchRecord { StringValue = "123", };
@@ -85,7 +85,7 @@ public sealed partial class MatchTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void MatchRegexWhenInvalid()
 	{
 		var record = new RegexMatchRecord { StringValue = "asdf", };

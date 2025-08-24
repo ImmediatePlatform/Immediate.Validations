@@ -19,7 +19,7 @@ public sealed partial class LessThanTests
 		public required string KeyValue { get; init; }
 	}
 
-	[Test]
+	[Fact]
 	public void IntLessThanRecordWhenZero()
 	{
 		var instance = new IntLessThanRecord { IntValue = -1 };
@@ -29,7 +29,7 @@ public sealed partial class LessThanTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void IntLessThanRecordWhenNotZero()
 	{
 		var instance = new IntLessThanRecord { IntValue = 0 };
@@ -48,7 +48,7 @@ public sealed partial class LessThanTests
 		);
 	}
 
-	[Test]
+	[Fact]
 	public void StringLessThanRecordWhenLessThan()
 	{
 		var instance = new StringLessThanRecord { StringValue = "Bar", KeyValue = "Foo" };
@@ -58,7 +58,7 @@ public sealed partial class LessThanTests
 		Assert.Empty(errors);
 	}
 
-	[Test]
+	[Fact]
 	public void StringLessThanRecordWhenNotLessThan()
 	{
 		var instance = new StringLessThanRecord { StringValue = "Foo", KeyValue = "Foo" };
