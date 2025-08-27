@@ -8,11 +8,17 @@ public sealed class MiscellaneousTests
 		var result = GeneratorTestHelper.RunGenerator(
 			"""
 			using System.ComponentModel;
+			using System.Collections.Generic;
 			using Immediate.Validations.Shared;
 
 			[Validate]
 			public sealed partial record ValidateClass(
-				[property: MaxLength(3)] string Testing
+				[property: MaxLength(3)]
+				string Testing1,
+
+				[property: NotEmpty]
+				[element: GreaterThan(0)]
+				List<int> data
 			): IValidationTarget<ValidateClass>;
 			"""
 		);

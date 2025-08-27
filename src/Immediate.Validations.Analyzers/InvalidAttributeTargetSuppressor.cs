@@ -29,23 +29,31 @@ public sealed class InvalidAttributeTargetSuppressor : DiagnosticSuppressor
 
 			if (syntaxTree
 					?.GetRoot(token)
-					.FindNode(diagnostic.Location.SourceSpan) is
-					not AttributeTargetSpecifierSyntax
+					.FindNode(diagnostic.Location.SourceSpan) is not AttributeTargetSpecifierSyntax
 					{
 						Identifier.ValueText: "element",
-						Parent.Parent: PropertyDeclarationSyntax propertyDeclarationSyntax
+						Parent.Parent: SyntaxNode declarationSyntax
 					})
 			{
 				continue;
 			}
 
-			if (context.GetSemanticModel(syntaxTree)
-					.GetDeclaredSymbol(propertyDeclarationSyntax, token) is
-					not IPropertySymbol
-					{
-						ContainingType: INamedTypeSymbol containerSymbol,
-						Type: ITypeSymbol propertyTypeSymbol
-					})
+			if (context.GetSemanticModel(syntaxTree).GetDeclaredSymbol(declarationSyntax, token) switch
+			{
+				IPropertySymbol
+				{
+					ContainingType: INamedTypeSymbol ct1,
+					Type: ITypeSymbol pt1
+				} => (true, ct1, pt1),
+
+				IParameterSymbol
+				{
+					ContainingType: INamedTypeSymbol ct1,
+					Type: ITypeSymbol pt1
+				} => (true, ct1, pt1),
+
+				_ => (false, null, null),
+			} is not (true, { } containerSymbol, { } propertyTypeSymbol))
 			{
 				continue;
 			}
@@ -79,6 +87,8 @@ public sealed class InvalidAttributeTargetSuppressor : DiagnosticSuppressor
 					diagnostic
 				)
 			);
+
+			break;
 		}
 	}
 }

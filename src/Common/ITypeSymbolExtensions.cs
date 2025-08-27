@@ -329,15 +329,12 @@ internal static class ITypeSymbolExtensions
 
 				foreach (var attributeList in parameterSyntax.AttributeLists)
 				{
-					var target = attributeList.Target?.Identifier.ValueText;
-
-					if (target is not "property")
-						continue;
+					var target = attributeList.Target?.Identifier.ValueText.NullIf("property");
 
 					foreach (var attribute in attributeList.Attributes)
 					{
 						if (semanticModel.GetOperation(attribute) is IAttributeOperation { Operation: IObjectCreationOperation operation })
-							list.Add((null, operation));
+							list.Add((target, operation));
 					}
 				}
 
