@@ -3,6 +3,31 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 public sealed class MiscellaneousTests
 {
 	[Fact]
+	public async Task PropertyValidationOnRecord()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			using System.ComponentModel;
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record ValidateClass(
+				[property: MaxLength(3)] string Testing
+			): IValidationTarget<ValidateClass>;
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
 	public async Task FilledDescriptionChangesName()
 	{
 		var result = GeneratorTestHelper.RunGenerator(

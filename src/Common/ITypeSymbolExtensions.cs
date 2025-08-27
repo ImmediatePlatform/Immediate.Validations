@@ -303,22 +303,50 @@ internal static class ITypeSymbolExtensions
 		SemanticModel semanticModel
 	)
 	{
-		var propertySyntax = (PropertyDeclarationSyntax)propertySymbol.DeclaringSyntaxReferences.First().GetSyntax();
-
-		var list = new List<(string? Target, IObjectCreationOperation AttributeOperation)>();
-
-		foreach (var attributeList in propertySyntax.AttributeLists)
+		switch (propertySymbol.DeclaringSyntaxReferences.First().GetSyntax())
 		{
-			var target = attributeList.Target?.Identifier.ValueText;
-
-			foreach (var attribute in attributeList.Attributes)
+			case PropertyDeclarationSyntax propertySyntax:
 			{
-				if (semanticModel.GetOperation(attribute) is IAttributeOperation { Operation: IObjectCreationOperation operation })
-					list.Add((target, operation));
-			}
-		}
+				var list = new List<(string? Target, IObjectCreationOperation AttributeOperation)>();
 
-		return list;
+				foreach (var attributeList in propertySyntax.AttributeLists)
+				{
+					var target = attributeList.Target?.Identifier.ValueText;
+
+					foreach (var attribute in attributeList.Attributes)
+					{
+						if (semanticModel.GetOperation(attribute) is IAttributeOperation { Operation: IObjectCreationOperation operation })
+							list.Add((target, operation));
+					}
+				}
+
+				return list;
+			}
+
+			case ParameterSyntax parameterSyntax:
+			{
+				var list = new List<(string? Target, IObjectCreationOperation AttributeOperation)>();
+
+				foreach (var attributeList in parameterSyntax.AttributeLists)
+				{
+					var target = attributeList.Target?.Identifier.ValueText;
+
+					if (target is not "property")
+						continue;
+
+					foreach (var attribute in attributeList.Attributes)
+					{
+						if (semanticModel.GetOperation(attribute) is IAttributeOperation { Operation: IObjectCreationOperation operation })
+							list.Add((null, operation));
+					}
+				}
+
+				return list;
+			}
+
+			case var syntax:
+				throw new InvalidOperationException($"Property declared using a `{syntax.GetType().FullName}`.");
+		}
 	}
 
 	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
