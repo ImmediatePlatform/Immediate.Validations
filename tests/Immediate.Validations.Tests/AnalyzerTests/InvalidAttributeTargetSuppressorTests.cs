@@ -9,6 +9,36 @@ public sealed class InvalidAttributeTargetSuppressorTests
 		DiagnosticResult.CompilerWarning("CS0658");
 
 	[Fact]
+	public async Task ElementAttributeInValidatorListForParameterIsSuppressed() =>
+		await AnalyzerTestHelpers
+			.CreateSuppressorTest<InvalidAttributeTargetSuppressor>(
+				"""
+				#nullable enable
+
+				using System.Collections.Generic;
+				using Immediate.Validations.Shared;
+			
+				[Validate]
+				public record Target(
+					[{|#0:element|}: MaxLength(3)]
+					List<string> Strings
+				): IValidationTarget<Target>
+				{
+				
+					public ValidationResult Validate() => [];
+					public ValidationResult Validate(ValidationResult errors) => [];
+					public static ValidationResult Validate(Target target) => [];
+					public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+				}
+				"""
+			)
+			.WithSpecificDiagnostics([CS0658])
+			.WithExpectedDiagnosticsResults([
+				CS0658.WithLocation(0).WithIsSuppressed(true),
+			])
+			.RunAsync(TestContext.Current.CancellationToken);
+
+	[Fact]
 	public async Task ElementAttributeInValidatorListIsSuppressed() =>
 		await AnalyzerTestHelpers
 			.CreateSuppressorTest<InvalidAttributeTargetSuppressor>(
