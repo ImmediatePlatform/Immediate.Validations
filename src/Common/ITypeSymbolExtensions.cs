@@ -10,7 +10,8 @@ internal static class ITypeSymbolExtensions
 	public static bool IsICollection1(this INamedTypeSymbol typeSymbol) =>
 		typeSymbol is
 		{
-			MetadataName: "ICollection`1",
+			Arity: 1,
+			Name: "ICollection",
 			ContainingNamespace:
 			{
 				Name: "Generic",
@@ -29,7 +30,8 @@ internal static class ITypeSymbolExtensions
 	public static bool IsIReadOnlyCollection1(this INamedTypeSymbol typeSymbol) =>
 		typeSymbol is
 		{
-			MetadataName: "IReadOnlyCollection`1",
+			Arity: 1,
+			Name: "IReadOnlyCollection",
 			ContainingNamespace:
 			{
 				Name: "Generic",
@@ -148,7 +150,8 @@ internal static class ITypeSymbolExtensions
 	public static bool IsValidationResult(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
-			MetadataName: "ValidationResult",
+			Arity: 0,
+			Name: "ValidationResult",
 			ContainingNamespace:
 			{
 				Name: "Shared",
@@ -167,7 +170,8 @@ internal static class ITypeSymbolExtensions
 	public static bool IsIValidationTarget(this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
-			MetadataName: "IValidationTarget`1",
+			Arity: 1,
+			Name: "IValidationTarget",
 			ContainingNamespace:
 			{
 				Name: "Shared",
@@ -244,7 +248,8 @@ internal static class ITypeSymbolExtensions
 	public static bool IsValidationBehavior([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
-			MetadataName: "ValidationBehavior`2",
+			Arity: 2,
+			Name: "ValidationBehavior",
 			ContainingNamespace:
 			{
 				Name: "Shared",
