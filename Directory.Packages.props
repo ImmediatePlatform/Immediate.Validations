@@ -49,7 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<GlobalPackageReference Include="Meziantou.Analyzer" Version="2.0.212" />
+	<GlobalPackageReference Include="Meziantou.Analyzer" Version="2.0.227" />
 	<GlobalPackageReference Include="PolySharp" Version="1.15.0" />
   </ItemGroup>
 </Project>
