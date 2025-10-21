@@ -8,16 +8,16 @@ using Immediate.Validations.Shared;
 
 partial interface IInterface1
 {
-	static ValidationResult IValidationTarget<IInterface1>.Validate(IInterface1? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<IInterface1>.Validate(IInterface1? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<IInterface1>.Validate(IInterface1? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<IInterface1>.Validate(IInterface1? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static new ValidationResult Validate(IInterface1? target) =>
+	public static new global::Immediate.Validations.Shared.ValidationResult Validate(IInterface1? target) =>
 		Validate(target, []);
 
-	public static new ValidationResult Validate(IInterface1? target, ValidationResult errors)
+	public static new global::Immediate.Validations.Shared.ValidationResult Validate(IInterface1? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -40,7 +40,7 @@ partial interface IInterface1
 
 
 	private static void __ValidateProperty(
-		ValidationResult errors, IInterface1 instance, string target
+		global::Immediate.Validations.Shared.ValidationResult errors, IInterface1 instance, string target
 	)
 	{
 

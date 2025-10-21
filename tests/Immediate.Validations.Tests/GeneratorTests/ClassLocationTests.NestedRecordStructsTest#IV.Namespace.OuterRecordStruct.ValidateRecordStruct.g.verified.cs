@@ -10,24 +10,24 @@ namespace Namespace;
 partial record struct OuterRecordStruct
 {
 
-partial record struct ValidateRecordStruct : IValidationTarget
+partial record struct ValidateRecordStruct : global::Immediate.Validations.Shared.IValidationTarget
 {
-	ValidationResult IValidationTarget.Validate() =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate() =>
 		Validate(this, []);
 
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate(global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(this, errors);
 
-	static ValidationResult IValidationTarget<ValidateRecordStruct>.Validate(ValidateRecordStruct target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidateRecordStruct>.Validate(ValidateRecordStruct target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<ValidateRecordStruct>.Validate(ValidateRecordStruct target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidateRecordStruct>.Validate(ValidateRecordStruct target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static  ValidationResult Validate(ValidateRecordStruct target) =>
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(ValidateRecordStruct target) =>
 		Validate(target, []);
 
-	public static  ValidationResult Validate(ValidateRecordStruct target, ValidationResult errors)
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(ValidateRecordStruct target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		var t = target;
 

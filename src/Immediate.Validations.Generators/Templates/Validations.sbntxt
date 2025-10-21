@@ -13,26 +13,26 @@ partial {{ c.type }} {{ c.name }}
 {
 {{~ end ~}}
 
-partial {{ class.type }} {{ class.name }}{{ if class.type != "interface" }} : IValidationTarget{{ end }}
+partial {{ class.type }} {{ class.name }}{{ if class.type != "interface" }} : global::Immediate.Validations.Shared.IValidationTarget{{ end }}
 {
 	{{~ if class.type != "interface" ~}}
-	ValidationResult IValidationTarget.Validate() =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate() =>
 		Validate(this, []);
 
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate(global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(this, errors);
 
 	{{~ end ~}}
-	static ValidationResult IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<{{ class.name }}>.Validate({{ class.name; if is_reference_type; "?"; end }} target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static {{ if class.type == "interface"; "new"; end }} ValidationResult Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
+	public static {{ if class.type == "interface"; "new"; end }} global::Immediate.Validations.Shared.ValidationResult Validate({{ class.name; if is_reference_type; "?"; end }} target) =>
 		Validate(target, []);
 
-	public static {{ if class.type == "interface"; "new"; end }} ValidationResult Validate({{ class.name; if is_reference_type; "?"; end }} target, ValidationResult errors)
+	public static {{ if class.type == "interface"; "new"; end }} global::Immediate.Validations.Shared.ValidationResult Validate({{ class.name; if is_reference_type; "?"; end }} target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		{{~ if is_reference_type ~}}
 		if (target is not { } t)
@@ -115,7 +115,7 @@ partial {{ class.type }} {{ class.name }}{{ if class.type != "interface" }} : IV
 	{{~ func validate_property(p, depth = 0) ~}}
 	{{- if p.collection_property_details; validate_property(p.collection_property_details, depth + 1); end ~}}
 	private static void __Validate{{ p.property_name }}{{ if depth != 0; for i in 1..depth; "0"; end; end }}(
-		ValidationResult errors, {{ class.name }} instance, {{ p.type_full_name }} target{{ if depth != 0; for i in 1..depth }}, int counter{{i-1}}{{ end; end }}
+		global::Immediate.Validations.Shared.ValidationResult errors, {{ class.name }} instance, {{ p.type_full_name }} target{{ if depth != 0; for i in 1..depth }}, int counter{{i-1}}{{ end; end }}
 	)
 	{
 		{{~ 

@@ -10,16 +10,16 @@ namespace Namespace;
 
 partial interface IBaseInterface
 {
-	static ValidationResult IValidationTarget<IBaseInterface>.Validate(IBaseInterface? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<IBaseInterface>.Validate(IBaseInterface? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<IBaseInterface>.Validate(IBaseInterface? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<IBaseInterface>.Validate(IBaseInterface? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static new ValidationResult Validate(IBaseInterface? target) =>
+	public static new global::Immediate.Validations.Shared.ValidationResult Validate(IBaseInterface? target) =>
 		Validate(target, []);
 
-	public static new ValidationResult Validate(IBaseInterface? target, ValidationResult errors)
+	public static new global::Immediate.Validations.Shared.ValidationResult Validate(IBaseInterface? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{

@@ -10,16 +10,16 @@ namespace Namespace;
 
 partial interface IInterface
 {
-	static ValidationResult IValidationTarget<IInterface>.Validate(IInterface? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<IInterface>.Validate(IInterface? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<IInterface>.Validate(IInterface? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<IInterface>.Validate(IInterface? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static new ValidationResult Validate(IInterface? target) =>
+	public static new global::Immediate.Validations.Shared.ValidationResult Validate(IInterface? target) =>
 		Validate(target, []);
 
-	public static new ValidationResult Validate(IInterface? target, ValidationResult errors)
+	public static new global::Immediate.Validations.Shared.ValidationResult Validate(IInterface? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -43,7 +43,7 @@ partial interface IInterface
 
 
 	private static void __ValidateValueB(
-		ValidationResult errors, IInterface instance, int target
+		global::Immediate.Validations.Shared.ValidationResult errors, IInterface instance, int target
 	)
 	{
 

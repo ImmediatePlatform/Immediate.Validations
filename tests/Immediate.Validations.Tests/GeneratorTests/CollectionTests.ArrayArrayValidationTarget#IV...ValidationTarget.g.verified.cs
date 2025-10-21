@@ -6,24 +6,24 @@ using Immediate.Validations.Shared;
 #pragma warning disable CS1591
 
 
-partial class ValidationTarget : IValidationTarget
+partial class ValidationTarget : global::Immediate.Validations.Shared.IValidationTarget
 {
-	ValidationResult IValidationTarget.Validate() =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate() =>
 		Validate(this, []);
 
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate(global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(this, errors);
 
-	static ValidationResult IValidationTarget<ValidationTarget>.Validate(ValidationTarget? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidationTarget>.Validate(ValidationTarget? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<ValidationTarget>.Validate(ValidationTarget? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidationTarget>.Validate(ValidationTarget? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static  ValidationResult Validate(ValidationTarget? target) =>
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(ValidationTarget? target) =>
 		Validate(target, []);
 
-	public static  ValidationResult Validate(ValidationTarget? target, ValidationResult errors)
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(ValidationTarget? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -46,7 +46,7 @@ partial class ValidationTarget : IValidationTarget
 
 
 	private static void __ValidateStringProperty(
-		ValidationResult errors, ValidationTarget instance, string target
+		global::Immediate.Validations.Shared.ValidationResult errors, ValidationTarget instance, string target
 	)
 	{
 

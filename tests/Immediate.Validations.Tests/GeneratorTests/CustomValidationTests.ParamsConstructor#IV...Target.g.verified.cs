@@ -6,24 +6,24 @@ using Immediate.Validations.Shared;
 #pragma warning disable CS1591
 
 
-partial record Target : IValidationTarget
+partial record Target : global::Immediate.Validations.Shared.IValidationTarget
 {
-	ValidationResult IValidationTarget.Validate() =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate() =>
 		Validate(this, []);
 
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate(global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(this, errors);
 
-	static ValidationResult IValidationTarget<Target>.Validate(Target? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<Target>.Validate(Target? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<Target>.Validate(Target? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<Target>.Validate(Target? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static  ValidationResult Validate(Target? target) =>
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(Target? target) =>
 		Validate(target, []);
 
-	public static  ValidationResult Validate(Target? target, ValidationResult errors)
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(Target? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -47,7 +47,7 @@ partial record Target : IValidationTarget
 
 
 	private static void __ValidateId(
-		ValidationResult errors, Target instance, string target
+		global::Immediate.Validations.Shared.ValidationResult errors, Target instance, string target
 	)
 	{
 
@@ -103,7 +103,7 @@ partial record Target : IValidationTarget
 	}
 
 	private static void __ValidateFirstValue(
-		ValidationResult errors, Target instance, string target
+		global::Immediate.Validations.Shared.ValidationResult errors, Target instance, string target
 	)
 	{
 

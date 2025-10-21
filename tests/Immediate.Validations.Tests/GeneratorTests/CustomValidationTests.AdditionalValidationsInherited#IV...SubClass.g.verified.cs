@@ -6,24 +6,24 @@ using Immediate.Validations.Shared;
 #pragma warning disable CS1591
 
 
-partial class SubClass : IValidationTarget
+partial class SubClass : global::Immediate.Validations.Shared.IValidationTarget
 {
-	ValidationResult IValidationTarget.Validate() =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate() =>
 		Validate(this, []);
 
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate(global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(this, errors);
 
-	static ValidationResult IValidationTarget<SubClass>.Validate(SubClass? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<SubClass>.Validate(SubClass? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<SubClass>.Validate(SubClass? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<SubClass>.Validate(SubClass? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static  ValidationResult Validate(SubClass? target) =>
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(SubClass? target) =>
 		Validate(target, []);
 
-	public static  ValidationResult Validate(SubClass? target, ValidationResult errors)
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(SubClass? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
