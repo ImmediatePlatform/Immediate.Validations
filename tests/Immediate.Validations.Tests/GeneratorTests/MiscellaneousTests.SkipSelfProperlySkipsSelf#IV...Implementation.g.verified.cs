@@ -6,24 +6,24 @@ using Immediate.Validations.Shared;
 #pragma warning disable CS1591
 
 
-partial class Implementation : IValidationTarget
+partial class Implementation : global::Immediate.Validations.Shared.IValidationTarget
 {
-	ValidationResult IValidationTarget.Validate() =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate() =>
 		Validate(this, []);
 
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate(global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(this, errors);
 
-	static ValidationResult IValidationTarget<Implementation>.Validate(Implementation? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<Implementation>.Validate(Implementation? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<Implementation>.Validate(Implementation? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<Implementation>.Validate(Implementation? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static  ValidationResult Validate(Implementation? target) =>
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(Implementation? target) =>
 		Validate(target, []);
 
-	public static  ValidationResult Validate(Implementation? target, ValidationResult errors)
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(Implementation? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{

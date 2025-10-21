@@ -6,24 +6,24 @@ using Immediate.Validations.Shared;
 #pragma warning disable CS1591
 
 
-partial record ValidateClass : IValidationTarget
+partial record ValidateClass : global::Immediate.Validations.Shared.IValidationTarget
 {
-	ValidationResult IValidationTarget.Validate() =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate() =>
 		Validate(this, []);
 
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate(global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(this, errors);
 
-	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidateClass>.Validate(ValidateClass? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static  ValidationResult Validate(ValidateClass? target) =>
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(ValidateClass? target) =>
 		Validate(target, []);
 
-	public static  ValidationResult Validate(ValidateClass? target, ValidationResult errors)
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(ValidateClass? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
@@ -47,7 +47,7 @@ partial record ValidateClass : IValidationTarget
 
 
 	private static void __ValidateTesting1(
-		ValidationResult errors, ValidateClass instance, string target
+		global::Immediate.Validations.Shared.ValidationResult errors, ValidateClass instance, string target
 	)
 	{
 
@@ -91,7 +91,7 @@ partial record ValidateClass : IValidationTarget
 	}
 
 	private static void __Validatedata0(
-		ValidationResult errors, ValidateClass instance, int target, int counter0
+		global::Immediate.Validations.Shared.ValidationResult errors, ValidateClass instance, int target, int counter0
 	)
 	{
 
@@ -122,7 +122,7 @@ partial record ValidateClass : IValidationTarget
 	}
 
 	private static void __Validatedata(
-		ValidationResult errors, ValidateClass instance, global::System.Collections.Generic.List<int> target
+		global::Immediate.Validations.Shared.ValidationResult errors, ValidateClass instance, global::System.Collections.Generic.List<int> target
 	)
 	{
 

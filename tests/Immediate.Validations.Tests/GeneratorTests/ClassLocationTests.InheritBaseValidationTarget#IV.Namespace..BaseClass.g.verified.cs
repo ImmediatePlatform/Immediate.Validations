@@ -8,24 +8,24 @@ using Immediate.Validations.Shared;
 namespace Namespace;
 
 
-partial class BaseClass : IValidationTarget
+partial class BaseClass : global::Immediate.Validations.Shared.IValidationTarget
 {
-	ValidationResult IValidationTarget.Validate() =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate() =>
 		Validate(this, []);
 
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate(global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(this, errors);
 
-	static ValidationResult IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<BaseClass>.Validate(BaseClass? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<BaseClass>.Validate(BaseClass? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<BaseClass>.Validate(BaseClass? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static  ValidationResult Validate(BaseClass? target) =>
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(BaseClass? target) =>
 		Validate(target, []);
 
-	public static  ValidationResult Validate(BaseClass? target, ValidationResult errors)
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(BaseClass? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{

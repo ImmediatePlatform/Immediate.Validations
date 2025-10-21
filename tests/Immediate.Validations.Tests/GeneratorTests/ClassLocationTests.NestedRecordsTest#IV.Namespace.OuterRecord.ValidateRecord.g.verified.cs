@@ -10,24 +10,24 @@ namespace Namespace;
 partial record OuterRecord
 {
 
-partial record ValidateRecord : IValidationTarget
+partial record ValidateRecord : global::Immediate.Validations.Shared.IValidationTarget
 {
-	ValidationResult IValidationTarget.Validate() =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate() =>
 		Validate(this, []);
 
-	ValidationResult IValidationTarget.Validate(ValidationResult errors) =>
+	global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget.Validate(global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(this, errors);
 
-	static ValidationResult IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidateRecord>.Validate(ValidateRecord? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static  ValidationResult Validate(ValidateRecord? target) =>
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(ValidateRecord? target) =>
 		Validate(target, []);
 
-	public static  ValidationResult Validate(ValidateRecord? target, ValidationResult errors)
+	public static  global::Immediate.Validations.Shared.ValidationResult Validate(ValidateRecord? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{

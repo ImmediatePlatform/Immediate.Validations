@@ -12,16 +12,16 @@ partial interface OuterInterface
 
 partial interface ValidateClass
 {
-	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidateClass>.Validate(ValidateClass? target) =>
 		Validate(target, []);
 
-	static ValidationResult IValidationTarget<ValidateClass>.Validate(ValidateClass? target, ValidationResult errors) =>
+	static global::Immediate.Validations.Shared.ValidationResult global::Immediate.Validations.Shared.IValidationTarget<ValidateClass>.Validate(ValidateClass? target, global::Immediate.Validations.Shared.ValidationResult errors) =>
 		Validate(target, errors);
 
-	public static new ValidationResult Validate(ValidateClass? target) =>
+	public static new global::Immediate.Validations.Shared.ValidationResult Validate(ValidateClass? target) =>
 		Validate(target, []);
 
-	public static new ValidationResult Validate(ValidateClass? target, ValidationResult errors)
+	public static new global::Immediate.Validations.Shared.ValidationResult Validate(ValidateClass? target, global::Immediate.Validations.Shared.ValidationResult errors)
 	{
 		if (target is not { } t)
 		{
