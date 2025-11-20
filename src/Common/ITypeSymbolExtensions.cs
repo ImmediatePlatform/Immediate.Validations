@@ -12,19 +12,7 @@ internal static class ITypeSymbolExtensions
 		{
 			Arity: 1,
 			Name: "ICollection",
-			ContainingNamespace:
-			{
-				Name: "Generic",
-				ContainingNamespace:
-				{
-					Name: "Collections",
-					ContainingNamespace:
-					{
-						Name: "System",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsSystemCollectionsGeneric: true,
 		};
 
 	public static bool IsIReadOnlyCollection1(this INamedTypeSymbol typeSymbol) =>
@@ -32,19 +20,7 @@ internal static class ITypeSymbolExtensions
 		{
 			Arity: 1,
 			Name: "IReadOnlyCollection",
-			ContainingNamespace:
-			{
-				Name: "Generic",
-				ContainingNamespace:
-				{
-					Name: "Collections",
-					ContainingNamespace:
-					{
-						Name: "System",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsSystemCollectionsGeneric: true,
 		};
 
 	public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol? type)
@@ -68,41 +44,19 @@ internal static class ITypeSymbolExtensions
 				.SelectMany(t => t.GetMembers());
 
 	public static bool IsValidateAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
-		typeSymbol is
+		typeSymbol is INamedTypeSymbol
 		{
+			Arity: 0,
 			Name: "ValidateAttribute",
-			ContainingNamespace:
-			{
-				Name: "Shared",
-				ContainingNamespace:
-				{
-					Name: "Validations",
-					ContainingNamespace:
-					{
-						Name: "Immediate",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsImmediateValidationsShared: true,
 		};
 
 	public static bool IsValidatorAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
-		typeSymbol is
+		typeSymbol is INamedTypeSymbol
 		{
+			Arity: 0,
 			Name: "ValidatorAttribute",
-			ContainingNamespace:
-			{
-				Name: "Shared",
-				ContainingNamespace:
-				{
-					Name: "Validations",
-					ContainingNamespace:
-					{
-						Name: "Immediate",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsImmediateValidationsShared: true,
 		};
 
 	public static bool ImplementsValidatorAttribute([NotNullWhen(true)] this INamedTypeSymbol? typeSymbol) =>
@@ -112,39 +66,17 @@ internal static class ITypeSymbolExtensions
 	public static bool IsTargetTypeAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
+			Arity: 0,
 			Name: "TargetTypeAttribute",
-			ContainingNamespace:
-			{
-				Name: "Shared",
-				ContainingNamespace:
-				{
-					Name: "Validations",
-					ContainingNamespace:
-					{
-						Name: "Immediate",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsImmediateValidationsShared: true,
 		};
 
 	public static bool IsNotNullAttribute([NotNullWhen(returnValue: true)] this ITypeSymbol? typeSymbol) =>
 		typeSymbol is INamedTypeSymbol
 		{
+			Arity: 0,
 			Name: "NotNullAttribute",
-			ContainingNamespace:
-			{
-				Name: "Shared",
-				ContainingNamespace:
-				{
-					Name: "Validations",
-					ContainingNamespace:
-					{
-						Name: "Immediate",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsImmediateValidationsShared: true,
 		};
 
 	public static bool IsValidationResult(this INamedTypeSymbol? typeSymbol) =>
@@ -152,19 +84,7 @@ internal static class ITypeSymbolExtensions
 		{
 			Arity: 0,
 			Name: "ValidationResult",
-			ContainingNamespace:
-			{
-				Name: "Shared",
-				ContainingNamespace:
-				{
-					Name: "Validations",
-					ContainingNamespace:
-					{
-						Name: "Immediate",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsImmediateValidationsShared: true,
 		};
 
 	public static bool IsIValidationTarget(this INamedTypeSymbol? typeSymbol) =>
@@ -172,19 +92,7 @@ internal static class ITypeSymbolExtensions
 		{
 			Arity: 1,
 			Name: "IValidationTarget",
-			ContainingNamespace:
-			{
-				Name: "Shared",
-				ContainingNamespace:
-				{
-					Name: "Validations",
-					ContainingNamespace:
-					{
-						Name: "Immediate",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsImmediateValidationsShared: true,
 		};
 
 	public static bool IsValidationTarget([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
@@ -217,6 +125,7 @@ internal static class ITypeSymbolExtensions
 			.Any(m =>
 				m is
 				{
+					Arity: 0,
 					Name: "AdditionalValidations",
 					IsStatic: true,
 					ReturnsVoid: true,
@@ -233,6 +142,7 @@ internal static class ITypeSymbolExtensions
 	public static bool IsDescriptionAttribute([NotNullWhen(returnValue: true)] this INamedTypeSymbol? typeSymbol) =>
 		typeSymbol is
 		{
+			Arity: 0,
 			Name: "DescriptionAttribute",
 			ContainingNamespace:
 			{
@@ -250,38 +160,15 @@ internal static class ITypeSymbolExtensions
 		{
 			Arity: 2,
 			Name: "ValidationBehavior",
-			ContainingNamespace:
-			{
-				Name: "Shared",
-				ContainingNamespace:
-				{
-					Name: "Validations",
-					ContainingNamespace:
-					{
-						Name: "Immediate",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsImmediateValidationsShared: true,
 		};
 
 	public static bool IsBehaviorsAttribute(this ITypeSymbol? typeSymbol) =>
-		typeSymbol is
+		typeSymbol is INamedTypeSymbol
 		{
+			Arity: 2,
 			Name: "BehaviorsAttribute",
-			ContainingNamespace:
-			{
-				Name: "Shared",
-				ContainingNamespace:
-				{
-					Name: "Handlers",
-					ContainingNamespace:
-					{
-						Name: "Immediate",
-						ContainingNamespace.IsGlobalNamespace: true,
-					},
-				},
-			},
+			ContainingNamespace.IsImmediateHandlersShared: true,
 		};
 
 	public static bool IsAllowNullAttribute(this ITypeSymbol? typeSymbol) =>
@@ -352,15 +239,63 @@ internal static class ITypeSymbolExtensions
 	}
 
 	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
-		symbol switch
-		{
-			IParameterSymbol { Type: var type } => type.IsValidTargetTypeType(),
-			IPropertySymbol { Type: var type } => type.IsValidTargetTypeType(),
-			_ => false,
-		}
+		symbol is IParameterSymbol { Type.IsValidTargetTypeType: true }
+			or IPropertySymbol { Type.IsValidTargetTypeType: true }
 		&& symbol.GetAttributes().Any(a => a.AttributeClass.IsTargetTypeAttribute());
 
-	private static bool IsValidTargetTypeType(this ITypeSymbol? typeSymbol) =>
-		typeSymbol is { SpecialType: SpecialType.System_Object or SpecialType.System_String }
-			or IArrayTypeSymbol { ElementType.SpecialType: SpecialType.System_Object or SpecialType.System_String };
+	extension(ITypeSymbol typeSymbol)
+	{
+		[SuppressMessage("Style", "IDE0051:Remove unused private members", Justification = "Roslyn Bug (https://github.com/dotnet/roslyn/issues/81213)")]
+		private bool IsValidTargetTypeType =>
+			typeSymbol is { SpecialType: SpecialType.System_Object or SpecialType.System_String }
+				or IArrayTypeSymbol { ElementType.SpecialType: SpecialType.System_Object or SpecialType.System_String };
+	}
+
+	extension(INamespaceSymbol namespaceSymbol)
+	{
+		public bool IsImmediateValidationsShared =>
+			namespaceSymbol is
+			{
+				Name: "Shared",
+				ContainingNamespace:
+				{
+					Name: "Validations",
+					ContainingNamespace:
+					{
+						Name: "Immediate",
+						ContainingNamespace.IsGlobalNamespace: true,
+					},
+				},
+			};
+
+		public bool IsImmediateHandlersShared =>
+			namespaceSymbol is
+			{
+				Name: "Shared",
+				ContainingNamespace:
+				{
+					Name: "Handlers",
+					ContainingNamespace:
+					{
+						Name: "Immediate",
+						ContainingNamespace.IsGlobalNamespace: true,
+					},
+				},
+			};
+
+		public bool IsSystemCollectionsGeneric =>
+			namespaceSymbol is
+			{
+				Name: "Generic",
+				ContainingNamespace:
+				{
+					Name: "Collections",
+					ContainingNamespace:
+					{
+						Name: "System",
+						ContainingNamespace.IsGlobalNamespace: true,
+					},
+				},
+			};
+	}
 }
