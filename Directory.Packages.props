@@ -9,7 +9,7 @@
 	<PackageVersion Include="coverlet.collector" Version="6.0.4" />
 	<PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
 	<PackageVersion Include="DotNet.ReproducibleBuilds" Version="1.2.39" />
-	<PackageVersion Include="GitHubActionsTestLogger" Version="2.4.1" />
+	<PackageVersion Include="GitHubActionsTestLogger" Version="3.0.0" />
 	<PackageVersion Include="Immediate.Handlers" Version="3.0.0" />
 	<PackageVersion Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
 	<PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0" />
