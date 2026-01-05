@@ -3,7 +3,6 @@
   <PropertyGroup>
 	<TargetFramework>net8.0</TargetFramework>
 	<OutputType>Exe</OutputType>
-	<NoWarn>$(NoWarn);NU1903</NoWarn>
 	<_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
   </PropertyGroup>
 
@@ -15,7 +14,6 @@
 	<PackageReference Include="Basic.Reference.Assemblies.Net80" />
 	<PackageReference Include="coverlet.collector" PrivateAssets="All" />
 	<PackageReference Include="coverlet.msbuild" PrivateAssets="All" />
-	<PackageReference Include="GitHubActionsTestLogger" PrivateAssets="All" />
 	<PackageReference Include="Immediate.Handlers" />
 	<PackageReference Include="Microsoft.CodeAnalysis.CSharp" VersionOverride="4.9.2" />
 	<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" />
@@ -26,7 +24,7 @@
 	<PackageReference Include="Scriban" />
 	<PackageReference Include="Verify.SourceGenerators" />
 	<PackageReference Include="Verify.XunitV3" />
-	<PackageReference Include="xunit.v3" />
+	<PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
 
   <ItemGroup>
