@@ -59,7 +59,7 @@ public sealed class AssemblyBehaviorAnalyzer : DiagnosticAnalyzer
 			return;
 		}
 
-		if (targetSymbol is not INamespaceSymbol)
+		if (targetSymbol is not INamespaceSymbol { IsGlobalNamespace: true })
 			return;
 
 		token.ThrowIfCancellationRequested();

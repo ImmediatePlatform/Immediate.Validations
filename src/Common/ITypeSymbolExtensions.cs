@@ -166,7 +166,7 @@ internal static class ITypeSymbolExtensions
 	public static bool IsBehaviorsAttribute(this ITypeSymbol? typeSymbol) =>
 		typeSymbol is INamedTypeSymbol
 		{
-			Arity: 2,
+			Arity: 0,
 			Name: "BehaviorsAttribute",
 			ContainingNamespace.IsImmediateHandlersShared: true,
 		};

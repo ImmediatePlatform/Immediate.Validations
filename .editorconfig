@@ -316,3 +316,25 @@ dotnet_diagnostic.MA0048.severity = none
 dotnet_diagnostic.MA0051.severity = none
 dotnet_diagnostic.MA0053.severity = warning
 dotnet_diagnostic.MA0071.severity = none
+
+[tests/**/*.cs]
+
+dotnet_diagnostic.CA1822.severity = none                # CA1822: Mark members as static
+dotnet_diagnostic.MA0009.severity = none
+dotnet_diagnostic.MA0016.severity = none
+dotnet_diagnostic.MA0053.severity = none
+
+[tests/**/*.g.verified.cs]
+
+# Mark code as excluded and generated
+# NB: This disables regular analyzers by default
+exclude = true
+generated_code = true
+
+# Disable any active Roslyn analyzers
+dotnet_analyzer_diagnostic.severity = none
+
+# These are security analyzers and must be manually disabled
+dotnet_diagnostic.CA5350.severity = none
+dotnet_diagnostic.CA5351.severity = none
+dotnet_diagnostic.CA5394.severity = none
