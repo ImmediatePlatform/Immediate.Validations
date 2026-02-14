@@ -23,19 +23,6 @@ Or via the .NET Core command line interface:
 
 Either command, from Package Manager Console or .NET Core CLI, will download and install Immediate.Validations.
 
-## Using Immediate.Validations
-
-Add Immediate.Validations to the Immediate.Handlers behaviors pipeline by including it in the list of default Behaviors
-for the assembly:
-
-```cs
-using Immediate.Validations.Shared;
-
-[assembly: Behaviors(
-	typeof(ValidationBehavior<,>)
-)]
-```
-
 ### Creating Validation Classes
 
 Indicate that a class should be validated by adding the `[Validate]` attribute and `IValidationTarget<>` interface:
@@ -138,7 +125,56 @@ public partial record Query : IValidationTarget<Query>
 }
 ```
 
-### Results
+## Using Immediate.Validations
+
+### Validating instances directly
+
+An instance of an IV object can be validated directly by calling `ClassName.Validate(instance);`. In the example above,
+this would look like:
+
+```cs
+public void Method(Query query)
+{
+	var results = Query.Validate(query);
+}
+```
+
+The `results` object will contain information on whether the instance is valid, and if not, the validation failures that
+occurred during validation.
+
+If you would like to throw an exception if the validation fails, you can call `ValidationException.ThrowIfInvalid()`. This
+method can be called using the `ValidationResult` returned from validation if you have already validated it, or using an
+instance of the object if you would like to validate and throw. Examples:
+
+```cs
+public void Method(Query query)
+{
+	var results = Query.Validate(query);
+	ValidationException.ThrowIfInvalid(results);
+
+	// or
+
+	ValidationException.ThrowIfInvalid(query);
+}
+```
+
+### Using Immediate.Validations with [Immediate.Handlers](https://github.com/ImmediatePlatform/Immediate.Handlers)
+
+Adding code to explicitly validate the object in every method that needs to do so can be annoying. Immediate.Validations
+is intended to integrate primarily with Immediate.Handlers, and so it provides an IH `Behavior<,>` which can be used to
+automatically add validation to every IH handler which has a request which is an `IValidation<>` object. Add
+Immediate.Validations to the Immediate.Handlers behaviors pipeline by including it in the list of default Behaviors for
+the assembly:
+
+```cs
+using Immediate.Validations.Shared;
+
+[assembly: Behaviors(
+	typeof(ValidationBehavior<,>)
+)]
+```
+
+### Using Immediate.Validations in an ASP.NET Core application
 
 The result of doing the above is that when a parameter fails one or more validations, a `ValidationException` is thrown,
 which can be handled via ProblemDetails or any other infrastructure mechanism.
