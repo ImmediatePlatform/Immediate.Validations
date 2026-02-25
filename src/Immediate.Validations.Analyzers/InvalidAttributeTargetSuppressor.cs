@@ -11,9 +11,9 @@ public sealed class InvalidAttributeTargetSuppressor : DiagnosticSuppressor
 	public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions =>
 		ImmutableArray.Create([
 			new SuppressionDescriptor(
-				id: $"InvalidAttributeTargetSuppression",
+				id: "InvalidAttributeTargetSuppression",
 				suppressedDiagnosticId: "CS0658",
-				justification: $"Suppress invalid attribute target when used for validation."
+				justification: "Suppress invalid attribute target when used for validation."
 			),
 		]);
 
@@ -32,7 +32,7 @@ public sealed class InvalidAttributeTargetSuppressor : DiagnosticSuppressor
 					.FindNode(diagnostic.Location.SourceSpan) is not AttributeTargetSpecifierSyntax
 					{
 						Identifier.ValueText: "element",
-						Parent.Parent: SyntaxNode declarationSyntax
+						Parent.Parent: SyntaxNode declarationSyntax,
 					})
 			{
 				continue;
@@ -43,13 +43,13 @@ public sealed class InvalidAttributeTargetSuppressor : DiagnosticSuppressor
 				IPropertySymbol
 				{
 					ContainingType: INamedTypeSymbol ct1,
-					Type: ITypeSymbol pt1
+					Type: ITypeSymbol pt1,
 				} => (true, ct1, pt1),
 
 				IParameterSymbol
 				{
 					ContainingType: INamedTypeSymbol ct1,
-					Type: ITypeSymbol pt1
+					Type: ITypeSymbol pt1,
 				} => (true, ct1, pt1),
 
 				_ => (false, null, null),

@@ -411,7 +411,7 @@ public sealed class ValidateTargetTransformer
 			IsGenericMethod = validateMethod.IsGenericMethod,
 			IsNullable = targetParameterType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated }
 				or { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T },
-			Arguments = parameters.ToEquatableReadOnlyList()!,
+			Arguments = parameters.ToEquatableReadOnlyList(),
 			Message = attribute.GetMessage(),
 		};
 	}
@@ -455,7 +455,7 @@ public sealed class ValidateTargetTransformer
 
 			if (argument.Value is not IArrayCreationOperation
 				{
-					Initializer.ElementValues: { } elements
+					Initializer.ElementValues: { } elements,
 				})
 			{
 				return null;
@@ -511,7 +511,7 @@ public sealed class ValidateTargetTransformer
 
 				if (initializer is not ISimpleAssignmentOperation
 					{
-						Target: IPropertyReferenceOperation { Property: { } property }
+						Target: IPropertyReferenceOperation { Property: { } property },
 					})
 				{
 					return null;
@@ -623,7 +623,7 @@ public sealed class ValidateTargetTransformer
 						.FirstOrDefault(
 							ims => ims is IMethodSymbol
 							{
-								Parameters: []
+								Parameters: [],
 							}
 						);
 

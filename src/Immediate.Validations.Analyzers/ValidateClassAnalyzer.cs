@@ -330,7 +330,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 			if (argument.Value is not IArrayCreationOperation
 				{
-					Initializer.ElementValues: { } elements
+					Initializer.ElementValues: { } elements,
 				})
 			{
 				return;
@@ -357,7 +357,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 				if (initializer is not ISimpleAssignmentOperation
 					{
-						Target: IPropertyReferenceOperation { Property: { } property }
+						Target: IPropertyReferenceOperation { Property: { } property },
 					})
 				{
 					return;
@@ -493,7 +493,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 					.FirstOrDefault(
 						ims => ims is IMethodSymbol
 						{
-							Parameters: []
+							Parameters: [],
 						}
 					);
 

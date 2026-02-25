@@ -8,7 +8,7 @@ public sealed class CorrectValidatePropertyReturnTypeCodefixProviderTests
 	[Fact]
 	public async Task CorrectValidatePropertyReturnType() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, CorrectValidatePropertyReturnTypeCodefixProvider>(
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 			
 			public sealed class TestAttribute : ValidatorAttribute
@@ -18,7 +18,7 @@ public sealed class CorrectValidatePropertyReturnTypeCodefixProviderTests
 				public const string DefaultMessage = "";
 			}
 			""",
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 
 			public sealed class TestAttribute : ValidatorAttribute

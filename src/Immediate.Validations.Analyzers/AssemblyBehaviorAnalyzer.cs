@@ -20,7 +20,7 @@ public sealed class AssemblyBehaviorAnalyzer : DiagnosticAnalyzer
 		);
 
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-		ImmutableArray.Create<DiagnosticDescriptor>(
+		ImmutableArray.Create(
 		[
 			AssemblyBehaviorsShouldUseValidation,
 		]);
@@ -79,7 +79,7 @@ public sealed class AssemblyBehaviorAnalyzer : DiagnosticAnalyzer
 						},
 					},
 				},
-				ChildOperations.Count: 2
+				ChildOperations.Count: 2,
 			}
 			|| array.ChildOperations.ElementAt(1) is not IArrayInitializerOperation aio)
 		{

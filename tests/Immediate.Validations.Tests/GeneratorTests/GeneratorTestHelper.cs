@@ -10,15 +10,15 @@ public static class GeneratorTestHelper
 {
 	public static GeneratorDriverRunResult RunGenerator([StringSyntax("c#-test")] string source)
 	{
-		var syntaxTree = CSharpSyntaxTree.ParseText(source);
+		var syntaxTree = CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.Current.CancellationToken);
 
 		var compilation = CSharpCompilation.Create(
 			assemblyName: "Tests",
 			syntaxTrees: [syntaxTree],
 			references:
 			[
-				.. Basic.Reference.Assemblies.Net80.References.All,
-				.. Utility.GetMetadataReferences(),
+				..Utility.NetCoreAssemblies,
+				..Utility.GetMetadataReferences(),
 			],
 			options: new(
 				outputKind: OutputKind.DynamicallyLinkedLibrary,
@@ -29,7 +29,7 @@ public static class GeneratorTestHelper
 			)
 		);
 
-		var clone = compilation.Clone().AddSyntaxTrees(CSharpSyntaxTree.ParseText("// dummy"));
+		var clone = compilation.Clone().AddSyntaxTrees(CSharpSyntaxTree.ParseText("// dummy", cancellationToken: TestContext.Current.CancellationToken));
 
 		GeneratorDriver driver = CSharpGeneratorDriver.Create(
 			generators: [new ImmediateValidationsGenerator().AsSourceGenerator()],
@@ -54,12 +54,13 @@ public static class GeneratorTestHelper
 			.RunGeneratorsAndUpdateCompilation(
 				compilation,
 				out var outputCompilation,
-				out var diagnostics
+				out var diagnostics,
+				TestContext.Current.CancellationToken
 			);
 
 		Assert.Empty(
 			outputCompilation
-				.GetDiagnostics()
+				.GetDiagnostics(TestContext.Current.CancellationToken)
 				.Where(d => d.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning)
 		);
 

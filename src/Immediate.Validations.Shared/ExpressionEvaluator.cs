@@ -185,7 +185,7 @@ internal static class ExpressionEvaluator
 			? s_identityCheckedMethod.MakeGenericMethod(targetType)
 			: s_identityUncheckedMethod.MakeGenericMethod(targetType);
 
-		return method.Invoke(null, [value!])!;
+		return method.Invoke(null, [value]);
 	}
 
 	private static T IdentityChecked<T>(dynamic value) => checked((T)value);
