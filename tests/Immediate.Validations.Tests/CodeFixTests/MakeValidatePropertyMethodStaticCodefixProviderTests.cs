@@ -8,7 +8,7 @@ public sealed class MakeValidatePropertyMethodStaticCodefixProviderTests
 	[Fact]
 	public async Task MakeValidatePropertyMethodStatic() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, MakeValidatePropertyMethodStaticCodefixProvider>(
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 			
 			public sealed class TestAttribute : ValidatorAttribute
@@ -18,7 +18,7 @@ public sealed class MakeValidatePropertyMethodStaticCodefixProviderTests
 				public const string DefaultMessage = "";
 			}
 			""",
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 
 			public sealed class TestAttribute : ValidatorAttribute

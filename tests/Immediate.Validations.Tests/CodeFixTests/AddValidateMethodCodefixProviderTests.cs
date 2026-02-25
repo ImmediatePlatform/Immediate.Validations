@@ -8,7 +8,7 @@ public sealed class AddValidateMethodCodefixProviderTests
 	[Fact]
 	public async Task AddValidateMethod() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidatorClassAnalyzer, AddValidateMethodCodefixProvider>(
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 			
 			public sealed class {|IV0001:TestAttribute|} : ValidatorAttribute
@@ -16,7 +16,7 @@ public sealed class AddValidateMethodCodefixProviderTests
 				public const string DefaultMessage = "";
 			}
 			""",
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 
 			public sealed class TestAttribute : ValidatorAttribute

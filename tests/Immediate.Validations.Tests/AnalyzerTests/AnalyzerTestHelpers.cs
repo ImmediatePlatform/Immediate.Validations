@@ -20,12 +20,7 @@ public static class AnalyzerTestHelpers
 			TestState =
 			{
 				Sources = { inputSource },
-				ReferenceAssemblies = new ReferenceAssemblies(
-					"net8.0",
-					new PackageIdentity(
-						"Microsoft.NETCore.App.Ref",
-						"8.0.0"),
-					Path.Combine("ref", "net8.0")),
+				ReferenceAssemblies = Utility.ReferenceAssemblies,
 			},
 		};
 
@@ -113,13 +108,7 @@ public static class AnalyzerTestHelpers
 		var test = new CSharpSuppressorTest<TSuppressor, DefaultVerifier>
 		{
 			TestCode = inputSource,
-			ReferenceAssemblies = new ReferenceAssemblies(
-				"net8.0",
-				new PackageIdentity(
-					"Microsoft.NETCore.App.Ref",
-					"8.0.0"),
-				Path.Combine("ref", "net8.0")
-			),
+			ReferenceAssemblies = Utility.ReferenceAssemblies,
 			CompilerDiagnostics = CompilerDiagnostics.Warnings,
 			DisabledDiagnostics =
 			{

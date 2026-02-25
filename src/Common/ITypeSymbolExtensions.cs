@@ -185,9 +185,9 @@ internal static class ITypeSymbolExtensions
 					{
 						Name: "System",
 						ContainingNamespace.IsGlobalNamespace: true,
-					}
-				}
-			}
+					},
+				},
+			},
 		};
 
 	public static IReadOnlyList<(string? Target, IObjectCreationOperation Attribute)> GetTargetedAttributes(

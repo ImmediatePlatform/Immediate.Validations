@@ -31,14 +31,14 @@ public sealed class AddAdditionalValidationsCodeRefactoringProviderTests
 	[Fact]
 	public async Task NoRefactorOnNonValidatedClass() =>
 		await CodeRefactoringTestHelper.CreateCodeRefactoringTest<AddAdditionalValidationsCodeRefactoringProvider>(
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 			
 			public sealed record {|Refactoring:Data|}
 			{
 			}
 			""",
-			$$"""
+			"""
 			namespace Immediate.Validations.Shared;
 			
 			public sealed record Data
