@@ -8,9 +8,15 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 
 public static class GeneratorTestHelper
 {
-	public static GeneratorDriverRunResult RunGenerator([StringSyntax("c#-test")] string source)
+	public static GeneratorDriverRunResult RunGenerator(
+		[StringSyntax("c#-test")] string source,
+		params ReadOnlySpan<string> skippedSteps
+	)
 	{
-		var syntaxTree = CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.Current.CancellationToken);
+		var syntaxTree = CSharpSyntaxTree.ParseText(
+			source,
+			cancellationToken: TestContext.Current.CancellationToken
+		);
 
 		var compilation = CSharpCompilation.Create(
 			assemblyName: "Tests",
@@ -29,24 +35,21 @@ public static class GeneratorTestHelper
 			)
 		);
 
-		var clone = compilation.Clone().AddSyntaxTrees(CSharpSyntaxTree.ParseText("// dummy", cancellationToken: TestContext.Current.CancellationToken));
-
 		GeneratorDriver driver = CSharpGeneratorDriver.Create(
 			generators: [new ImmediateValidationsGenerator().AsSourceGenerator()],
 			driverOptions: new GeneratorDriverOptions(default, trackIncrementalGeneratorSteps: true)
 		);
 
-		var result1 = RunGenerator(ref driver, compilation);
-		var result2 = RunGenerator(ref driver, clone);
+		driver = RunGenerator(driver, compilation);
+		var result = driver.GetRunResult();
 
-		foreach (var (_, step) in result2.Results[0].TrackedOutputSteps)
-			AssertSteps(step);
+		VerifyIncrementality(driver, compilation, skippedSteps);
 
-		return result1;
+		return result;
 	}
 
-	private static GeneratorDriverRunResult RunGenerator(
-		ref GeneratorDriver driver,
+	private static GeneratorDriver RunGenerator(
+		GeneratorDriver driver,
 		Compilation compilation
 	)
 	{
@@ -65,8 +68,66 @@ public static class GeneratorTestHelper
 		);
 
 		Assert.Empty(diagnostics);
-		return driver.GetRunResult();
+		return driver;
 	}
+
+	private static void VerifyIncrementality(
+		GeneratorDriver driver,
+		Compilation compilation,
+		ReadOnlySpan<string> skippedSteps
+	)
+	{
+		var clone = compilation.Clone().AddSyntaxTrees(
+			CSharpSyntaxTree.ParseText(
+				"// dummy",
+				cancellationToken: TestContext.Current.CancellationToken
+			)
+		);
+
+		driver = RunGenerator(driver, clone);
+
+		if (
+			driver.GetRunResult() is not
+			{
+				Results:
+				[
+					{
+						TrackedOutputSteps: { } outputSteps,
+						TrackedSteps: { } trackedSteps,
+					}
+				],
+			}
+		)
+		{
+			Assert.Fail("Unable to verify incrementality.");
+			return;
+		}
+
+		foreach (var (_, step) in outputSteps)
+			AssertSteps(step);
+
+		foreach (var step in TrackedSteps)
+		{
+			if (skippedSteps.Contains(step))
+			{
+				if (trackedSteps.ContainsKey(step))
+					Assert.Fail($"Step `{step}` should have been skipped, but is present.");
+			}
+			else
+			{
+				if (!trackedSteps.TryGetValue(step, out var outputs))
+					Assert.Fail($"Step `{step}` expected, but is missing.");
+
+				AssertSteps(outputs);
+			}
+		}
+	}
+
+	private static ReadOnlySpan<string> TrackedSteps =>
+		new string[]
+		{
+			"ValidationClasses",
+		};
 
 	private static void AssertSteps(
 		ImmutableArray<IncrementalGeneratorRunStep> steps
