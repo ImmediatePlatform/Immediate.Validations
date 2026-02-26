@@ -15,7 +15,8 @@ public sealed partial class ImmediateValidationsGenerator : IIncrementalGenerato
 				predicate: (node, _) => node is TypeDeclarationSyntax,
 				transform: (ctx, ct) => new ValidateTargetTransformer(ctx, ct).Transform()
 			)
-			.Where(m => m != null);
+			.Where(m => m != null)
+			.WithTrackingName("ValidationClasses");
 
 		var template = Utility.GetTemplate("Validations");
 		context.RegisterSourceOutput(
