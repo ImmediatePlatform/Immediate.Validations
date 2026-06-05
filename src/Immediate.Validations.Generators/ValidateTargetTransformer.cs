@@ -72,6 +72,7 @@ public sealed class ValidateTargetTransformer
 			SkipSelf = skipSelf,
 			BaseValidationTargets = baseValidationTargets,
 			Properties = properties,
+			Version = ThisAssembly.InformationalVersion,
 		};
 	}
 

@@ -1,11 +1,15 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis;
 using Scriban;
 
 namespace Immediate.Validations.Generators;
 
 internal static partial class Utility
 {
+	public static IncrementalValuesProvider<T> WhereNotNull<T>(this IncrementalValuesProvider<T?> values)
+		where T : class => values.Where(x => x is not null)!;
+
 	public static Template GetTemplate(string name)
 	{
 		using var stream = Assembly

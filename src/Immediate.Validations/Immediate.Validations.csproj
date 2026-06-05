@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 	<IsPackable>true</IsPackable>
 	<IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
@@ -11,7 +10,7 @@
 	<Description>Source generated validations for Immediate.Handlers parameters.</Description>
 
 	<Authors>Immediate.Validations Developers</Authors>
-	<Copyright>© 2024 Immediate.Validations Developers</Copyright>
+	<Copyright>© 2024-2026 Immediate.Validations Developers</Copyright>
 
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<PackageReadmeFile>readme.md</PackageReadmeFile>
@@ -31,14 +30,14 @@
 	-->
   <ItemGroup>
 	<None Include="../../readme.md" Pack="true" PackagePath="/" />
-	<None Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Analyzers.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="true" />
-	<None Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/netstandard2.0/Immediate.Validations.CodeFixes.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="true" />
-	<None Include="../Immediate.Validations.Generators/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Generators.dll" Pack="true" PackagePath="analyzers/roslyn4.8/dotnet/cs" Visible="true" />
+	<None Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.8/cs" Visible="true" />
+	<None Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/netstandard2.0/Immediate.Validations.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.8/cs" Visible="true" />
+	<None Include="../Immediate.Validations.Generators/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Generators.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.8/cs" Visible="true" />
 
 	<TfmSpecificPackageFile
 	  Include="$(PkgScriban)/lib/netstandard2.0/Scriban.dll"
 	  Pack="true"
-	  PackagePath="analyzers/roslyn4.8/dotnet/cs"
+	  PackagePath="analyzers/dotnet/roslyn4.8/cs"
 	  Condition=" '$(TargetFramework)' == 'net8.0' " />
 
 	<TfmSpecificPackageFile
@@ -53,8 +52,6 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="All" />
-	<PackageReference Include="MinVer" PrivateAssets="all" />
 	<PackageReference Include="Scriban" PrivateAssets="all" GeneratePathProperty="true" />
   </ItemGroup>
 
@@ -64,11 +61,5 @@
 	<ProjectReference Include="../Immediate.Validations.Generators/Immediate.Validations.Generators.csproj" ReferenceOutputAssembly="false" />
 	<ProjectReference Include="../Immediate.Validations.Shared/Immediate.Validations.Shared.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
-
-  <PropertyGroup Label="MinVer">
-	<MinVerAutoIncrement>minor</MinVerAutoIncrement>
-	<MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
-	<MinVerTagPrefix>v</MinVerTagPrefix>
-  </PropertyGroup>
 
 </Project>
