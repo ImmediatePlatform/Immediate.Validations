@@ -1,5 +1,8 @@
+using Immediate.Handlers.Shared;
+using Immediate.Validations.Shared;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Testing;
+using Microsoft.Extensions.Localization;
 
 namespace Immediate.Validations.Tests;
 
@@ -14,14 +17,24 @@ internal static class Utility
 #elif NET10_0
 	public static ReferenceAssemblies ReferenceAssemblies => ReferenceAssemblies.Net.Net100;
 	public static IEnumerable<MetadataReference> NetCoreAssemblies => Basic.Reference.Assemblies.Net100.References.All;
+#elif NET11_0
+	public static ReferenceAssemblies ReferenceAssemblies { get; } = new ReferenceAssemblies(
+		"net11.0",
+		new PackageIdentity(
+			"Microsoft.NETCore.App.Ref",
+			"11.0.0-preview.4.26230.115"
+		),
+		Path.Combine("ref", "net11.0")
+	);
+	public static IEnumerable<MetadataReference> NetCoreAssemblies => Basic.Reference.Assemblies.Net110.References.All;
 #else
 #error .net version not yet implemented
 #endif
 
 	public static IEnumerable<MetadataReference> GetMetadataReferences() =>
 	[
-		MetadataReference.CreateFromFile("./Immediate.Handlers.Shared.dll"),
-		MetadataReference.CreateFromFile("./Immediate.Validations.Shared.dll"),
-		MetadataReference.CreateFromFile("./Microsoft.Extensions.Localization.Abstractions.dll"),
+		MetadataReference.CreateFromFile(typeof(HandlerAttribute).Assembly.Location),
+		MetadataReference.CreateFromFile(typeof(ValidateAttribute).Assembly.Location),
+		MetadataReference.CreateFromFile(typeof(IStringLocalizer).Assembly.Location),
 	];
 }

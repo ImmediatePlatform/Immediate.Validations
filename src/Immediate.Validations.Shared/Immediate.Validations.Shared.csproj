@@ -1,18 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
-	<IsPackable>false</IsPackable>
-	<NoWarn>$(NoWarn);CA1716</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
 	<ProjectReference Include="../Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	<ProjectReference Include="../Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="All" />
 	<PackageReference Include="Immediate.Handlers" PrivateAssets="all" />
 	<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
   </ItemGroup>

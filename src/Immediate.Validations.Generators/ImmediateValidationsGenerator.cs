@@ -15,13 +15,13 @@ public sealed partial class ImmediateValidationsGenerator : IIncrementalGenerato
 				predicate: (node, _) => node is TypeDeclarationSyntax,
 				transform: (ctx, ct) => new ValidateTargetTransformer(ctx, ct).Transform()
 			)
-			.Where(m => m != null)
+			.WhereNotNull()
 			.WithTrackingName("ValidationClasses");
 
 		var template = Utility.GetTemplate("Validations");
 		context.RegisterSourceOutput(
 			validations,
-			(spc, v) => RenderValidation(spc, v!, template)
+			(spc, v) => RenderValidation(spc, v, template)
 		);
 	}
 

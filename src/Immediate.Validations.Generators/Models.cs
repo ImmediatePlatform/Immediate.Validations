@@ -10,6 +10,7 @@ public sealed record ValidationTarget
 	public required bool SkipSelf { get; init; }
 	public required EquatableReadOnlyList<string> BaseValidationTargets { get; init; }
 	public required EquatableReadOnlyList<ValidationTargetProperty> Properties { get; init; }
+	public required string Version { get; init; }
 }
 
 public sealed record Class

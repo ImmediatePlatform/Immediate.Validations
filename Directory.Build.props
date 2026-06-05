@@ -1,5 +1,6 @@
 <Project>
   <PropertyGroup>
+	<TargetFrameworks>net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
 	<LangVersion>latest</LangVersion>
 
 	<Nullable>enable</Nullable>
@@ -30,6 +31,12 @@
 	<Polyfill>$(Polyfill)|T:System.Runtime.CompilerServices.SkipLocalsInitAttribute</Polyfill>
 	<Polyfill>$(Polyfill)|T:System.Diagnostics.CodeAnalysis</Polyfill>
 	<MeziantouPolyfill_IncludedPolyfills>$(Polyfill)</MeziantouPolyfill_IncludedPolyfills>
+  </PropertyGroup>
+
+  <PropertyGroup Label="MinVer">
+	<MinVerAutoIncrement>minor</MinVerAutoIncrement>
+	<MinVerDefaultPreReleaseIdentifiers>preview</MinVerDefaultPreReleaseIdentifiers>
+	<MinVerTagPrefix>v</MinVerTagPrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
