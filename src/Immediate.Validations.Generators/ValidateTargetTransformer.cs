@@ -54,7 +54,7 @@ public sealed class ValidateTargetTransformer
 	{
 		_token.ThrowIfCancellationRequested();
 
-		var @namespace = _symbol.ContainingNamespace.ToString().NullIf("<global namespace>");
+		var @namespace = _symbol.ContainingNamespace.ToDisplayString().NullIf("<global namespace>");
 		var outerClasses = GetOuterClasses();
 		var @class = GetClass(_symbol);
 		var hasAdditionalValidationsMethod = _symbol.HasAdditionalValidationsMethod();
@@ -595,7 +595,8 @@ public sealed class ValidateTargetTransformer
 		{
 			if (argumentExpression is SimpleNameSyntax { Identifier.ValueText: { } name })
 			{
-				var member = _members.Find(m => m.Name.Equals(name, StringComparison.Ordinal));
+				var member = _members.Find(m => m.Name.Equals(name, StringComparison.Ordinal))
+					?? throw new InvalidOperationException();
 
 				return (
 					member.GetDescription(),
@@ -629,7 +630,7 @@ public sealed class ValidateTargetTransformer
 						);
 
 				return (
-					argumentExpression.ToString().Replace(".", "").ToTitleCase() ?? "",
+					argumentExpression.ToString().Replace(".", "", StringComparison.Ordinal).ToTitleCase() ?? "",
 					symbol?.ToDisplayString(DisplayNameFormatters.FullyQualifiedForMembers) ?? "",
 					false
 				);
@@ -653,10 +654,10 @@ public sealed class ValidateTargetTransformer
 				operation?.ConstantValue switch
 				{
 					{ HasValue: true, Value: string s } =>
-						SymbolDisplay.FormatLiteral(s, quote: true),
+						SymbolDisplay.FormatLiteral(s, quote: true)!,
 
 					{ HasValue: true, Value: { } o } =>
-						SymbolDisplay.FormatPrimitive(o, quoteStrings: false, useHexadecimalNumbers: false),
+						SymbolDisplay.FormatPrimitive(o, quoteStrings: false, useHexadecimalNumbers: false)!,
 
 					_ => "",
 				},
