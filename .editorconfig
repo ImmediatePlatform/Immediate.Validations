@@ -316,6 +316,9 @@ dotnet_diagnostic.MA0048.severity = none
 dotnet_diagnostic.MA0051.severity = none
 dotnet_diagnostic.MA0053.severity = warning
 dotnet_diagnostic.MA0071.severity = none
+dotnet_diagnostic.MA0110.severity = none
+
+dotnet_diagnostic.RS1041.severity = none                # RS1041: Compiler extensions should be implemented in assemblies targeting netstandard2.0
 
 [tests/**/*.cs]
 

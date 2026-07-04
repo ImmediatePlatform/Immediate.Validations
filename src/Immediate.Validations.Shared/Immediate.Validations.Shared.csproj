@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-	<ProjectReference Include="../Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-	<ProjectReference Include="../Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Immediate.Handlers" PrivateAssets="all" />
-	<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
+    <PackageReference Include="Immediate.Handlers" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
-	<InternalsVisibleTo Include="Immediate.Validations.FunctionalTests" />
+    <InternalsVisibleTo Include="Immediate.Validations.FunctionalTests" />
   </ItemGroup>
 
 </Project>

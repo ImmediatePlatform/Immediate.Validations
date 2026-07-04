@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -17,6 +18,8 @@ internal static partial class Utility
 			.GetManifestResourceStream(
 				$"Immediate.Validations.Generators.Templates.{name}.sbntxt"
 			);
+
+		Debug.Assert(stream is { });
 
 		using var reader = new StreamReader(stream);
 		return Template.Parse(reader.ReadToEnd());
