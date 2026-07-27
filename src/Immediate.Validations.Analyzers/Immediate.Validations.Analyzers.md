@@ -176,14 +176,14 @@ A value of invalid type was provided to the validator.
 | Severity | Warning              |
 | CodeFix  | False                |
 
-## IV0016: Parameter is incompatible type
+## IV0016: Parameter is incompatible type (Removed in 2.3)
 
 A `nameof()` reference of invalid type was provided to the validator.
 
 | Item     | Value                |
 |----------|----------------------|
 | Category | ImmediateValidations |
-| Enabled  | True                 |
+| Enabled  | False                |
 | Severity | Warning              |
 | CodeFix  | False                |
 

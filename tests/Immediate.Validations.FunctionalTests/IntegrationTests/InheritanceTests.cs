@@ -54,7 +54,7 @@ public sealed partial class InheritanceTests
 				new()
 				{
 					PropertyName = "Id",
-					ErrorMessage = "'Id' must be more than 4 characters.",
+					ErrorMessage = "'Id' must be at least 4 characters.",
 				},
 			],
 			errors

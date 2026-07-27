@@ -11,7 +11,6 @@ public static class DiagnosticIds
 	public const string IV0007ValidateMethodParameterIsIncorrectType = "IV0007";
 	public const string IV0008ValidatePropertyMustBeRequired = "IV0008";
 	public const string IV0009ValidatorHasTooManyConstructors = "IV0009";
-	public const string IV0019ValidatorIsMissingDefaultMessage = "IV0019";
 	public const string IV0010ValidatorIsMissingDefaultMessage = "IV0010";
 
 	public const string IV0011AssemblyBehaviorsShouldUseValidation = "IV0011";
@@ -20,7 +19,6 @@ public static class DiagnosticIds
 	public const string IV0013IValidationTargetMissing = "IV0013";
 	public const string IV0014ValidatePropertyIncompatibleType = "IV0014";
 	public const string IV0015ValidateParameterIncompatibleType = "IV0015";
-	public const string IV0016ValidateParameterPropertyIncompatibleType = "IV0016";
 	public const string IV0017ValidateParameterNameofInvalid = "IV0017";
 	public const string IV0018ValidateNotNullWhenInvalid = "IV0018";
 }
