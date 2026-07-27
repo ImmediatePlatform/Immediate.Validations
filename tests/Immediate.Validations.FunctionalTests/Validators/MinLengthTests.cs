@@ -22,6 +22,16 @@ public sealed partial class MinLengthTests
 	}
 
 	[Fact]
+	public void MinLengthWhenExactBoundary()
+	{
+		var instance = new StringRecord { StringValue = new string('a', 30) };
+
+		var errors = StringRecord.Validate(instance);
+
+		Assert.Empty(errors);
+	}
+
+	[Fact]
 	public void MinLengthWhenLong()
 	{
 		var instance = new StringRecord { StringValue = "Hello World!" };
@@ -33,7 +43,7 @@ public sealed partial class MinLengthTests
 				new()
 				{
 					PropertyName = nameof(StringRecord.StringValue),
-					ErrorMessage = "'String Value' must be more than 30 characters.",
+					ErrorMessage = "'String Value' must be at least 30 characters.",
 				},
 			],
 			errors

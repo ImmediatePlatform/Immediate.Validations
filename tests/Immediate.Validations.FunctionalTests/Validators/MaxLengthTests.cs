@@ -22,6 +22,16 @@ public sealed partial class MaxLengthTests
 	}
 
 	[Fact]
+	public void MaxLengthWhenExactBoundary()
+	{
+		var instance = new StringRecord { StringValue = new string('a', 30) };
+
+		var errors = StringRecord.Validate(instance);
+
+		Assert.Empty(errors);
+	}
+
+	[Fact]
 	public void MaxLengthWhenLong()
 	{
 		var instance = new StringRecord { StringValue = "Hello World! Hello World! Hello World!" };
@@ -33,7 +43,7 @@ public sealed partial class MaxLengthTests
 				new()
 				{
 					PropertyName = nameof(StringRecord.StringValue),
-					ErrorMessage = "'String Value' must be less than 30 characters.",
+					ErrorMessage = "'String Value' must be at most 30 characters.",
 				},
 			],
 			errors
