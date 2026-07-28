@@ -6,7 +6,7 @@ using Scriban;
 
 namespace Immediate.Validations.Generators;
 
-internal static partial class Utility
+internal static class Utility
 {
 	public static IncrementalValuesProvider<T> WhereNotNull<T>(this IncrementalValuesProvider<T?> values)
 		where T : class => values.Where(x => x is not null)!;
