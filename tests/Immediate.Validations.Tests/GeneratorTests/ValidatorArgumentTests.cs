@@ -541,4 +541,46 @@ public sealed class ValidatorArgumentTests
 
 		_ = await Verify(result);
 	}
+
+	[Fact]
+	public async Task NameOfInNamedArgument()
+	{
+		var result = GeneratorTestHelper.RunGenerator(
+			"""
+			#nullable enable
+
+			using System.Collections.Generic;
+			using Immediate.Validations.Shared;
+
+			public sealed class MatchesAttribute : ValidatorAttribute
+			{
+			    [TargetType]
+			    public required object Comparison { get; init; }
+
+			    public static bool ValidateProperty<T>(T target, T comparison) =>
+			        EqualityComparer<T>.Default.Equals(target, comparison);
+
+			    public static string DefaultMessage => "Values must match.";
+			}
+			
+			[Validate]
+			public partial class ValidateClass : IValidationTarget<ValidateClass>
+			{
+				public required string Password { get; init; }
+
+				[Matches(Comparison = nameof(Password))]
+				public required string Confirmation { get; init; }
+			}
+			"""
+		);
+
+		Assert.Equal(
+			[
+				@"Immediate.Validations.Generators/Immediate.Validations.Generators.ImmediateValidationsGenerator/IV...ValidateClass.g.cs",
+			],
+			result.GeneratedTrees.Select(t => t.FilePath.Replace('\\', '/'))
+		);
+
+		_ = await Verify(result);
+	}
 }
