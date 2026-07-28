@@ -456,7 +456,7 @@ public sealed class ValidateTargetTransformer
 
 			if (argument.Value is not IArrayCreationOperation
 				{
-					Initializer.ElementValues: { } elements,
+					Initializer.ElementValues: var elements,
 				})
 			{
 				return null;

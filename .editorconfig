@@ -323,6 +323,7 @@ dotnet_diagnostic.RS1041.severity = none                # RS1041: Compiler exten
 [tests/**/*.cs]
 
 dotnet_diagnostic.CA1822.severity = none                # CA1822: Mark members as static
+dotnet_diagnostic.MA0002.severity = none
 dotnet_diagnostic.MA0009.severity = none
 dotnet_diagnostic.MA0016.severity = none
 dotnet_diagnostic.MA0053.severity = none
