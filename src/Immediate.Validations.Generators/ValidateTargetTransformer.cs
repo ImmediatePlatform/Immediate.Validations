@@ -524,7 +524,7 @@ public sealed class ValidateTargetTransformer
 				argumentValues.Add(
 					BuildArgumentValue(
 						(AttributeArgumentSyntax)initializer.Syntax,
-						GetParameter(property.Name, validateMethodParameters),
+						property,
 						validateMethodParameters
 					)
 				);
