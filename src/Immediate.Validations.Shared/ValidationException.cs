@@ -44,6 +44,9 @@ public sealed class ValidationException : Exception
 	/// </summary>
 	public IReadOnlyList<ValidationError> Errors { get; }
 
+#pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
+	// These methods throw on `null`, but indirectly.
+
 	/// <summary>
 	///	    Validates an object and throws a <see cref="ValidationException"/> is there are any validation errors.
 	/// </summary>
@@ -56,7 +59,7 @@ public sealed class ValidationException : Exception
 	/// <exception cref="ValidationException">
 	///		Thrown if there are any errors.
 	/// </exception>
-	public static void ThrowIfInvalid<T>(T obj)
+	public static void ThrowIfInvalid<T>([System.Diagnostics.CodeAnalysis.NotNull] T? obj)
 		where T : IValidationTarget<T>
 	{
 		ThrowIfInvalid(T.Validate(obj));
@@ -77,7 +80,7 @@ public sealed class ValidationException : Exception
 	/// <exception cref="ValidationException">
 	///		Thrown if there are any errors.
 	/// </exception>
-	public static void ThrowIfInvalid<T>(T obj, string message)
+	public static void ThrowIfInvalid<T>([System.Diagnostics.CodeAnalysis.NotNull] T? obj, string message)
 		where T : IValidationTarget<T>
 	{
 		ThrowIfInvalid(T.Validate(obj), message);
@@ -98,7 +101,7 @@ public sealed class ValidationException : Exception
 	/// <exception cref="ValidationException">
 	///		Thrown if there are any errors.
 	/// </exception>
-	public static void ThrowIfInvalid<T>(T obj, Func<T, string> messageFunc)
+	public static void ThrowIfInvalid<T>([System.Diagnostics.CodeAnalysis.NotNull] T? obj, Func<T?, string> messageFunc)
 		where T : IValidationTarget<T>
 	{
 		ArgumentNullException.ThrowIfNull(messageFunc);
@@ -107,6 +110,8 @@ public sealed class ValidationException : Exception
 		if (!errors.IsValid)
 			ThrowValidationException(errors.Errors, messageFunc(obj));
 	}
+
+#pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
 	/// <summary>
 	///	    Throws a <see cref="ValidationException"/> if there are any errors.
@@ -143,9 +148,11 @@ public sealed class ValidationException : Exception
 			ThrowValidationException(errors.Errors, message);
 	}
 
+	[DoesNotReturn]
 	private static void ThrowValidationException(IReadOnlyList<ValidationError> errors) =>
 		throw new ValidationException(errors);
 
+	[DoesNotReturn]
 	private static void ThrowValidationException(IReadOnlyList<ValidationError> errors, string message) =>
 		throw new ValidationException(message, errors);
 }
