@@ -56,7 +56,7 @@ public sealed class ValidationException : Exception
 	/// <exception cref="ValidationException">
 	///		Thrown if there are any errors.
 	/// </exception>
-	public static void ThrowIfInvalid<T>(T obj)
+	public static void ThrowIfInvalid<T>([System.Diagnostics.CodeAnalysis.NotNull] T obj)
 		where T : IValidationTarget<T>
 	{
 		ThrowIfInvalid(T.Validate(obj));
@@ -77,7 +77,7 @@ public sealed class ValidationException : Exception
 	/// <exception cref="ValidationException">
 	///		Thrown if there are any errors.
 	/// </exception>
-	public static void ThrowIfInvalid<T>(T obj, string message)
+	public static void ThrowIfInvalid<T>([System.Diagnostics.CodeAnalysis.NotNull] T obj, string message)
 		where T : IValidationTarget<T>
 	{
 		ThrowIfInvalid(T.Validate(obj), message);
@@ -98,7 +98,7 @@ public sealed class ValidationException : Exception
 	/// <exception cref="ValidationException">
 	///		Thrown if there are any errors.
 	/// </exception>
-	public static void ThrowIfInvalid<T>(T obj, Func<T, string> messageFunc)
+	public static void ThrowIfInvalid<T>([System.Diagnostics.CodeAnalysis.NotNull] T obj, Func<T, string> messageFunc)
 		where T : IValidationTarget<T>
 	{
 		ArgumentNullException.ThrowIfNull(messageFunc);
