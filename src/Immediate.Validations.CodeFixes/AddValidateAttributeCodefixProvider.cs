@@ -64,6 +64,7 @@ public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
 				)
 			)
 		)
+			.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
 			.WithTrailingTrivia(newLineSyntax);
 
 		var newDecl = typeDeclaration.AttributeLists switch
@@ -73,22 +74,27 @@ public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
 					.WithoutLeadingTrivia()
 					.WithAttributeLists(
 						typeDeclaration.AttributeLists
-							.Add(validateAttribute.WithLeadingTrivia(typeDeclaration.GetLeadingTrivia()))
+							.Add(
+								validateAttribute
+									.WithLeadingTrivia(typeDeclaration.GetLeadingTrivia())
+									.WithAdditionalAnnotations(Formatter.Annotation)
+							)
 					),
 
 			_ =>
 				typeDeclaration
 					.WithAttributeLists(
 						typeDeclaration.AttributeLists
-							.Add(validateAttribute)
+							.Add(
+								validateAttribute
+									.WithAdditionalAnnotations(Formatter.Annotation)
+							)
 					),
 		};
 
 		var newRoot = root.ReplaceNode(
 			typeDeclaration,
 			newDecl
-				.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
-				.WithAdditionalAnnotations(Formatter.Annotation)
 		);
 
 		return document.WithSyntaxRoot(newRoot);
