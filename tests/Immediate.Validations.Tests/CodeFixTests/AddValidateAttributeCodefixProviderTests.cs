@@ -32,4 +32,34 @@ public sealed class AddValidateAttributeCodefixProviderTests
 			}
 			"""
 		).RunAsync(TestContext.Current.CancellationToken);
+
+	[Fact]
+	public async Task AddValidateAttributeWorksCorrectlyWithXmlDocs() =>
+		await CodeFixTestHelper.CreateCodeFixTest<ValidateClassAnalyzer, AddValidateAttributeCodefixProvider>(
+			"""
+			namespace Immediate.Validations.Shared;
+			
+			/// <summary>documentation</summary>
+			public sealed record {|IV0012:Data|} : IValidationTarget<Data>
+			{
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Data target) => [];
+				public static ValidationResult Validate(Data target, ValidationResult errors) => [];
+			}
+			""",
+			"""
+			namespace Immediate.Validations.Shared;
+			
+			/// <summary>documentation</summary>
+			[Validate]
+			public sealed record Data : IValidationTarget<Data>
+			{
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Data target) => [];
+				public static ValidationResult Validate(Data target, ValidationResult errors) => [];
+			}
+			"""
+		).RunAsync(TestContext.Current.CancellationToken);
 }

@@ -3,7 +3,10 @@ using Immediate.Validations.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Immediate.Validations.CodeFixes;
@@ -30,26 +33,44 @@ public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
 		context.RegisterCodeFix(
 			CodeAction.Create(
 				"Add `[Validate]`",
-				createChangedDocument: _ =>
-					AddValidateAttribute(context.Document, root, typeDeclaration),
+				createChangedDocument: token =>
+					AddValidateAttribute(context.Document, root, typeDeclaration, token),
 				equivalenceKey: nameof(AddValidateAttributeCodefixProvider)
 			),
 			diagnostic
 		);
 	}
 
-	private static Task<Document> AddValidateAttribute(Document document, CompilationUnitSyntax root, TypeDeclarationSyntax typeDeclaration)
+	private static async Task<Document> AddValidateAttribute(Document document, CompilationUnitSyntax root, TypeDeclarationSyntax typeDeclaration, CancellationToken token)
 	{
+		var model = await document.GetSemanticModelAsync(token);
+
+		var validateSymbol = model?.Compilation
+			.GetTypeByMetadataName("Immediate.Validations.Shared.ValidateAttribute")!;
+
+		var referenceId = DocumentationCommentId.CreateReferenceId(validateSymbol);
+		var annotation = new SyntaxAnnotation("SymbolId", referenceId);
+
 		var newDecl = typeDeclaration
+			.WithoutLeadingTrivia()
 			.WithAttributeLists(
 				typeDeclaration.AttributeLists
-					.Add(AttributeList(
-						SingletonSeparatedList(
-							Attribute(
-								IdentifierName("Validate"))))));
+					.Add(
+						AttributeList(
+							SingletonSeparatedList(
+								Attribute(
+									IdentifierName("Validate")
+								)
+							)
+						)
+							.WithLeadingTrivia(typeDeclaration.GetLeadingTrivia())
+							.WithTrailingTrivia(ElasticCarriageReturnLineFeed)
+					)
+			)
+			.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
+			.WithAdditionalAnnotations(Formatter.Annotation);
 
 		var newRoot = root.ReplaceNode(typeDeclaration, newDecl);
-		var newDocument = document.WithSyntaxRoot(newRoot);
-		return Task.FromResult(newDocument);
+		return document.WithSyntaxRoot(newRoot);
 	}
 }
