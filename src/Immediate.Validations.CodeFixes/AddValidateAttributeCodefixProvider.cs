@@ -3,7 +3,6 @@ using Immediate.Validations.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
@@ -51,24 +50,36 @@ public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
 		var referenceId = DocumentationCommentId.CreateReferenceId(validateSymbol);
 		var annotation = new SyntaxAnnotation("SymbolId", referenceId);
 
-		var newDecl = typeDeclaration
-			.WithoutLeadingTrivia()
-			.WithAttributeLists(
-				typeDeclaration.AttributeLists
-					.Add(
-						AttributeList(
-							SingletonSeparatedList(
-								Attribute(
-									IdentifierName("Validate")
-								)
-							)
-						)
-							.WithLeadingTrivia(typeDeclaration.GetLeadingTrivia())
-							.WithTrailingTrivia(ElasticCarriageReturnLineFeed)
-					)
+		var validateAttribute = AttributeList(
+			SingletonSeparatedList(
+				Attribute(
+					IdentifierName("Validate")
+				)
 			)
-			.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
-			.WithAdditionalAnnotations(Formatter.Annotation);
+		)
+			.WithTrailingTrivia(ElasticCarriageReturnLineFeed);
+
+		var newDecl = typeDeclaration.AttributeLists switch
+		{
+			[] =>
+				typeDeclaration
+					.WithoutLeadingTrivia()
+					.WithAttributeLists(
+						typeDeclaration.AttributeLists
+							.Add(validateAttribute.WithLeadingTrivia(typeDeclaration.GetLeadingTrivia()))
+					)
+					.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
+					.WithAdditionalAnnotations(Formatter.Annotation),
+
+			_ =>
+				typeDeclaration
+					.WithAttributeLists(
+						typeDeclaration.AttributeLists
+							.Add(validateAttribute.WithLeadingTrivia(ElasticCarriageReturnLineFeed))
+					)
+					.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
+					.WithAdditionalAnnotations(Formatter.Annotation),
+		};
 
 		var newRoot = root.ReplaceNode(typeDeclaration, newDecl);
 		return document.WithSyntaxRoot(newRoot);
