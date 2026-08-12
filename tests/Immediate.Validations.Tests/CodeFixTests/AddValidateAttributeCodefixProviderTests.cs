@@ -9,26 +9,28 @@ public sealed class AddValidateAttributeCodefixProviderTests
 	public async Task AddValidateAttribute() =>
 		await CodeFixTestHelper.CreateCodeFixTest<ValidateClassAnalyzer, AddValidateAttributeCodefixProvider>(
 			"""
-			namespace Immediate.Validations.Shared;
+			namespace Immediate.Validations.Testing;
 			
-			public sealed record {|IV0012:Data|} : IValidationTarget<Data>
+			public sealed record {|IV0012:Data|} : Immediate.Validations.Shared.IValidationTarget<Data>
 			{
-				public ValidationResult Validate() => [];
-				public ValidationResult Validate(ValidationResult errors) => [];
-				public static ValidationResult Validate(Data target) => [];
-				public static ValidationResult Validate(Data target, ValidationResult errors) => [];
+				public Immediate.Validations.Shared.ValidationResult Validate() => [];
+				public Immediate.Validations.Shared.ValidationResult Validate(Immediate.Validations.Shared.ValidationResult errors) => [];
+				public static Immediate.Validations.Shared.ValidationResult Validate(Data target) => [];
+				public static Immediate.Validations.Shared.ValidationResult Validate(Data target, Immediate.Validations.Shared.ValidationResult errors) => [];
 			}
 			""",
 			"""
-			namespace Immediate.Validations.Shared;
+			using Immediate.Validations.Shared;
+
+			namespace Immediate.Validations.Testing;
 			
 			[Validate]
-			public sealed record Data : IValidationTarget<Data>
+			public sealed record Data : Immediate.Validations.Shared.IValidationTarget<Data>
 			{
-				public ValidationResult Validate() => [];
-				public ValidationResult Validate(ValidationResult errors) => [];
-				public static ValidationResult Validate(Data target) => [];
-				public static ValidationResult Validate(Data target, ValidationResult errors) => [];
+				public Immediate.Validations.Shared.ValidationResult Validate() => [];
+				public Immediate.Validations.Shared.ValidationResult Validate(Immediate.Validations.Shared.ValidationResult errors) => [];
+				public static Immediate.Validations.Shared.ValidationResult Validate(Data target) => [];
+				public static Immediate.Validations.Shared.ValidationResult Validate(Data target, Immediate.Validations.Shared.ValidationResult errors) => [];
 			}
 			"""
 		).RunAsync(TestContext.Current.CancellationToken);

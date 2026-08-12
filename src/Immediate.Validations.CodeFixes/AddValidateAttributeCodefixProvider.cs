@@ -3,6 +3,7 @@ using Immediate.Validations.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
@@ -50,6 +51,12 @@ public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
 		var referenceId = DocumentationCommentId.CreateReferenceId(validateSymbol);
 		var annotation = new SyntaxAnnotation("SymbolId", referenceId);
 
+		var newLineSyntax = typeDeclaration.DescendantTrivia()
+			.FirstOrDefault(t => t.IsKind(SyntaxKind.EndOfLineTrivia));
+
+		if (newLineSyntax == default)
+			newLineSyntax = ElasticLineFeed;
+
 		var validateAttribute = AttributeList(
 			SingletonSeparatedList(
 				Attribute(
@@ -57,7 +64,7 @@ public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
 				)
 			)
 		)
-			.WithTrailingTrivia(ElasticCarriageReturnLineFeed);
+			.WithTrailingTrivia(newLineSyntax);
 
 		var newDecl = typeDeclaration.AttributeLists switch
 		{
@@ -67,21 +74,23 @@ public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
 					.WithAttributeLists(
 						typeDeclaration.AttributeLists
 							.Add(validateAttribute.WithLeadingTrivia(typeDeclaration.GetLeadingTrivia()))
-					)
-					.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
-					.WithAdditionalAnnotations(Formatter.Annotation),
+					),
 
 			_ =>
 				typeDeclaration
 					.WithAttributeLists(
 						typeDeclaration.AttributeLists
-							.Add(validateAttribute.WithLeadingTrivia(ElasticCarriageReturnLineFeed))
-					)
-					.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
-					.WithAdditionalAnnotations(Formatter.Annotation),
+							.Add(validateAttribute)
+					),
 		};
 
-		var newRoot = root.ReplaceNode(typeDeclaration, newDecl);
+		var newRoot = root.ReplaceNode(
+			typeDeclaration,
+			newDecl
+				.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
+				.WithAdditionalAnnotations(Formatter.Annotation)
+		);
+
 		return document.WithSyntaxRoot(newRoot);
 	}
 }
