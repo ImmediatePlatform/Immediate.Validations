@@ -3,7 +3,10 @@ using Immediate.Validations.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Immediate.Validations.CodeFixes;
@@ -30,26 +33,70 @@ public sealed class AddValidateAttributeCodefixProvider : CodeFixProvider
 		context.RegisterCodeFix(
 			CodeAction.Create(
 				"Add `[Validate]`",
-				createChangedDocument: _ =>
-					AddValidateAttribute(context.Document, root, typeDeclaration),
+				createChangedDocument: token =>
+					AddValidateAttribute(context.Document, root, typeDeclaration, token),
 				equivalenceKey: nameof(AddValidateAttributeCodefixProvider)
 			),
 			diagnostic
 		);
 	}
 
-	private static Task<Document> AddValidateAttribute(Document document, CompilationUnitSyntax root, TypeDeclarationSyntax typeDeclaration)
+	private static async Task<Document> AddValidateAttribute(Document document, CompilationUnitSyntax root, TypeDeclarationSyntax typeDeclaration, CancellationToken token)
 	{
-		var newDecl = typeDeclaration
-			.WithAttributeLists(
-				typeDeclaration.AttributeLists
-					.Add(AttributeList(
-						SingletonSeparatedList(
-							Attribute(
-								IdentifierName("Validate"))))));
+		var model = await document.GetSemanticModelAsync(token);
 
-		var newRoot = root.ReplaceNode(typeDeclaration, newDecl);
-		var newDocument = document.WithSyntaxRoot(newRoot);
-		return Task.FromResult(newDocument);
+		var validateSymbol = model?.Compilation
+			.GetTypeByMetadataName("Immediate.Validations.Shared.ValidateAttribute")!;
+
+		var referenceId = DocumentationCommentId.CreateReferenceId(validateSymbol);
+		var annotation = new SyntaxAnnotation("SymbolId", referenceId);
+
+		var newLineSyntax = typeDeclaration.DescendantTrivia()
+			.FirstOrDefault(t => t.IsKind(SyntaxKind.EndOfLineTrivia));
+
+		if (newLineSyntax == default)
+			newLineSyntax = ElasticLineFeed;
+
+		var validateAttribute = AttributeList(
+			SingletonSeparatedList(
+				Attribute(
+					IdentifierName("Validate")
+				)
+			)
+		)
+			.WithAdditionalAnnotations(Simplifier.AddImportsAnnotation, annotation)
+			.WithTrailingTrivia(newLineSyntax);
+
+		var newDecl = typeDeclaration.AttributeLists switch
+		{
+			[] =>
+				typeDeclaration
+					.WithoutLeadingTrivia()
+					.WithAttributeLists(
+						typeDeclaration.AttributeLists
+							.Add(
+								validateAttribute
+									.WithLeadingTrivia(typeDeclaration.GetLeadingTrivia())
+									.WithAdditionalAnnotations(Formatter.Annotation)
+							)
+					),
+
+			_ =>
+				typeDeclaration
+					.WithAttributeLists(
+						typeDeclaration.AttributeLists
+							.Add(
+								validateAttribute
+									.WithAdditionalAnnotations(Formatter.Annotation)
+							)
+					),
+		};
+
+		var newRoot = root.ReplaceNode(
+			typeDeclaration,
+			newDecl
+		);
+
+		return document.WithSyntaxRoot(newRoot);
 	}
 }
