@@ -3,6 +3,8 @@
   <PropertyGroup>
 	<OutputType>Exe</OutputType>
 	<_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
+	<!-- Temporary fix for packaging bug -->
+	<NoWarn>$(NoWarn);NU1603</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Label="Usings">
