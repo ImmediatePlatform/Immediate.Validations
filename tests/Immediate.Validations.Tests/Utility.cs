@@ -22,7 +22,7 @@ internal static class Utility
 		"net11.0",
 		new PackageIdentity(
 			"Microsoft.NETCore.App.Ref",
-			"11.0.0-preview.7.26381.103"
+			"11.0.0-rc.1.26425.128"
 		),
 		Path.Combine("ref", "net11.0")
 	);
