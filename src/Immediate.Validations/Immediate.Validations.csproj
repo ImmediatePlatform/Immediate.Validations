@@ -3,6 +3,9 @@
   <PropertyGroup>
 	<IsPackable>true</IsPackable>
 	<IncludeBuildOutput>false</IncludeBuildOutput>
+
+	<EnablePackageValidation>true</EnablePackageValidation>
+	<PackageValidationBaselineVersion>3.0.0</PackageValidationBaselineVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget">
@@ -22,7 +25,7 @@
 
   <ItemGroup>
 	<PackageReference Include="Immediate.Handlers" />
-	<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" NoWarn="NU5104" />
+	<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
   </ItemGroup>
 
   <!--
@@ -43,46 +46,67 @@
 	  PackagePath="lib/$(TargetFramework)" />
   </ItemGroup>
 
-  <!-- roslyn 4.8 for net8/net9 -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-	<TfmSpecificPackageFile
-	  Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Analyzers.dll"
+  <ItemGroup>
+	<None
+	  Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/roslyn4.8/Immediate.Validations.Analyzers.dll"
 	  Pack="true"
 	  PackagePath="analyzers/dotnet/roslyn4.8/cs" />
 
-	<TfmSpecificPackageFile
-	  Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/netstandard2.0/Immediate.Validations.CodeFixes.dll"
+	<None
+	  Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/roslyn4.8/Immediate.Validations.CodeFixes.dll"
 	  Pack="true"
 	  PackagePath="analyzers/dotnet/roslyn4.8/cs" />
 
-	<TfmSpecificPackageFile
-	  Include="../Immediate.Validations.Generators/bin/$(Configuration)/netstandard2.0/Immediate.Validations.Generators.dll"
+	<None
+	  Include="../Immediate.Validations.Generators/bin/$(Configuration)/roslyn4.8/Immediate.Validations.Generators.dll"
 	  Pack="true"
 	  PackagePath="analyzers/dotnet/roslyn4.8/cs" />
   </ItemGroup>
 
-  <!-- roslyn 5.0 for net10/net11 -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-	<TfmSpecificPackageFile
-	  Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/net10.0/Immediate.Validations.Analyzers.dll"
+  <ItemGroup>
+	<None
+	  Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/roslyn5.0/Immediate.Validations.Analyzers.dll"
 	  Pack="true"
 	  PackagePath="analyzers/dotnet/roslyn5.0/cs" />
 
-	<!-- Specifically use ns2.0 for VS -->
-	<TfmSpecificPackageFile
-	  Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/netstandard2.0/Immediate.Validations.CodeFixes.dll"
+	<None
+	  Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/roslyn5.0/Immediate.Validations.CodeFixes.dll"
+	  Pack="true"
+	  PackagePath="analyzers/dotnet/roslyn5.0/cs" />
+
+	<None
+	  Include="../Immediate.Validations.Generators/bin/$(Configuration)/roslyn5.0/Immediate.Validations.Generators.dll"
 	  Pack="true"
 	  PackagePath="analyzers/dotnet/roslyn5.0/cs" />
 
 	<TfmSpecificPackageFile
-	  Include="../Immediate.Validations.Generators/bin/$(Configuration)/net10.0/Immediate.Validations.Generators.dll"
-	  Pack="true"
-	  PackagePath="analyzers/dotnet/roslyn5.0/cs" />
-
-	<TfmSpecificPackageFile
+	  Condition=" '$(TargetFramework)' == 'net8.0' "
 	  Include="$(PkgScriban)/lib/net8.0/Scriban.dll"
 	  Pack="true"
 	  PackagePath="analyzers/dotnet/roslyn5.0/cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<None
+	  Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/roslyn5.9/Immediate.Validations.Analyzers.dll"
+	  Pack="true"
+	  PackagePath="analyzers/dotnet/roslyn5.9/cs" />
+
+	<None
+	  Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/roslyn5.9/Immediate.Validations.CodeFixes.dll"
+	  Pack="true"
+	  PackagePath="analyzers/dotnet/roslyn5.9/cs" />
+
+	<None
+	  Include="../Immediate.Validations.Generators/bin/$(Configuration)/roslyn5.9/Immediate.Validations.Generators.dll"
+	  Pack="true"
+	  PackagePath="analyzers/dotnet/roslyn5.9/cs" />
+
+	<TfmSpecificPackageFile
+	  Condition=" '$(TargetFramework)' == 'net8.0' "
+	  Include="$(PkgScriban)/lib/net8.0/Scriban.dll"
+	  Pack="true"
+	  PackagePath="analyzers/dotnet/roslyn5.9/cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -90,10 +114,27 @@
   </ItemGroup>
 
   <ItemGroup>
-	<ProjectReference Include="../Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" ReferenceOutputAssembly="false" />
-	<ProjectReference Include="../Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" ReferenceOutputAssembly="false" />
-	<ProjectReference Include="../Immediate.Validations.Generators/Immediate.Validations.Generators.csproj" ReferenceOutputAssembly="false" />
 	<ProjectReference Include="../Immediate.Validations.Shared/Immediate.Validations.Shared.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <PropertyGroup>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net8.0' ">roslyn4.8</RoslynVersion>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net10.0' ">roslyn5.0</RoslynVersion>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net11.0' ">roslyn5.9</RoslynVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="../../src/Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" ReferenceOutputAssembly="false">
+	  <SetTargetFramework>TargetFramework=$(RoslynVersion)</SetTargetFramework>
+	</ProjectReference>
+
+	<ProjectReference Include="../../src/Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" ReferenceOutputAssembly="false">
+	  <SetTargetFramework>TargetFramework=$(RoslynVersion)</SetTargetFramework>
+	</ProjectReference>
+
+	<ProjectReference Include="../../src/Immediate.Validations.Generators/Immediate.Validations.Generators.csproj" ReferenceOutputAssembly="false">
+	  <SetTargetFramework>TargetFramework=$(RoslynVersion)</SetTargetFramework>
+	</ProjectReference>
   </ItemGroup>
 
 </Project>

@@ -3,8 +3,10 @@
   <PropertyGroup>
 	<OutputType>Exe</OutputType>
 	<_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
-	<!-- Temporary fix for packaging bug -->
-	<NoWarn>$(NoWarn);NU1603</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">
+	<Features>runtime-async=on</Features>
   </PropertyGroup>
 
   <ItemGroup Label="Usings">
@@ -44,20 +46,38 @@
 
   <ItemGroup>
 	<ProjectReference Include="../../src/Immediate.Validations.Shared/Immediate.Validations.Shared.csproj" />
-	<ProjectReference Include="../../src/Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" />
-	<ProjectReference Include="../../src/Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" />
-	<ProjectReference Include="../../src/Immediate.Validations.Generators/Immediate.Validations.Generators.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net8.0' ">roslyn4.8</RoslynVersion>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net10.0' ">roslyn5.0</RoslynVersion>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net11.0' ">roslyn5.9</RoslynVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="../../src/Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" ReferenceOutputAssembly="false">
+	  <SetTargetFramework>TargetFramework=$(RoslynVersion)</SetTargetFramework>
+	</ProjectReference>
+	<Reference Include="../../src/Immediate.Validations.Analyzers/bin/$(Configuration)/$(RoslynVersion)/Immediate.Validations.Analyzers.dll" />
+
+	<ProjectReference Include="../../src/Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" ReferenceOutputAssembly="false">
+	  <SetTargetFramework>TargetFramework=$(RoslynVersion)</SetTargetFramework>
+	</ProjectReference>
+	<Reference Include="../../src/Immediate.Validations.CodeFixes/bin/$(Configuration)/$(RoslynVersion)/Immediate.Validations.CodeFixes.dll" />
+
+	<ProjectReference Include="../../src/Immediate.Validations.Generators/Immediate.Validations.Generators.csproj" ReferenceOutputAssembly="false">
+	  <SetTargetFramework>TargetFramework=$(RoslynVersion)</SetTargetFramework>
+	</ProjectReference>
+	<Reference Include="../../src/Immediate.Validations.Generators/bin/$(Configuration)/$(RoslynVersion)/Immediate.Validations.Generators.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Compile Include="../../src/Immediate.Validations.Analyzers/DiagnosticIds.cs" />
   </ItemGroup>
 
   <ItemGroup>
 	<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" PrivateAssets="all" GeneratePathProperty="true" />
-
-	<Reference Condition=" '$(TargetFramework)' != 'net10.0' "
-			   Include="$(PkgMicrosoft_CodeAnalysis_NetAnalyzers)\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
-	<Reference Condition=" '$(TargetFramework)' == 'net10.0' "
-			   Include="$(PkgMicrosoft_CodeAnalysis_NetAnalyzers)\analyzers\dotnet\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
-
-	<Reference Include="$(PkgMicrosoft_CodeAnalysis_NetAnalyzers)\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll" />
+	<Reference Include="$(PkgMicrosoft_CodeAnalysis_NetAnalyzers)\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
   </ItemGroup>
 
 </Project>

@@ -1,17 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="../Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <ProjectReference Include="../Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Immediate.Handlers" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Immediate.Validations.FunctionalTests" />
+  </ItemGroup>
+
+  <PropertyGroup>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net8.0' ">roslyn4.8</RoslynVersion>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net10.0' ">roslyn5.0</RoslynVersion>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net11.0' ">roslyn5.9</RoslynVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="../../src/Immediate.Validations.Analyzers/Immediate.Validations.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false">
+	  <SetTargetFramework>TargetFramework=$(RoslynVersion)</SetTargetFramework>
+	</ProjectReference>
+
+	<ProjectReference Include="../../src/Immediate.Validations.CodeFixes/Immediate.Validations.CodeFixes.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false">
+	  <SetTargetFramework>TargetFramework=$(RoslynVersion)</SetTargetFramework>
+	</ProjectReference>
   </ItemGroup>
 
 </Project>
