@@ -29,7 +29,7 @@ public sealed partial class ValidationResult : IEnumerable<ValidationError>
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	[SuppressMessage("Design", "CA1062:Validate arguments of public methods")]
 	public bool VisitType(Type type) =>
-		(_types ??= []).Add(type.ToString());
+		(_types ??= [with(StringComparer.Ordinal)]).Add(type.ToString());
 
 	/// <summary>
 	///		Indicates whether the validation was successful.
