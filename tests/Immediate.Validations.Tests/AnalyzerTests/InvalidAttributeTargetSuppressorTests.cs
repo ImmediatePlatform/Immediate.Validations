@@ -52,6 +52,9 @@ public sealed class InvalidAttributeTargetSuppressorTests
 				public class Target : IValidationTarget<Target>
 				{
 					[{|#0:element|}: MaxLength(3)]
+					public required List<string> Strings12 { get; init; }
+				
+					[{|#1:element|}: MaxLength(3)]
 					public required List<string> Strings { get; init; }
 				
 					public ValidationResult Validate() => [];
@@ -64,6 +67,7 @@ public sealed class InvalidAttributeTargetSuppressorTests
 			.WithSpecificDiagnostics([CS0658])
 			.WithExpectedDiagnosticsResults([
 				CS0658.WithLocation(0).WithIsSuppressed(true),
+				CS0658.WithLocation(1).WithIsSuppressed(true),
 			])
 			.RunAsync(TestContext.Current.CancellationToken);
 
