@@ -87,8 +87,6 @@ public sealed class InvalidAttributeTargetSuppressor : DiagnosticSuppressor
 					diagnostic
 				)
 			);
-
-			break;
 		}
 	}
 }
