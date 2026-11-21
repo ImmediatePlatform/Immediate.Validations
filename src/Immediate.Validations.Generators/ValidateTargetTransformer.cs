@@ -163,12 +163,17 @@ public sealed class ValidateTargetTransformer
 
 			_token.ThrowIfCancellationRequested();
 
+			var declaration = property.DeclaringSyntaxReferences[0];
+			var semanticModel = declaration.SyntaxTree == _semanticModel.SyntaxTree
+				? _semanticModel
+				: _semanticModel.Compilation.GetSemanticModel(declaration.SyntaxTree);
+
 			if (GetPropertyValidations(
 					property.GetDescription(),
 					property.Name,
 					property.Type,
 					property.NullableAnnotation,
-					property.GetTargetedAttributes(_semanticModel)
+					declaration.GetSyntax(_token).GetTargetedAttributes(semanticModel, _token)
 				) is { } prop)
 			{
 				properties.Add(prop);
@@ -426,6 +431,7 @@ public sealed class ValidateTargetTransformer
 		if (attribute.Constructor is null)
 			return null;
 
+		var semanticModel = attribute.SemanticModel!;
 		var argumentValues = new List<Argument>(
 			attribute.Arguments.Length
 			+ (attribute.Initializer?.Initializers.Length ?? 0)
@@ -446,7 +452,8 @@ public sealed class ValidateTargetTransformer
 						BuildArgumentValue(
 							aas,
 							constructorParameter,
-							validateMethodParameters
+							validateMethodParameters,
+							semanticModel
 						)
 					);
 				}
@@ -468,7 +475,8 @@ public sealed class ValidateTargetTransformer
 			if (elements.Length == 1
 				&& GetArgumentValue(
 					constructorParameter,
-					(ExpressionSyntax)elements[0].Syntax
+					(ExpressionSyntax)elements[0].Syntax,
+					semanticModel
 				) is (var name, var value, true))
 			{
 				argumentValues.Add(
@@ -488,7 +496,8 @@ public sealed class ValidateTargetTransformer
 				.Select(e =>
 					GetArgumentValue(
 						constructorParameter,
-						(ExpressionSyntax)e.Syntax
+						(ExpressionSyntax)e.Syntax,
+						semanticModel
 					).Value
 				)
 				.ToList();
@@ -525,7 +534,8 @@ public sealed class ValidateTargetTransformer
 					BuildArgumentValue(
 						(AttributeArgumentSyntax)initializer.Syntax,
 						property,
-						validateMethodParameters
+						validateMethodParameters,
+						semanticModel
 					)
 				);
 			}
@@ -537,12 +547,14 @@ public sealed class ValidateTargetTransformer
 	private Argument BuildArgumentValue(
 		AttributeArgumentSyntax attributeArgumentSyntax,
 		ISymbol constructorParameterSymbol,
-		ImmutableArray<IParameterSymbol> parameters
+		ImmutableArray<IParameterSymbol> parameters,
+		SemanticModel semanticModel
 	)
 	{
 		var (argumentName, argumentValue, _) = GetArgumentValue(
 			constructorParameterSymbol,
-			attributeArgumentSyntax.Expression
+			attributeArgumentSyntax.Expression,
+			semanticModel
 		);
 
 		return BuildArgumentValue(
@@ -587,7 +599,8 @@ public sealed class ValidateTargetTransformer
 
 	private (string Name, string Value, bool IsArray) GetArgumentValue(
 		ISymbol constructorParameterSymbol,
-		ExpressionSyntax argumentExpressionSyntax
+		ExpressionSyntax argumentExpressionSyntax,
+		SemanticModel semanticModel
 	)
 	{
 		if (constructorParameterSymbol.IsTargetTypeSymbol()
@@ -618,7 +631,7 @@ public sealed class ValidateTargetTransformer
 			}
 			else
 			{
-				var symbolInfo = _semanticModel.GetSymbolInfo(argumentExpression, _token);
+				var symbolInfo = semanticModel.GetSymbolInfo(argumentExpression, _token);
 
 				var symbol = symbolInfo.Symbol
 					?? symbolInfo.CandidateSymbols
@@ -638,11 +651,11 @@ public sealed class ValidateTargetTransformer
 		}
 		else
 		{
-			var operation = _semanticModel.GetOperation(argumentExpressionSyntax, _token);
+			var operation = semanticModel.GetOperation(argumentExpressionSyntax, _token);
 
 			if (operation?.Type is INamedTypeSymbol { TypeKind: TypeKind.Enum })
 			{
-				var symbolInfo = _semanticModel.GetSymbolInfo(argumentExpressionSyntax, _token);
+				var symbolInfo = semanticModel.GetSymbolInfo(argumentExpressionSyntax, _token);
 				var symbol = (IFieldSymbol)symbolInfo.Symbol!;
 				var reference = $"{symbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{symbol.Name}";
 
