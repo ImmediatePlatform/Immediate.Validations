@@ -53,6 +53,39 @@ public sealed class ValidateClassAnalyzerTests
 		).RunAsync(TestContext.Current.CancellationToken);
 
 	[Fact]
+	public async Task PartialTargetReportsPropertyDiagnosticsInEachFile()
+	{
+		var test = AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
+			"""
+			using Immediate.Validations.Shared;
+
+			[Validate]
+			public sealed partial record Target([property: {|IV0018:NotNull|}] int Id) : IValidationTarget<Target>
+			{
+				public ValidationResult Validate() => [];
+				public ValidationResult Validate(ValidationResult errors) => [];
+				public static ValidationResult Validate(Target target) => [];
+				public static ValidationResult Validate(Target target, ValidationResult errors) => [];
+			}
+			"""
+		);
+
+		test.TestState.Sources.Add(
+			("Target.Properties.cs", """
+			using Immediate.Validations.Shared;
+
+			public sealed partial record Target
+			{
+				[Equal({|IV0015:"test"|})]
+				public required int OtherId { get; init; }
+			}
+			""")
+		);
+
+		await test.RunAsync(TestContext.Current.CancellationToken);
+	}
+
+	[Fact]
 	public async Task MissingValidateAttributeShouldWarn() =>
 		await AnalyzerTestHelpers.CreateAnalyzerTest<ValidateClassAnalyzer>(
 			"""

@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Operations;
 
 namespace Immediate.Validations;
 
@@ -189,54 +187,6 @@ internal static class ITypeSymbolExtensions
 				},
 			},
 		};
-
-	public static IReadOnlyList<(string? Target, IObjectCreationOperation Attribute)> GetTargetedAttributes(
-		this IPropertySymbol propertySymbol,
-		SemanticModel semanticModel
-	)
-	{
-		switch (propertySymbol.DeclaringSyntaxReferences.First().GetSyntax())
-		{
-			case PropertyDeclarationSyntax propertySyntax:
-			{
-				var list = new List<(string? Target, IObjectCreationOperation AttributeOperation)>();
-
-				foreach (var attributeList in propertySyntax.AttributeLists)
-				{
-					var target = attributeList.Target?.Identifier.ValueText;
-
-					foreach (var attribute in attributeList.Attributes)
-					{
-						if (semanticModel.GetOperation(attribute) is IAttributeOperation { Operation: IObjectCreationOperation operation })
-							list.Add((target, operation));
-					}
-				}
-
-				return list;
-			}
-
-			case ParameterSyntax parameterSyntax:
-			{
-				var list = new List<(string? Target, IObjectCreationOperation AttributeOperation)>();
-
-				foreach (var attributeList in parameterSyntax.AttributeLists)
-				{
-					var target = attributeList.Target?.Identifier.ValueText.NullIf("property");
-
-					foreach (var attribute in attributeList.Attributes)
-					{
-						if (semanticModel.GetOperation(attribute) is IAttributeOperation { Operation: IObjectCreationOperation operation })
-							list.Add((target, operation));
-					}
-				}
-
-				return list;
-			}
-
-			case var syntax:
-				throw new InvalidOperationException($"Property declared using a `{syntax.GetType().FullName}`.");
-		}
-	}
 
 	public static bool IsTargetTypeSymbol(this ISymbol symbol) =>
 		symbol is IParameterSymbol { Type.IsValidTargetTypeType: true }

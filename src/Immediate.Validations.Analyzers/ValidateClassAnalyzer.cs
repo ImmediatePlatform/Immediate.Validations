@@ -122,29 +122,18 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 
 		token.ThrowIfCancellationRequested();
 
-		if (!hasValidateAttribute)
-		{
-			if (!isIValidationTarget && !symbol.HasValidatedProperties())
-				return;
+		if (!hasValidateAttribute && !isIValidationTarget && !symbol.HasValidatedProperties())
+			return;
 
-			context.ReportDiagnostic(
-				Diagnostic.Create(
-					ValidateAttributeMissing,
-					symbol.Locations[0],
-					symbol.Name
-				)
-			);
-		}
-
-		if (!isIValidationTarget)
+		var typeDeclaration = context.Node;
+		var typeLocation = symbol.Locations[0];
+		if (typeLocation.SourceTree == typeDeclaration.SyntaxTree && typeDeclaration.Span.Contains(typeLocation.SourceSpan))
 		{
-			context.ReportDiagnostic(
-				Diagnostic.Create(
-					IValidationTargetMissing,
-					symbol.Locations[0],
-					symbol.Name
-				)
-			);
+			if (!hasValidateAttribute)
+				context.ReportDiagnostic(Diagnostic.Create(ValidateAttributeMissing, typeLocation, symbol.Name));
+
+			if (!isIValidationTarget)
+				context.ReportDiagnostic(Diagnostic.Create(IValidationTargetMissing, typeLocation, symbol.Name));
 		}
 
 		var members = symbol
@@ -166,7 +155,15 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			if (property is { IsStatic: true } or { DeclaredAccessibility: not Accessibility.Public })
 				continue;
 
-			foreach (var (target, attribute) in property.GetTargetedAttributes(context.SemanticModel))
+			if (property.DeclaringSyntaxReferences is not [{ } propertyDeclaration, ..]
+				|| propertyDeclaration.SyntaxTree != typeDeclaration.SyntaxTree
+				|| !typeDeclaration.Span.Contains(propertyDeclaration.Span))
+			{
+				continue;
+			}
+
+			var attributes = propertyDeclaration.GetSyntax(token).GetTargetedAttributes(context.SemanticModel, token);
+			foreach (var (target, attribute) in attributes)
 			{
 				var targetType = target switch
 				{
