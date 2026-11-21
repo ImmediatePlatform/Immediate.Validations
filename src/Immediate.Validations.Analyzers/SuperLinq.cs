@@ -12,7 +12,7 @@ internal static class SuperLinq
 		where TLeft : class
 		where TRight : class
 	{
-		comparer ??= Comparer<string>.Default;
+		comparer ??= StringComparer.CurrentCulture;
 
 		using var e1 = left.GetEnumerator();
 		using var e2 = right.GetEnumerator();
