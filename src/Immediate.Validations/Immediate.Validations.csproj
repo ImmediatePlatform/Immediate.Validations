@@ -88,25 +88,25 @@
 
   <ItemGroup>
 	<None
-	  Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/roslyn5.9/Immediate.Validations.Analyzers.dll"
+	  Include="../Immediate.Validations.Analyzers/bin/$(Configuration)/roslyn5.12/Immediate.Validations.Analyzers.dll"
 	  Pack="true"
-	  PackagePath="analyzers/dotnet/roslyn5.9/cs" />
+	  PackagePath="analyzers/dotnet/roslyn5.12/cs" />
 
 	<None
-	  Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/roslyn5.9/Immediate.Validations.CodeFixes.dll"
+	  Include="../Immediate.Validations.CodeFixes/bin/$(Configuration)/roslyn5.12/Immediate.Validations.CodeFixes.dll"
 	  Pack="true"
-	  PackagePath="analyzers/dotnet/roslyn5.9/cs" />
+	  PackagePath="analyzers/dotnet/roslyn5.12/cs" />
 
 	<None
-	  Include="../Immediate.Validations.Generators/bin/$(Configuration)/roslyn5.9/Immediate.Validations.Generators.dll"
+	  Include="../Immediate.Validations.Generators/bin/$(Configuration)/roslyn5.12/Immediate.Validations.Generators.dll"
 	  Pack="true"
-	  PackagePath="analyzers/dotnet/roslyn5.9/cs" />
+	  PackagePath="analyzers/dotnet/roslyn5.12/cs" />
 
 	<TfmSpecificPackageFile
 	  Condition=" '$(TargetFramework)' == 'net8.0' "
 	  Include="$(PkgScriban)/lib/net8.0/Scriban.dll"
 	  Pack="true"
-	  PackagePath="analyzers/dotnet/roslyn5.9/cs" />
+	  PackagePath="analyzers/dotnet/roslyn5.12/cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -120,7 +120,7 @@
   <PropertyGroup>
 	<RoslynVersion Condition=" '$(TargetFramework)' == 'net8.0' ">roslyn4.8</RoslynVersion>
 	<RoslynVersion Condition=" '$(TargetFramework)' == 'net10.0' ">roslyn5.0</RoslynVersion>
-	<RoslynVersion Condition=" '$(TargetFramework)' == 'net11.0' ">roslyn5.9</RoslynVersion>
+	<RoslynVersion Condition=" '$(TargetFramework)' == 'net11.0' ">roslyn5.12</RoslynVersion>
   </PropertyGroup>
 
   <ItemGroup>
