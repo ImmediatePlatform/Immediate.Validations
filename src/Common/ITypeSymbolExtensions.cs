@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Immediate.Validations;
 
+[ExcludeFromCodeCoverage]
 internal static class ITypeSymbolExtensions
 {
 	public static bool IsICollection1(this INamedTypeSymbol typeSymbol) =>

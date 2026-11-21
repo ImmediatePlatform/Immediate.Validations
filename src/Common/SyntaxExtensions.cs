@@ -5,9 +5,9 @@ using Microsoft.CodeAnalysis.Operations;
 
 namespace Immediate.Validations;
 
+[ExcludeFromCodeCoverage]
 internal static class SyntaxExtensions
 {
-	[ExcludeFromCodeCoverage]
 	public static bool IsNameOfExpression(this ExpressionSyntax syntax, [NotNullWhen(returnValue: true)] out ExpressionSyntax? argumentExpression)
 	{
 		if (syntax is InvocationExpressionSyntax
@@ -44,6 +44,7 @@ internal static class SyntaxExtensions
 		foreach (var attributeList in attributeLists)
 		{
 			var target = attributeList.Target?.Identifier.ValueText;
+
 			if (declaration is ParameterSyntax && target is "property")
 				target = null;
 

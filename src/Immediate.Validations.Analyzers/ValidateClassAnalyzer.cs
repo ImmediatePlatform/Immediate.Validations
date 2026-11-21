@@ -163,6 +163,7 @@ public sealed class ValidateClassAnalyzer : DiagnosticAnalyzer
 			}
 
 			var attributes = propertyDeclaration.GetSyntax(token).GetTargetedAttributes(context.SemanticModel, token);
+
 			foreach (var (target, attribute) in attributes)
 			{
 				var targetType = target switch

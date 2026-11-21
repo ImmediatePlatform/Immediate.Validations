@@ -71,15 +71,20 @@ public sealed class ValidateClassAnalyzerTests
 		);
 
 		test.TestState.Sources.Add(
-			("Target.Properties.cs", """
-			using Immediate.Validations.Shared;
+			(
+				filename: "Target.Properties.cs",
+				content:
+					/* lang=c#-test */
+					"""
+					using Immediate.Validations.Shared;
 
-			public sealed partial record Target
-			{
-				[Equal({|IV0015:"test"|})]
-				public required int OtherId { get; init; }
-			}
-			""")
+					public sealed partial record Target
+					{
+						[Equal({|IV0015:"test"|})]
+						public required int OtherId { get; init; }
+					}
+					"""
+			)
 		);
 
 		await test.RunAsync(TestContext.Current.CancellationToken);
