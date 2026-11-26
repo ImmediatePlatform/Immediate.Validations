@@ -12,6 +12,7 @@
 	<PackageVersion Include="Microsoft.CodeAnalysis.CSharp.CodeRefactoring.Testing" Version="1.1.4" />
 	<PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0" />
 	<PackageVersion Include="Scriban" Version="7.6.1" />
+	<PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.3.1" Condition=" '$(TargetFramework)' == 'net8.0' " />
 	<PackageVersion Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
 	<PackageVersion Include="Verify.SourceGenerators" Version="2.5.0" />
 	<PackageVersion Include="Verify.XunitV3" Version="33.3.4" />
@@ -25,6 +26,7 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
 	<PackageVersion Include="Basic.Reference.Assemblies.Net80" Version="1.8.15" />
+	<PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.34" />
 	<PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0" />
 	<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
 	<PackageVersion Include="Microsoft.Extensions.Localization" Version="8.0.34" />
@@ -34,6 +36,8 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
 	<PackageVersion Include="Basic.Reference.Assemblies.Net100" Version="1.8.15" />
+	<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(Net10PackageVersion)" />
+	<PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="$(Net10PackageVersion)" />
 	<PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.404" />
 	<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(Net10PackageVersion)" />
 	<PackageVersion Include="Microsoft.Extensions.Localization" Version="$(Net10PackageVersion)" />
@@ -43,6 +47,8 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net11.0' ">
 	<PackageVersion Include="Basic.Reference.Assemblies.Net110" Version="1.8.15" />
+	<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(Net11PackageVersion)" />
+	<PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="$(Net11PackageVersion)" />
 	<PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="11.0.100" />
 	<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(Net11PackageVersion)" />
 	<PackageVersion Include="Microsoft.Extensions.Localization" Version="$(Net11PackageVersion)" />

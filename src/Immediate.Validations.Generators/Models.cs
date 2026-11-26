@@ -32,7 +32,10 @@ public sealed record ValidationTargetProperty
 	public required ValidationTargetProperty? CollectionPropertyDetails { get; init; }
 	public required EquatableReadOnlyList<PropertyValidation> Validations { get; init; }
 	public required EquatableReadOnlyList<PropertyValidation> NullValidations { get; init; }
+	public EquatableReadOnlyList<OpenApiConstraint> OpenApiConstraints { get; init; }
 }
+
+public sealed record OpenApiConstraint(string Kind, string? Value = null);
 
 public sealed record PropertyValidation
 {

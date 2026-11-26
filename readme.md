@@ -220,3 +220,20 @@ public static void ConfigureProblemDetails(ProblemDetailsOptions options) =>
 	};
 
 ```
+
+### Documenting validation in OpenAPI
+
+Import `Immediate.Validations.OpenApi` in your web app and register the generated extension for the OpenAPI provider you use.
+
+```cs
+using Immediate.Validations.OpenApi;
+
+builder.Services.AddOpenApi(options => options.AddImmediateValidations());
+```
+
+For Swashbuckle, register the filters with `builder.Services.AddSwaggerGen(options => options.AddImmediateValidations());`.
+The built-in ASP.NET Core integration supports .NET 10 and later. The Swashbuckle integration uses the schema filter API in Swashbuckle 10 and later.
+
+The integration reads validation metadata from `[Validate]` types compiled with a reference to ASP.NET Core or Immediate.Apis. It works with request schemas and bound properties exposed by API Explorer, including Immediate.Apis request types, Minimal API `[AsParameters]` types, and MVC models.
+
+Documented rules include nullability, constant integer comparisons, string lengths, and supported collection counts. Collection element constraints are applied to the item schema. Minimum string lengths use a lower bound in Unicode code points because Immediate.Validations measures UTF-16 code units. Validators that depend on runtime values, custom code, or .NET regular expressions continue to run in validation.

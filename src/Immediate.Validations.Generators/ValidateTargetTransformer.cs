@@ -19,6 +19,7 @@ public sealed class ValidateTargetTransformer
 	private readonly GeneratorAttributeSyntaxContext _context;
 	private readonly CancellationToken _token;
 	private readonly SemanticModel _semanticModel;
+	private readonly bool _emitOpenApiConstraints;
 	private readonly INamedTypeSymbol _symbol;
 	private readonly List<ISymbol> _members;
 
@@ -31,6 +32,10 @@ public sealed class ValidateTargetTransformer
 		_token = token;
 		_semanticModel = _context.SemanticModel;
 		_symbol = (INamedTypeSymbol)context.TargetSymbol;
+		var compilation = _semanticModel.Compilation;
+		_emitOpenApiConstraints = compilation.GetTypeByMetadataName("Immediate.Validations.Shared.OpenApiConstraintAttribute") is not null
+			&& (compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Http.HttpContext") is not null
+				|| compilation.GetTypeByMetadataName("Immediate.Apis.Shared.MapMethodAttribute") is not null);
 
 		_token.ThrowIfCancellationRequested();
 		_members =
@@ -266,10 +271,15 @@ public sealed class ValidateTargetTransformer
 
 		_token.ThrowIfCancellationRequested();
 
+		var constraints = _emitOpenApiConstraints ? new List<OpenApiConstraint>() : null;
+		if (validateNotNull && (isReferenceType || isNullable))
+			constraints?.Add(new("NotNull"));
+
 		var validations = ProcessAttributes(
 			propertyType,
 			baseType,
-			attributes
+			attributes,
+			constraints
 		);
 
 		if (baseType.TypeKind is TypeKind.Enum)
@@ -331,13 +341,15 @@ public sealed class ValidateTargetTransformer
 			NullValidations = validations
 				.Where(v => v.IsNullable)
 				.ToEquatableReadOnlyList(),
+			OpenApiConstraints = new(constraints),
 		};
 	}
 
 	private List<PropertyValidation> ProcessAttributes(
 		ITypeSymbol propertyType,
 		ITypeSymbol baseType,
-		IEnumerable<IObjectCreationOperation> attributes
+		IEnumerable<IObjectCreationOperation> attributes,
+		List<OpenApiConstraint>? constraints
 	)
 	{
 		var list = new List<PropertyValidation>();
@@ -352,6 +364,8 @@ public sealed class ValidateTargetTransformer
 			)
 			{
 				list.Add(validation);
+				if (constraints is not null)
+					OpenApiConstraints.Add(constraints, baseType, attribute);
 			}
 		}
 

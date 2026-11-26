@@ -10,10 +10,12 @@
   </ItemGroup>
 
   <ItemGroup>
+	<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	<PackageReference Include="Immediate.Handlers" />
-	<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-	<PackageReference Include="Microsoft.Extensions.Localization" />
+	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Condition=" '$(TargetFramework)' != 'net8.0' " />
+	<PackageReference Include="Microsoft.AspNetCore.TestHost" />
 	<PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Condition=" '$(TargetFramework)' == 'net8.0' " />
 	<PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
 
