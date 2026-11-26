@@ -13,6 +13,13 @@ partial {{ c.type }} {{ c.name }}
 {
 {{~ end ~}}
 
+{{~ func emit_constraints(p, depth = 0) ~}}
+{{~ for constraint in p.open_api_constraints ~}}
+[global::Immediate.Validations.Shared.OpenApiConstraintAttribute("{{ p.property_name }}", global::Immediate.Validations.Shared.OpenApiConstraintKind.{{ constraint.kind }}, {{ if constraint.value; '"' + constraint.value + '"'; else; "null"; end }}, {{ depth }})]
+{{~ end ~}}
+{{~ if p.collection_property_details; emit_constraints p.collection_property_details (depth + 1); end ~}}
+{{~ end ~}}
+{{~ for p in properties; emit_constraints p; end ~}}
 partial {{ class.type }} {{ class.name }}{{ if class.type != "interface" }} : global::Immediate.Validations.Shared.IValidationTarget{{ end }}
 {
 	{{~ if class.type != "interface" ~}}
