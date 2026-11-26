@@ -11,12 +11,32 @@ public static class GeneratorTestHelper
 	public static GeneratorDriverRunResult RunGenerator(
 		[StringSyntax("c#-test")] string source,
 		params ReadOnlySpan<string> skippedSteps
+	) => RunGenerator(source, [], includeOpenApi: false, skippedSteps);
+
+	public static GeneratorDriverRunResult RunOpenApiGenerators(
+		[StringSyntax("c#-test")] string source,
+		params ReadOnlySpan<MetadataReference> additionalReferences
+	) => RunGenerator(source, additionalReferences, includeOpenApi: true, []);
+
+	private static GeneratorDriverRunResult RunGenerator(
+		string source,
+		ReadOnlySpan<MetadataReference> additionalReferences,
+		bool includeOpenApi,
+		ReadOnlySpan<string> skippedSteps
 	)
 	{
 		var syntaxTree = CSharpSyntaxTree.ParseText(
 			source,
 			cancellationToken: TestContext.Current.CancellationToken
 		);
+
+		// The validation generator supports the custom `element` attribute target.
+		var diagnosticOptions = ImmutableDictionary<string, ReportDiagnostic>.Empty.Add("CS0658", ReportDiagnostic.Suppress);
+		if (includeOpenApi)
+		{
+			// Match the SDK's assembly version unification for references like Microsoft.OpenApi targeting .NET 8.
+			diagnosticOptions = diagnosticOptions.Add("CS1701", ReportDiagnostic.Suppress);
+		}
 
 		var compilation = CSharpCompilation.Create(
 			assemblyName: "Tests",
@@ -25,18 +45,18 @@ public static class GeneratorTestHelper
 			[
 				..Utility.NetCoreAssemblies,
 				..Utility.GetMetadataReferences(),
+				..additionalReferences,
 			],
 			options: new(
 				outputKind: OutputKind.DynamicallyLinkedLibrary,
-				specificDiagnosticOptions:
-				[
-					KeyValuePair.Create("CS0658", ReportDiagnostic.Suppress), // Suppress 'element' is not a recognized attribute location. Valid attribute locations for this declaration are 'field, property'. All attributes in this block will be ignored.
-				]
+				specificDiagnosticOptions: diagnosticOptions
 			)
 		);
 
 		GeneratorDriver driver = CSharpGeneratorDriver.Create(
-			generators: [new ImmediateValidationsGenerator().AsSourceGenerator()],
+			generators: includeOpenApi
+				? [new ImmediateValidationsGenerator().AsSourceGenerator(), new OpenApiIntegrationGenerator().AsSourceGenerator()]
+				: [new ImmediateValidationsGenerator().AsSourceGenerator()],
 			driverOptions: new GeneratorDriverOptions(default, trackIncrementalGeneratorSteps: true)
 		);
 
@@ -86,26 +106,11 @@ public static class GeneratorTestHelper
 
 		driver = RunGenerator(driver, clone);
 
-		if (
-			driver.GetRunResult() is not
-			{
-				Results:
-				[
-					{
-						TrackedOutputSteps: { } outputSteps,
-						TrackedSteps: { } trackedSteps,
-					}
-				],
-			}
-		)
-		{
-			Assert.Fail("Unable to verify incrementality.");
-			return;
-		}
-
-		foreach (var (_, step) in outputSteps)
+		var results = driver.GetRunResult().Results;
+		foreach (var (_, step) in results.SelectMany(r => r.TrackedOutputSteps))
 			AssertSteps(step);
 
+		var trackedSteps = results[0].TrackedSteps;
 		foreach (var step in TrackedSteps)
 		{
 			if (skippedSteps.Contains(step))
