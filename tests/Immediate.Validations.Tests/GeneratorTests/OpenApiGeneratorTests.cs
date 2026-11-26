@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.OpenApi;
 #if NET8_0
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -16,6 +15,10 @@ namespace Immediate.Validations.Tests.GeneratorTests;
 public sealed class OpenApiGeneratorTests
 {
 	private const string ValidationSource = """
+		#nullable enable
+		using System.Collections.Generic;
+		using Immediate.Validations.Shared;
+
 		[Validate]
 		public sealed partial record Request(
 			[property: NotNull, Length(5, 12)] string? Name,
@@ -30,60 +33,28 @@ public sealed class OpenApiGeneratorTests
 		}
 		""";
 
-	[Theory]
-	[InlineData(false)]
-	[InlineData(true)]
-	public void EmitsConstraintsOnlyWithWebReferences(bool useAspNetCore)
+	[Fact]
+	public async Task OmitsConstraintsWithoutWebReferences()
 	{
-		var result = GeneratorTestHelper.RunOpenApiGenerators(
-			$$"""
-			#nullable enable
-			using System.Collections.Generic;
-			using Immediate.Validations.Shared;
+		var result = GeneratorTestHelper.RunOpenApiGenerators(ValidationSource);
 
-			{{ValidationSource}}
-			""",
-			useAspNetCore ? [Reference(typeof(HttpContext))] : []
-		);
-
-		var tree = Assert.Single(result.GeneratedTrees);
-		var constraints = tree.GetRoot(TestContext.Current.CancellationToken)
-			.DescendantNodes()
-			.OfType<AttributeSyntax>()
-			.Where(attribute => attribute.Name.GetLastToken().ValueText is "OpenApiConstraintAttribute")
-			.Select(attribute =>
-			{
-				var arguments = attribute.ArgumentList!.Arguments;
-				return (
-					arguments[0].Expression.GetFirstToken().ValueText,
-					arguments[1].Expression.GetLastToken().ValueText,
-					arguments[2].Expression.GetFirstToken().ValueText,
-					arguments[3].Expression.GetFirstToken().ValueText
-				);
-			});
-
-		if (!useAspNetCore)
-		{
-			Assert.Empty(constraints);
-			return;
-		}
-
-		Assert.Equal(
-			[
-				("Name", "NotNull", "null", "0"),
-				("Name", "MinLength", "3", "0"),
-				("Name", "MaxLength", "12", "0"),
-				("Id", "ExclusiveMinimum", "2", "0"),
-				("Tags", "NotNull", "null", "0"),
-				("Tags", "NotNull", "null", "1"),
-				("Tags", "MaxLength", "8", "2"),
-			],
-			constraints
-		);
+		_ = await Verify(result);
 	}
 
 	[Fact]
-	public void CompilesAdapterForReferencedProvider()
+	public async Task EmitsConstraintsWithAspNetCoreReference()
+	{
+		var result = GeneratorTestHelper.RunOpenApiGenerators(ValidationSource, Reference(typeof(HttpContext)));
+
+		_ = await Verify(result);
+	}
+
+	[Fact]
+#if NET8_0
+	public async Task GeneratesSwashbuckleAdapter()
+#else
+	public async Task GeneratesAspNetCoreOpenApiAdapter()
+#endif
 	{
 #if NET8_0
 		const string OptionsType = "Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions";
@@ -107,23 +78,19 @@ public sealed class OpenApiGeneratorTests
 
 		var result = GeneratorTestHelper.RunOpenApiGenerators(
 			$$"""
-			#nullable enable
-			using System.Collections.Generic;
 			using Immediate.Validations.OpenApi;
-			using Immediate.Validations.Shared;
+
+			{{ValidationSource}}
 
 			public static class Registration
 			{
 				public static {{OptionsType}} Configure({{OptionsType}} options) => options.AddImmediateValidations();
 			}
-
-			{{ValidationSource}}
 			""",
 			references
 		);
 
-		var adapter = Assert.Single(result.Results[1].GeneratedSources);
-		Assert.Equal("IV.OpenApiValidation.g.cs", adapter.HintName);
+		_ = await Verify(result);
 	}
 
 	private static MetadataReference Reference(Type type) => MetadataReference.CreateFromFile(type.Assembly.Location);
